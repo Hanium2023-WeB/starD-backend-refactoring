@@ -3,6 +3,7 @@ package com.web.stard.domain.member.dto.request;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.domain.enums.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -17,7 +18,7 @@ public class MemberRequestDto {
 
         @NotBlank(message = "이메일은 필수입니다.")
         @Schema(example = "user@naver.com", description = "회원가입 이메일")
-        @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", message = "이메일 형식에 맞지 않습니다.")
+        @Email(message = "이메일 형식에 맞지 않습니다.")
         private String email;
 
         @NotBlank(message = "비밀번호는 필수 입니다.")

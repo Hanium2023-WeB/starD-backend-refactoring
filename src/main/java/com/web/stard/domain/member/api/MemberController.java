@@ -19,7 +19,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @Operation(summary = "회원가입")
-    @PostMapping
+    @PostMapping("/join")
     public ResponseEntity<MemberResponseDto.SignupResultDto> signUp(@RequestBody MemberRequestDto.SignupDto requestDTO) {
         return ResponseEntity.ok(memberService.signUp(requestDTO));
     }
