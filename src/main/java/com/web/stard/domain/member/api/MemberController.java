@@ -35,4 +35,11 @@ public class MemberController {
         return ResponseEntity.ok(memberService.checkNicknameDuplicate(nickname));
     }
 
+    @Operation(summary = "회원가입 추가 정보 저장",
+            description = "회원가입 거주지 및 관심 분야를 저장합니다.")
+    @PostMapping("/join/additional-info")
+    public ResponseEntity<MemberResponseDto.AdditionalInfoResultDto> saveAdditionalInfo(@RequestBody MemberRequestDto.AdditionalInfoRequestDto requestDto) {
+        MemberResponseDto.AdditionalInfoResultDto result = memberService.saveAdditionalInfo(requestDto);
+        return ResponseEntity.ok(result);
+    }
 }

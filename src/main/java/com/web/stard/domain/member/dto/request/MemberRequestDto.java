@@ -10,6 +10,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 public class MemberRequestDto {
 
     @Getter
@@ -52,5 +54,14 @@ public class MemberRequestDto {
                     .build();
         }
 
+    }
+
+    @Getter
+    @Builder
+    public static class AdditionalInfoRequestDto {
+        private Long memberId;
+        private String city;
+        private String district;
+        private List<String> interests;
     }
 }

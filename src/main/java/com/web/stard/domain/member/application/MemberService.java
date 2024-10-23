@@ -9,4 +9,6 @@ public interface  MemberService {
     boolean checkEmailDuplicate(String email);
 
     boolean checkNicknameDuplicate(String nickname);
+
+    MemberResponseDto.AdditionalInfoResultDto saveAdditionalInfo(MemberRequestDto.AdditionalInfoRequestDto requestDto);
 }
