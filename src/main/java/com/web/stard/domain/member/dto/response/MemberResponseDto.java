@@ -1,5 +1,6 @@
 package com.web.stard.domain.member.dto.response;
 
+import com.web.stard.domain.member.domain.Address;
 import com.web.stard.domain.member.domain.Interest;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.domain.enums.InterestField;
@@ -73,6 +74,22 @@ public class MemberResponseDto {
             return EditPhoneResponseDto.builder()
                     .phone(phone)
                     .message("전화번호가 성공적으로 변경되었습니다.")
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    public static class EditAddressResponseDto {
+        private String city;
+        private String district;
+        private String message;
+
+        public static EditAddressResponseDto from(Address address) {
+            return EditAddressResponseDto.builder()
+                    .city(address.getCity())
+                    .district(address.getDistrict())
+                    .message("주소가 성공적으로 변경되었습니다.")
                     .build();
         }
     }

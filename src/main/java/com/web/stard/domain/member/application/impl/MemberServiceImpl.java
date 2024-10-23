@@ -1,10 +1,12 @@
 package com.web.stard.domain.member.application.impl;
 
 import com.web.stard.domain.member.application.MemberService;
+import com.web.stard.domain.member.domain.Address;
 import com.web.stard.domain.member.domain.Interest;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.dto.response.MemberResponseDto;
+import com.web.stard.domain.member.repository.AddressRepository;
 import com.web.stard.domain.member.repository.InterestRepository;
 import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.global.error.CustomException;
@@ -23,6 +25,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final InterestRepository interestRepository;
+    private final AddressRepository addressRepository;
 
     @Override
     public MemberResponseDto.SignupResultDto signUp(MemberRequestDto.SignupDto requestDto) {
@@ -103,4 +106,37 @@ public class MemberServiceImpl implements MemberService {
 
         return MemberResponseDto.EditPhoneResponseDto.from(info.getPhone());
     }
+
+    /**
+     * 마이페이지 - 개인정보 수정 : 거주지
+     *
+     * @param id, EditAddressDto        사용자 고유 id, city 시, district 구
+     * @return EditAddressResponseDto   city 시, district 구, message 성공 메시지
+     *
+     */
+    @Transactional
+    @Override
+    public MemberResponseDto.EditAddressResponseDto editAddress(Long id, MemberRequestDto.EditAddressDto requestDTO) {
+        // 회원 정보 반환
+        Member info = memberRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+
+        Address address = info.getAddress();
+
+        // 주소가 없을 경우 생성
+        if (address == null) {
+            address = requestDTO.toEntity(requestDTO.getCity(), requestDTO.getDistrict());
+            addressRepository.save(address); // address 객체 저장
+        } else { // 있는 경우 city, district만 변경
+            address.setCity(requestDTO.getCity());
+            address.setDistrict(requestDTO.getDistrict());
+        }
+
+        info.setAddress(address);
+
+        memberRepository.save(info);
+
+        return MemberResponseDto.EditAddressResponseDto.from(info.getAddress());
+    }
+
 }

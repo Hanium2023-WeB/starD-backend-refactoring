@@ -1,11 +1,9 @@
 package com.web.stard.domain.member.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -17,7 +15,9 @@ public class Address {
     @Column(name = "address_id", nullable = false)
     private Long id;
 
+    @Setter
     private String city;    // 시
 
+    @Setter
     private String district;    // 구
 }

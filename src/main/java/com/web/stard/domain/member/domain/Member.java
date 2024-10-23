@@ -42,6 +42,7 @@ public class Member extends BaseEntity {
     @Column(name = "report_count")
     private double reportCount; // 누적 신고 수
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
     private Address address;

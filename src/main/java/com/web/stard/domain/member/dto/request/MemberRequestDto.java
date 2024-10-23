@@ -1,5 +1,6 @@
 package com.web.stard.domain.member.dto.request;
 
+import com.web.stard.domain.member.domain.Address;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.domain.enums.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -74,6 +75,26 @@ public class MemberRequestDto {
         @Schema(example = "010-1234-5678", description = "회원 전화번호")
         @NotBlank(message = "전화번호는 필수 입니다.")
         private String phone;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class EditAddressDto {
+        @Schema(example = "서울특별시", description = "회원 주소 - 시")
+        @NotBlank(message = "시는 필수 입니다.")
+        private String city;
+
+        @Schema(example = "성북구", description = "회원 주소 - 구")
+        @NotBlank(message = "구는 필수 입니다.")
+        private String district;
+
+        public Address toEntity(String city, String district){
+            return Address.builder()
+                    .city(city)
+                    .district(district)
+                    .build();
+        }
     }
 
 }
