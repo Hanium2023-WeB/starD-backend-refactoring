@@ -1,7 +1,6 @@
 package com.web.stard.domain.member.application.impl;
 
 import com.web.stard.domain.member.application.MemberService;
-import com.web.stard.domain.member.domain.Address;
 import com.web.stard.domain.member.domain.Interest;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
@@ -52,7 +51,7 @@ public class MemberServiceImpl implements MemberService {
         // 회원 정보 반환
         Member info = memberRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-        Address address = info.getAddress();
+
         // 관심분야 반환
         List<Interest> interests = interestRepository.findAllByMember(info);
 
@@ -62,11 +61,46 @@ public class MemberServiceImpl implements MemberService {
 
     // TODO : 비밀번호 변경 : 현재 비밀번호랑 다를 경우 변경 불가능
 
-    // TODO : 닉네임 변경 : 사용자의 현재 닉네임 = 중복 버튼 클릭 시의 (바꿀) 닉네임 => 변경 가능 alert
 
-    // TODO : 전화번호 변경
+    /**
+     * 마이페이지 - 개인정보 수정 : 닉네임
+     *
+     * @param id, EditNicknameDto       사용자 고유 id, nickname 닉네임
+     * @return EditNicknameResponseDto  nickname 닉네임, message 성공 메시지
+     *
+     */
+    @Override
+    public MemberResponseDto.EditNicknameResponseDto editNickname(Long id, MemberRequestDto.EditNicknameDto requestDTO) {
+        // 회원 정보 반환
+        Member info = memberRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
-    // TODO : 거주지 변경
+        // 닉네임 변경
+        info.setNickname(requestDTO.getNickname());
 
-    // TODO : 관심분야 변경
+        memberRepository.save(info);
+
+        return MemberResponseDto.EditNicknameResponseDto.from(info.getNickname());
+    }
+
+    /**
+     * 마이페이지 - 개인정보 수정 : 전화번호
+     *
+     * @param id, EditPhoneDto       사용자 고유 id, phone 전화번호
+     * @return EditPhoneResponseDto  phone 전화번호, message 성공 메시지
+     *
+     */
+    @Override
+    public MemberResponseDto.EditPhoneResponseDto editPhone(Long id, MemberRequestDto.EditPhoneDto requestDTO) {
+        // 회원 정보 반환
+        Member info = memberRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+
+        // 전화번호 변경
+        info.setPhone(requestDTO.getPhone());
+
+        memberRepository.save(info);
+
+        return MemberResponseDto.EditPhoneResponseDto.from(info.getPhone());
+    }
 }

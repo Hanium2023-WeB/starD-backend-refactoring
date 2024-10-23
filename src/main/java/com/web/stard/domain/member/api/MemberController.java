@@ -22,8 +22,20 @@ public class MemberController {
     }
 
     @Operation(summary = "개인정보 반환")
-    @GetMapping("/update")
+    @GetMapping("/edit")
     public ResponseEntity<MemberResponseDto.InfoDto> getInfo() {
         return ResponseEntity.ok(memberService.getInfo(5L)); // TODO 로그인 한 사용자 가져오기
+    }
+
+    @Operation(summary = "닉네임 수정")
+    @PostMapping("/edit/nickname")
+    public ResponseEntity<MemberResponseDto.EditNicknameResponseDto> editNickname(@RequestBody MemberRequestDto.EditNicknameDto requestDTO) {
+        return ResponseEntity.ok(memberService.editNickname(5L, requestDTO)); // TODO 로그인 한 사용자 가져오기
+    }
+
+    @Operation(summary = "전화번호 수정")
+    @PostMapping("/edit/phone")
+    public ResponseEntity<MemberResponseDto.EditPhoneResponseDto> editPhone(@RequestBody MemberRequestDto.EditPhoneDto requestDTO) {
+        return ResponseEntity.ok(memberService.editPhone(5L, requestDTO)); // TODO 로그인 한 사용자 가져오기
     }
 }

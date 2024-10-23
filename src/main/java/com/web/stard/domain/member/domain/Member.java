@@ -24,8 +24,10 @@ public class Member extends BaseEntity {
 
     private String name;    // 이름
 
+    @Setter
     private String nickname;    // 닉네임
 
+    @Setter
     private String phone;   // 전화번호
 
     @Enumerated(EnumType.STRING)

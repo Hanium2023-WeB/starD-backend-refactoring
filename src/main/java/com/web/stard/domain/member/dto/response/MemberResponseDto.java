@@ -48,4 +48,33 @@ public class MemberResponseDto {
                     .build();
         }
     }
+
+    @Getter
+    @Builder
+    public static class EditNicknameResponseDto {
+        private String nickname;
+        private String message;
+
+        public static EditNicknameResponseDto from(String nickname) {
+            return EditNicknameResponseDto.builder()
+                    .nickname(nickname)
+                    .message("닉네임이 성공적으로 변경되었습니다.")
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    public static class EditPhoneResponseDto {
+        private String phone;
+        private String message;
+
+        public static EditPhoneResponseDto from(String phone) {
+            return EditPhoneResponseDto.builder()
+                    .phone(phone)
+                    .message("전화번호가 성공적으로 변경되었습니다.")
+                    .build();
+        }
+    }
+
 }
