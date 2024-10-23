@@ -5,4 +5,8 @@ import com.web.stard.domain.member.dto.response.MemberResponseDto;
 
 public interface  MemberService {
     MemberResponseDto.SignupResultDto signUp(MemberRequestDto.SignupDto requestDTO);
+
+    boolean checkEmailDuplicate(String email);
+
+    boolean checkNicknameDuplicate(String nickname);
 }

@@ -32,7 +32,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private Role role; // 권한
 
-    @ColumnDefault("false")
+    @ColumnDefault("true")
     @Column(name = "matching_study_allow", columnDefinition = "TINYINT(1)")
     private boolean matchingStudyAllow; // 스터디 매칭 알림 여부
 
@@ -40,7 +40,11 @@ public class Member extends BaseEntity {
     @Column(name = "report_count")
     private double reportCount; // 누적 신고 수
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
     private Address address;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 }

@@ -29,4 +29,15 @@ public class MemberServiceImpl implements MemberService {
 
         return MemberResponseDto.SignupResultDto.from(savedMember);
     }
+
+    @Override
+    public boolean checkEmailDuplicate(String email) {
+        return !memberRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean checkNicknameDuplicate(String nickname) {
+        return !memberRepository.existsByNickname(nickname);
+    }
+
 }
