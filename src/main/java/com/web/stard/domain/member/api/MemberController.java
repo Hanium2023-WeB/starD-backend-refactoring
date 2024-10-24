@@ -6,10 +6,7 @@ import com.web.stard.domain.member.dto.response.MemberResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/members")
@@ -23,4 +20,17 @@ public class MemberController {
     public ResponseEntity<MemberResponseDto.SignupResultDto> signUp(@RequestBody MemberRequestDto.SignupDto requestDTO) {
         return ResponseEntity.ok(memberService.signUp(requestDTO));
     }
+
+    @Operation(summary = "개인정보 반환")
+    @GetMapping("/edit")
+    public ResponseEntity<MemberResponseDto.InfoDto> getInfo() {
+        return ResponseEntity.ok(memberService.getInfo(5L)); // TODO 로그인 한 사용자 가져오기
+    }
+
+    @Operation(summary = "닉네임 변경")
+    @PostMapping("/edit/nickname")
+    public ResponseEntity<MemberResponseDto.EditNicknameResponseDto> editNickname(@RequestBody MemberRequestDto.EditNicknameDto requestDTO) {
+        return ResponseEntity.ok(memberService.editNickname(5L, requestDTO)); // TODO 로그인 한 사용자 가져오기
+    }
+
 }

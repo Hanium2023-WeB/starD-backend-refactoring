@@ -24,8 +24,10 @@ public class Member extends BaseEntity {
 
     private String name;    // 이름
 
+    @Setter
     private String nickname;    // 닉네임
 
+    @Setter
     private String phone;   // 전화번호
 
     @Enumerated(EnumType.STRING)
@@ -39,8 +41,4 @@ public class Member extends BaseEntity {
     @ColumnDefault("0")
     @Column(name = "report_count")
     private double reportCount; // 누적 신고 수
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_id")
-    private Address address;
 }
