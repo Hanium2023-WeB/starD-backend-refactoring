@@ -1,6 +1,5 @@
 package com.web.stard.domain.member.dto.response;
 
-import com.web.stard.domain.member.domain.Address;
 import com.web.stard.domain.member.domain.Interest;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.domain.enums.InterestField;
@@ -31,20 +30,13 @@ public class MemberResponseDto {
     @Builder
     public static class InfoDto {
         private String nickname; // 닉네임
-        private String phone; // 전화번호
-        private String city; // 시
-        private String district; // 구
-        private List<String> interests; // 관심분야
+        private List<InterestField> interests; // 관심분야
 
         public static InfoDto from(Member member, List<Interest> interestList){
             return InfoDto.builder()
                     .nickname(member.getNickname())
-                    .phone(member.getPhone())
-                    .city(member.getAddress().getCity())
-                    .district(member.getAddress().getDistrict())
                     .interests(interestList.stream()
                             .map(Interest::getInterestField)
-                            .map(InterestField::name)
                             .collect(Collectors.toList()))
                     .build();
         }
@@ -60,36 +52,6 @@ public class MemberResponseDto {
             return EditNicknameResponseDto.builder()
                     .nickname(nickname)
                     .message("닉네임이 성공적으로 변경되었습니다.")
-                    .build();
-        }
-    }
-
-    @Getter
-    @Builder
-    public static class EditPhoneResponseDto {
-        private String phone;
-        private String message;
-
-        public static EditPhoneResponseDto from(String phone) {
-            return EditPhoneResponseDto.builder()
-                    .phone(phone)
-                    .message("전화번호가 성공적으로 변경되었습니다.")
-                    .build();
-        }
-    }
-
-    @Getter
-    @Builder
-    public static class EditAddressResponseDto {
-        private String city;
-        private String district;
-        private String message;
-
-        public static EditAddressResponseDto from(Address address) {
-            return EditAddressResponseDto.builder()
-                    .city(address.getCity())
-                    .district(address.getDistrict())
-                    .message("주소가 성공적으로 변경되었습니다.")
                     .build();
         }
     }

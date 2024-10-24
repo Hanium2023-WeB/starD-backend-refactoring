@@ -33,15 +33,4 @@ public class MemberController {
         return ResponseEntity.ok(memberService.editNickname(5L, requestDTO)); // TODO 로그인 한 사용자 가져오기
     }
 
-    @Operation(summary = "전화번호 변경")
-    @PostMapping("/edit/phone")
-    public ResponseEntity<MemberResponseDto.EditPhoneResponseDto> editPhone(@RequestBody MemberRequestDto.EditPhoneDto requestDTO) {
-        return ResponseEntity.ok(memberService.editPhone(5L, requestDTO)); // TODO 로그인 한 사용자 가져오기
-    }
-
-    @Operation(summary = "거주지 변경")
-    @PostMapping("/edit/address")
-    public ResponseEntity<MemberResponseDto.EditAddressResponseDto> editAddress(@RequestBody MemberRequestDto.EditAddressDto requestDTO) {
-        return ResponseEntity.ok(memberService.editAddress(7L, requestDTO)); // TODO 로그인 한 사용자 가져오기
-    }
 }
