@@ -15,16 +15,31 @@ public class MemberResponseDto {
     @Getter
     @Builder
     public static class SignupResultDto {
-        private Long id;
+        private Long memberId;
         private LocalDateTime createdAt;
 
         public static SignupResultDto from(Member member){
             return SignupResultDto.builder()
-                    .id(member.getId())
+                    .memberId(member.getId())
                     .createdAt(member.getCreatedAt())
                     .build();
         }
     }
+
+    @Getter
+    @Builder
+    public static class AdditionalInfoResultDto {
+        private Long memberId;
+        private List<InterestField> interests;
+
+        public static AdditionalInfoResultDto of(Member member){
+            return AdditionalInfoResultDto.builder()
+                    .memberId(member.getId())
+                    .interests(member.getInterests().stream().map(Interest::getInterestField).toList())
+                    .build();
+        }
+    }
+
 
     @Getter
     @Builder

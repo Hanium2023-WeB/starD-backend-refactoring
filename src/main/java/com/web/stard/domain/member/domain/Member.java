@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,9 +25,6 @@ public class Member extends BaseEntity {
 
     private String password;    // 비밀번호
 
-    private String name;    // 이름
-
-    @Setter
     private String nickname;    // 닉네임
 
     @Setter
@@ -34,11 +34,18 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private Role role; // 권한
 
-    @ColumnDefault("false")
+    @ColumnDefault("true")
     @Column(name = "matching_study_allow", columnDefinition = "TINYINT(1)")
     private boolean matchingStudyAllow; // 스터디 매칭 알림 여부
 
     @ColumnDefault("0")
     @Column(name = "report_count")
     private double reportCount; // 누적 신고 수
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Interest> interests = new ArrayList<>();
 }
