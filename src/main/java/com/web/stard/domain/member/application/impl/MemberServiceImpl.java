@@ -1,7 +1,6 @@
 package com.web.stard.domain.member.application.impl;
 
 import com.web.stard.domain.member.application.MemberService;
-import com.web.stard.domain.member.domain.Address;
 import com.web.stard.domain.member.domain.Interest;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.domain.Profile;
@@ -20,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -91,6 +92,52 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
 
         return MemberResponseDto.AdditionalInfoResultDto.of(member);
+    }
+
+
+    /**
+     * 마이페이지 - 개인정보 수정 기존 데이터 상세 조회
+     *
+     * @param id            사용자 고유 id
+     * @return InfoDto      nickname, phone, city, district, interests
+     *                      닉네임     전화번호 시    구         관심분야
+     */
+    @Transactional
+    @Override
+    public MemberResponseDto.InfoDto getInfo(Long id) {
+        // 회원 정보 반환
+        Member info = memberRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        // 관심분야 반환
+        List<Interest> interests = interestRepository.findAllByMember(info);
+
+        return MemberResponseDto.InfoDto.from(info, interests);
+    }
+
+
+    // TODO : 비밀번호 변경 : 현재 비밀번호랑 다를 경우 변경 불가능
+
+
+    /**
+     * 마이페이지 - 개인정보 수정 : 닉네임
+     *
+     * @param id, EditNicknameDto       사용자 고유 id, nickname 닉네임
+     * @return EditNicknameResponseDto  nickname 닉네임, message 성공 메시지
+     *
+     */
+    @Override
+    public MemberResponseDto.EditNicknameResponseDto editNickname(Long id, MemberRequestDto.EditNicknameDto requestDTO) {
+        // 회원 정보 반환
+        Member info = memberRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        // 닉네임 변경
+//        info.setNickname(requestDTO.getNickname());
+
+        memberRepository.save(info);
+
+        return MemberResponseDto.EditNicknameResponseDto.from(info.getNickname());
     }
 
 }

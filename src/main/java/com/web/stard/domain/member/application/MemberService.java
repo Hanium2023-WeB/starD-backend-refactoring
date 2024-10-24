@@ -12,4 +12,8 @@ public interface  MemberService {
     boolean checkNicknameDuplicate(String nickname);
 
     MemberResponseDto.AdditionalInfoResultDto saveAdditionalInfo(MemberRequestDto.AdditionalInfoRequestDto requestDto);
+
+    MemberResponseDto.InfoDto getInfo(Long id);
+
+    MemberResponseDto.EditNicknameResponseDto editNickname(Long id, MemberRequestDto.EditNicknameDto requestDTO);
 }

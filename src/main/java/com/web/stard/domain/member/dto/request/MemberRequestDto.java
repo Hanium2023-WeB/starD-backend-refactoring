@@ -8,8 +8,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -52,4 +54,15 @@ public class MemberRequestDto {
         private Long memberId;
         private List<String> interests;
     }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class EditNicknameDto {
+        @Size(min = 2, message = "닉네임은 2자 이상이어야 합니다.")
+        @Schema(example = "스타", description = "회원 닉네임")
+        @NotBlank(message = "닉네임은 필수 입니다.")
+        private String nickname;
+    }
+
 }

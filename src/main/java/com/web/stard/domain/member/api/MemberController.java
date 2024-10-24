@@ -45,4 +45,17 @@ public class MemberController {
         MemberResponseDto.AdditionalInfoResultDto result = memberService.saveAdditionalInfo(requestDto);
         return ResponseEntity.ok(result);
     }
+
+    @Operation(summary = "개인정보 반환")
+    @GetMapping("/edit")
+    public ResponseEntity<MemberResponseDto.InfoDto> getInfo() {
+        return ResponseEntity.ok(memberService.getInfo(5L)); // TODO 로그인 한 사용자 가져오기
+    }
+
+    @Operation(summary = "닉네임 변경")
+    @PostMapping("/edit/nickname")
+    public ResponseEntity<MemberResponseDto.EditNicknameResponseDto> editNickname(@RequestBody MemberRequestDto.EditNicknameDto requestDTO) {
+        return ResponseEntity.ok(memberService.editNickname(5L, requestDTO)); // TODO 로그인 한 사용자 가져오기
+    }
+
 }

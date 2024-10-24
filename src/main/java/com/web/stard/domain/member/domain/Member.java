@@ -27,6 +27,9 @@ public class Member extends BaseEntity {
 
     private String nickname;    // 닉네임
 
+    @Setter
+    private String phone;   // 전화번호
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role; // 권한
