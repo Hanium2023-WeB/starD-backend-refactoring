@@ -29,15 +29,11 @@ public class MemberResponseDto {
     @Builder
     public static class AdditionalInfoResultDto {
         private Long memberId;
-        private String city;
-        private String district;
         private List<InterestField> interests;
 
         public static AdditionalInfoResultDto of(Member member){
             return AdditionalInfoResultDto.builder()
                     .memberId(member.getId())
-                    .city(member.getAddress() != null ? member.getAddress().getCity() : null)
-                    .district(member.getAddress() != null ? member.getAddress().getDistrict() : null)
                     .interests(member.getInterests().stream().map(Interest::getInterestField).toList())
                     .build();
         }

@@ -6,8 +6,13 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum InterestField {
-    취업, 자소서, 면접, 취미, 영어공부,
-    프로그래밍, 음악, 미술, 스포츠, 요리,
-    건강, 여행, 독서, 투자, 사회봉사,
-    뉴스, 기술동향, 건축, 한경, 블로그운영
+    DEVELOPMENT_IT("개발/IT"),
+    EMPLOYMENT_CERTIFICATE("취업/자격증"),
+    DESIGN("디자인"),
+    LANGUAGE("언어"),
+    SELF_DEVELOPMENT("자기계발"),
+    HOBBY("취미"),
+    OTHERS("기타");
+
+    private final String description;
 }

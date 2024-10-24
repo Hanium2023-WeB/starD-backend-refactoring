@@ -76,14 +76,6 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findById(requestDto.getMemberId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        // 거주지 저장
-        if (requestDto.getCity() != null && requestDto.getDistrict() != null) {
-            Address address = Address.builder()
-                    .city(requestDto.getCity())
-                    .district(requestDto.getDistrict())
-                    .build();
-            member.setAddress(address);
-        }
         // 관심 분야 저장
         if (requestDto.getInterests() != null && !requestDto.getInterests().isEmpty()) {
             requestDto.getInterests().forEach(interest -> {

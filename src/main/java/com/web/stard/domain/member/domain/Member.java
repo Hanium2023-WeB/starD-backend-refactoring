@@ -25,11 +25,7 @@ public class Member extends BaseEntity {
 
     private String password;    // 비밀번호
 
-    private String name;    // 이름
-
     private String nickname;    // 닉네임
-
-    private String phone;   // 전화번호
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -43,18 +39,10 @@ public class Member extends BaseEntity {
     @Column(name = "report_count")
     private double reportCount; // 누적 신고 수
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_id")
-    private Address address;
-
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_id")
     private Profile profile;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Interest> interests = new ArrayList<>();
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
 }
