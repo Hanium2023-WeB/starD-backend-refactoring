@@ -3,9 +3,12 @@ package com.web.stard.domain.member.application.impl;
 import com.web.stard.domain.member.application.MemberService;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
+import com.web.stard.domain.member.dto.request.MemberRequestDto.SignInDto;
 import com.web.stard.domain.member.dto.response.MemberResponseDto;
 import com.web.stard.domain.member.repository.MemberRepository;
+import com.web.stard.global.dto.TokenInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,5 +31,13 @@ public class MemberServiceImpl implements MemberService {
         Member savedMember = memberRepository.save(member);
 
         return MemberResponseDto.SignupResultDto.from(savedMember);
+    }
+
+    @Override
+    public TokenInfo signIn(SignInDto requestDTO) {
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(requestDTO.email(), requestDTO.password());
+
+        return null;
     }
 }

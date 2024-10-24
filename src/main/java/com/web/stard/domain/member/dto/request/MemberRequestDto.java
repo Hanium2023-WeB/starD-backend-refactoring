@@ -53,4 +53,20 @@ public class MemberRequestDto {
         }
 
     }
+
+    @Getter
+    @Schema(description = "로그인 DTI")
+    public record SignInDto(
+        @NotBlank(message = "이메일은 필수입니다.")
+        @Schema(example = "user@naver.com", description = "이메일")
+        @Email(message = "이메일 형식에 맞지 않습니다.")
+        String email,
+
+        @NotBlank(message = "비밀번호는 필수 입니다.")
+        @Schema(example = "user123!", description = "비밀번호")
+        String password
+
+    ){
+
+    }
 }
