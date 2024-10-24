@@ -16,7 +16,7 @@ public class Profile {
     @Column(name = "profile_id", nullable = false)
     private Long id;
 
-    @ColumnDefault("5.0")
+    @Column
     private double credibility; // 신뢰도
 
     private String introduce;   // 자기소개

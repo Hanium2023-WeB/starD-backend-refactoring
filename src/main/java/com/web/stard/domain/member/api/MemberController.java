@@ -5,8 +5,10 @@ import com.web.stard.domain.member.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.dto.response.MemberResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/members")
@@ -16,9 +18,10 @@ public class MemberController {
     private final MemberService memberService;
 
     @Operation(summary = "회원가입")
-    @PostMapping("/join")
-    public ResponseEntity<MemberResponseDto.SignupResultDto> signUp(@RequestBody MemberRequestDto.SignupDto requestDTO) {
-        return ResponseEntity.ok(memberService.signUp(requestDTO));
+    @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MemberResponseDto.SignupResultDto> signUp(@RequestPart(value = "file", required = false) MultipartFile file,
+                                                                    @RequestPart MemberRequestDto.SignupDto requestDTO) {
+        return ResponseEntity.ok(memberService.signUp(file, requestDTO));
     }
 
     @Operation(summary = "이메일 중복 확인", description = "입력한 이메일을 다른 사용자가 사용 중인지 확인합니다.\n\n" +

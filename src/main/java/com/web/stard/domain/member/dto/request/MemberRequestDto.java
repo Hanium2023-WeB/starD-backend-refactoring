@@ -1,6 +1,7 @@
 package com.web.stard.domain.member.dto.request;
 
 import com.web.stard.domain.member.domain.Member;
+import com.web.stard.domain.member.domain.Profile;
 import com.web.stard.domain.member.domain.enums.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
@@ -43,7 +44,7 @@ public class MemberRequestDto {
         @NotBlank(message = "전화번호는 필수 입니다.")
         private String phone;
 
-        public Member toEntity(String encodedPassword){
+        public Member toEntity(String encodedPassword, Profile profile) {
             return Member.builder()
                     .email(email)
                     .password(encodedPassword)
@@ -51,6 +52,7 @@ public class MemberRequestDto {
                     .nickname(nickname)
                     .phone(phone)
                     .role(Role.USER)
+                    .profile(profile)
                     .build();
         }
 

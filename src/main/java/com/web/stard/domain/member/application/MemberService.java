@@ -2,9 +2,10 @@ package com.web.stard.domain.member.application;
 
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.dto.response.MemberResponseDto;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface  MemberService {
-    MemberResponseDto.SignupResultDto signUp(MemberRequestDto.SignupDto requestDTO);
+    MemberResponseDto.SignupResultDto signUp(MultipartFile file, MemberRequestDto.SignupDto requestDTO);
 
     boolean checkEmailDuplicate(String email);
 
