@@ -4,6 +4,7 @@ import com.web.stard.domain.member.application.MemberService;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.dto.response.MemberResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class MemberController {
     @Operation(summary = "회원가입")
     @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MemberResponseDto.SignupResultDto> signUp(@RequestPart(value = "file", required = false) MultipartFile file,
-                                                                    @RequestPart MemberRequestDto.SignupDto requestDTO) {
+                                                                    @Valid @RequestPart MemberRequestDto.SignupDto requestDTO) {
         return ResponseEntity.ok(memberService.signUp(file, requestDTO));
     }
 
@@ -39,9 +40,9 @@ public class MemberController {
     }
 
     @Operation(summary = "회원가입 추가 정보 저장",
-            description = "회원가입 거주지 및 관심 분야를 저장합니다.")
+            description = "회원가입 후, 관심 분야를 저장합니다.(선택사항)")
     @PostMapping("/join/additional-info")
-    public ResponseEntity<MemberResponseDto.AdditionalInfoResultDto> saveAdditionalInfo(@RequestBody MemberRequestDto.AdditionalInfoRequestDto requestDto) {
+    public ResponseEntity<MemberResponseDto.AdditionalInfoResultDto> saveAdditionalInfo(@Valid @RequestBody MemberRequestDto.AdditionalInfoRequestDto requestDto) {
         MemberResponseDto.AdditionalInfoResultDto result = memberService.saveAdditionalInfo(requestDto);
         return ResponseEntity.ok(result);
     }
