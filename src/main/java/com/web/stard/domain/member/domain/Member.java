@@ -4,10 +4,11 @@ import com.web.stard.domain.member.domain.enums.Role;
 import com.web.stard.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import java.util.Collection;
-import java.util.List;
 import lombok.*;
-import org.apache.catalina.User;
 import org.hibernate.annotations.ColumnDefault;
+
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -27,17 +28,16 @@ public class Member extends BaseEntity implements UserDetails {
 
     private String password;    // 비밀번호
 
-    private String name;    // 이름
-
     private String nickname;    // 닉네임
 
+    @Setter
     private String phone;   // 전화번호
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role; // 권한
 
-    @ColumnDefault("false")
+    @ColumnDefault("true")
     @Column(name = "matching_study_allow", columnDefinition = "TINYINT(1)")
     private boolean matchingStudyAllow; // 스터디 매칭 알림 여부
 
@@ -45,37 +45,40 @@ public class Member extends BaseEntity implements UserDetails {
     @Column(name = "report_count")
     private double reportCount; // 누적 신고 수
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_id")
-    private Address address;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Interest> interests = new ArrayList<>();
 
-    @Override
-    public String getUsername() {
-        return this.email;
-    }
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return null;
+  }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
-    }
+  @Override
+  public String getUsername() {
+    return this.email;
+  }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
+  @Override
+  public boolean isAccountNonExpired() {
+    return UserDetails.super.isAccountNonExpired();
+  }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
-    }
+  @Override
+  public boolean isAccountNonLocked() {
+    return UserDetails.super.isAccountNonLocked();
+  }
 
-    @Override
-    public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
-    }
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return UserDetails.super.isCredentialsNonExpired();
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return UserDetails.super.isEnabled();
+  }
 }
