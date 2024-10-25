@@ -7,10 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,4 +22,10 @@ public class NoticeController {
         return ResponseEntity.ok(noticeService.createNotice(createNoticeDto));
     }
 
+    @Operation(summary = "공지사항 수정", description = "관리자만 수정 가능합니다.")
+    @PutMapping("/{noticeId}")
+    public ResponseEntity<NoticeResponseDto.NoticeDto> updateNotice(@PathVariable(name = "noticeId") Long noticeId,
+                                                                    @Valid @RequestBody NoticeRequestDto.CreateNoticeDto createNoticeDto) {
+        return ResponseEntity.ok(noticeService.updateNotice(noticeId, createNoticeDto));
+    }
 }

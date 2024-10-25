@@ -20,24 +20,54 @@ public class NoticeServiceImpl implements NoticeService {
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
 
-    private boolean checkMemberRole(Member member) {
-        return member.getRole() == Role.ADMIN;
+    // 관리자인지 확인
+    private void isAdmin(Member member) {
+        if (member.getRole() != Role.ADMIN) {
+            throw new CustomException(ErrorCode.PERMISSION_DENIED);
+        }
+    }
+
+    // 작성자인지 확인
+    private void isPostAuthor(Member member, Post post) {
+        if (!member.getId().equals(post.getMember().getId())) {
+            throw new CustomException(ErrorCode.INVALID_ACCESS);
+        }
     }
 
     @Override
-    public NoticeResponseDto.NoticeDto createNotice(NoticeRequestDto.CreateNoticeDto createNoticeDto) {
+    public NoticeResponseDto.NoticeDto createNotice(NoticeRequestDto.CreateNoticeDto requestDto) {
         // TODO - 로그인한 멤버 정보로 변경
         Member member = memberRepository.findById(1L)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 권한 체크
-        if (!checkMemberRole(member)) {
-            throw new CustomException(ErrorCode.PERMISSION_DENIED);
-        }
+        isAdmin(member);
 
         // 공지 저장
-        Post notice = postRepository.save(createNoticeDto.toEntity(member));
+        Post notice = postRepository.save(requestDto.toEntity(member));
 
         return NoticeResponseDto.NoticeDto.from(notice);
+    }
+
+    @Override
+    public NoticeResponseDto.NoticeDto updateNotice(Long noticeId, NoticeRequestDto.CreateNoticeDto requestDto) {
+        // TODO - 로그인한 멤버 정보로 변경
+        Member member = memberRepository.findById(1L)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        Post notice = postRepository.findById(noticeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+
+        // 권한 체크
+        isAdmin(member);
+
+        // 작성자인지 확인
+        isPostAuthor(member,notice);
+
+        // 공지 수정
+        notice.updatePost(requestDto.getTitle(), requestDto.getContent());
+        Post updatedNotice = postRepository.save(notice);
+
+        return NoticeResponseDto.NoticeDto.from(updatedNotice);
     }
 }
