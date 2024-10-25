@@ -14,6 +14,7 @@ public enum ErrorCode {
     MISMATCH_TOKEN(HttpStatus.BAD_REQUEST, "토큰 불일치"),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰"),
     INVALID_TOKEN(HttpStatus.FORBIDDEN, "토큰 검증 실패"),
+    PERMISSION_DENIED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
 
     // S3
     UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 파일 업로드에 실패했습니다."),
