@@ -4,6 +4,7 @@ import com.web.stard.domain.admin.application.NoticeService;
 import com.web.stard.domain.admin.dto.request.NoticeRequestDto;
 import com.web.stard.domain.admin.dto.response.NoticeResponseDto;
 import com.web.stard.domain.board.global.domain.Post;
+import com.web.stard.domain.board.global.domain.enums.PostType;
 import com.web.stard.domain.board.global.repository.PostRepository;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.domain.enums.Role;
@@ -11,6 +12,10 @@ import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.global.error.CustomException;
 import com.web.stard.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -39,8 +44,8 @@ public class NoticeServiceImpl implements NoticeService {
      *
      * @param requestDto     title, content
      *                       제목     내용
-     * @return NoticeDto     noticeId, title, content, hit, writer, createdAt
-     *                       공지 id    제목    내용     조회수 작성자     생성일시
+     * @return NoticeDto     noticeId, title, content, hit, writer, updatedAt
+     *                       공지 id    제목    내용     조회수 작성자     수정일시
      */
     @Override
     public NoticeResponseDto.NoticeDto createNotice(NoticeRequestDto.CreateNoticeDto requestDto) {
@@ -60,8 +65,8 @@ public class NoticeServiceImpl implements NoticeService {
      * @param noticeId      수정할 공지사항의 id
      * @param requestDto    title, content
      *                      제목     내용
-     * @return NoticeDto    noticeId, title, content, hit, writer, createdAt
-     *                      공지 id    제목    내용     조회수 작성자     생성일시
+     * @return NoticeDto    noticeId, title, content, hit, writer, updatedAt
+     *                      공지 id    제목    내용     조회수 작성자     수정일시
      */
     @Override
     public NoticeResponseDto.NoticeDto updateNotice(Long noticeId, NoticeRequestDto.CreateNoticeDto requestDto) {
@@ -104,4 +109,37 @@ public class NoticeServiceImpl implements NoticeService {
         postRepository.delete(notice);
         return noticeId;
     }
+
+    /**
+     * 공지사항 목록 조회
+     *
+     * @param page              조회할 페이지 번호
+     * @return NoticeListDto    notices, currentPage, totalPages, isLast
+     *                          공지 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
+     */
+    @Override
+    public NoticeResponseDto.NoticeListDto getNoticeList(int page) {
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<Post> notices = postRepository.findByPostType(PostType.NOTICE, pageable);
+
+        return NoticeResponseDto.NoticeListDto.of(notices);
+    }
+
+    /**
+     * 공지사항 상세 조회
+     *
+     * @param noticeId      조회할 공지사항의 id
+     * @return NoticeDto    noticeId, title, content, hit, writer, updatedAt
+     *                      공지 id    제목    내용     조회수 작성자     수정일시
+     */
+    @Override
+    public NoticeResponseDto.NoticeDto getNoticeDetail(Long noticeId) {
+        Post notice = postRepository.findById(noticeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+
+        return NoticeResponseDto.NoticeDto.from(notice);
+    }
+
 }

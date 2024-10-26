@@ -34,4 +34,16 @@ public class NoticeController {
     public ResponseEntity<Long> deleteNotice(@PathVariable(name = "noticeId") Long noticeId) {
         return ResponseEntity.ok(noticeService.deleteNotice(noticeId));
     }
+
+    @Operation(summary = "공지사항 목록 조회")
+    @GetMapping
+    public ResponseEntity<NoticeResponseDto.NoticeListDto> getNoticeList(@RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(noticeService.getNoticeList(page));
+    }
+
+    @Operation(summary = "공지사항 상세조회")
+    @GetMapping("/{noticeId}")
+    public ResponseEntity<NoticeResponseDto.NoticeDto> getNoticeDetail(@PathVariable(name = "noticeId") Long noticeId) {
+        return ResponseEntity.ok(noticeService.getNoticeDetail(noticeId));
+    }
 }
