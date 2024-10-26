@@ -32,6 +32,15 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final S3Manager s3Manager;
 
+    /**
+     * 회원가입
+     *
+     * @param file              프로필 이미지 파일
+     * @param requestDto        email, password, nickname
+     *                          이메일    비밀번호    닉네임
+     * @return SignupResultDto  memberId, createdAt
+     *                          멤버 id    생성일시
+     */
     @Override
     public MemberResponseDto.SignupResultDto signUp(MultipartFile file, MemberRequestDto.SignupDto requestDto) {
 
@@ -62,16 +71,37 @@ public class MemberServiceImpl implements MemberService {
         return MemberResponseDto.SignupResultDto.from(savedMember);
     }
 
+    /**
+     * 이메일 중복 확인
+     *
+     * @param email     중복 체크할 이메일
+     * @return boolean  이메일이 중복되지 않으면 true, 중복되면 false
+     */
     @Override
     public boolean checkEmailDuplicate(String email) {
         return !memberRepository.existsByEmail(email);
     }
 
+    /**
+     * 닉네임 중복 확인
+     *
+     * @param nickname  중복 체크할 닉네임
+     * @return boolean  닉네임이 중복되지 않으면 true, 중복되면 false
+     */
     @Override
     public boolean checkNicknameDuplicate(String nickname) {
         return !memberRepository.existsByNickname(nickname);
     }
 
+
+    /**
+     * 회원가입 추가 정보 저장
+     *
+     * @param requestDto        memberId, interests
+     *                          멤버 id    관심분야
+     * @return AdditionalInfoResultDto  memberId, interests
+     *                                  멤버 id    관심분야
+     */
     @Override
     public MemberResponseDto.AdditionalInfoResultDto saveAdditionalInfo(MemberRequestDto.AdditionalInfoRequestDto requestDto) {
         Member member = memberRepository.findById(requestDto.getMemberId())
