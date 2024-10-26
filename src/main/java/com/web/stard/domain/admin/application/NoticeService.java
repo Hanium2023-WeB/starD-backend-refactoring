@@ -13,4 +13,6 @@ public interface NoticeService {
     NoticeResponseDto.NoticeDto getNoticeDetail(Long noticeId);
 
     NoticeResponseDto.NoticeListDto getNoticeList(int page);
+
+    NoticeResponseDto.NoticeListDto searchNotice(String keyword, int page);
 }

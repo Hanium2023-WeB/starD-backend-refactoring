@@ -37,7 +37,7 @@ public class NoticeController {
 
     @Operation(summary = "공지사항 목록 조회")
     @GetMapping
-    public ResponseEntity<NoticeResponseDto.NoticeListDto> getNoticeList(@RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+    public ResponseEntity<NoticeResponseDto.NoticeListDto> getNoticeList(@RequestParam(name = "page", defaultValue = "1", required = false) int page) {
         return ResponseEntity.ok(noticeService.getNoticeList(page));
     }
 
@@ -45,5 +45,12 @@ public class NoticeController {
     @GetMapping("/{noticeId}")
     public ResponseEntity<NoticeResponseDto.NoticeDto> getNoticeDetail(@PathVariable(name = "noticeId") Long noticeId) {
         return ResponseEntity.ok(noticeService.getNoticeDetail(noticeId));
+    }
+
+    @Operation(summary = "공지사항 검색", description = "키워드로 검색합니다.")
+    @GetMapping("/search")
+    public ResponseEntity<NoticeResponseDto.NoticeListDto> searchNotice(@RequestParam(name = "keyword") String keyword,
+                                                                        @RequestParam(name = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(noticeService.searchNotice(keyword, page));
     }
 }

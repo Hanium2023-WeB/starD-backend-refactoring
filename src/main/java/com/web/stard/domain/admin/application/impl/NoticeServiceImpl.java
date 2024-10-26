@@ -142,4 +142,22 @@ public class NoticeServiceImpl implements NoticeService {
         return NoticeResponseDto.NoticeDto.from(notice);
     }
 
+    /**
+     * 공지사항 검색
+     *
+     * @param keyword           조회할 키워드
+     * @param page              조회할 페이지 번호
+     * @return NoticeListDto    notices, currentPage, totalPages, isLast
+     *                          공지 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
+     */
+    @Override
+    public NoticeResponseDto.NoticeListDto searchNotice(String keyword, int page) {
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<Post> notices = postRepository.findByPostTypeAndTitleContainingOrContentContaining(
+                                PostType.NOTICE, keyword, keyword, pageable);
+
+        return NoticeResponseDto.NoticeListDto.of(notices);
+    }
 }

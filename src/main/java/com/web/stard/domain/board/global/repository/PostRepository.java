@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByPostType(PostType postType, Pageable pageable);
+
+    Page<Post> findByPostTypeAndTitleContainingOrContentContaining(PostType postType, String keyword, String keyword1, Pageable pageable);
 }
