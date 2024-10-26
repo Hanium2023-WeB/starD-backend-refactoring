@@ -1,5 +1,6 @@
-package com.web.stard.global.error;
+package com.web.stard.global.exception;
 
+import com.web.stard.global.exception.error.ErrorCode;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,7 @@ public class ErrorResponseEntity {
     private int status;
     private String message;
 
-    public static ResponseEntity<ErrorResponseEntity> toResponseEntity(ErrorCode e){
+    public static ResponseEntity<ErrorResponseEntity> toResponseEntity(ErrorCode e) {
         return ResponseEntity
                 .status(e.getHttpStatus())
                 .body(ErrorResponseEntity.builder()

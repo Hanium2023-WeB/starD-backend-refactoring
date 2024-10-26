@@ -6,13 +6,21 @@ import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.domain.Profile;
 import com.web.stard.domain.member.domain.enums.InterestField;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
+import com.web.stard.domain.member.dto.request.MemberRequestDto.SignInDto;
 import com.web.stard.domain.member.dto.response.MemberResponseDto;
 import com.web.stard.domain.member.repository.InterestRepository;
 import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.global.config.aws.S3Manager;
-import com.web.stard.global.error.CustomException;
-import com.web.stard.global.error.ErrorCode;
+import com.web.stard.global.config.security.JwtTokenProvider;
+import com.web.stard.global.dto.TokenInfo;
+import com.web.stard.global.exception.CustomException;
+import com.web.stard.global.exception.error.ErrorCode;
+import com.web.stard.global.utils.RedisUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +35,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
+    private final RedisUtils redisUtils;
+    private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final InterestRepository interestRepository;
     private final PasswordEncoder passwordEncoder;
     private final S3Manager s3Manager;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     public MemberResponseDto.SignupResultDto signUp(MultipartFile file, MemberRequestDto.SignupDto requestDto) {
@@ -98,9 +109,9 @@ public class MemberServiceImpl implements MemberService {
     /**
      * 마이페이지 - 개인정보 수정 기존 데이터 상세 조회
      *
-     * @param id            사용자 고유 id
+     * @param id 사용자 고유 id
      * @return InfoDto      nickname, phone, city, district, interests
-     *                      닉네임     전화번호 시    구         관심분야
+     * 닉네임     전화번호 시    구         관심분야
      */
     @Transactional
     @Override
@@ -124,7 +135,6 @@ public class MemberServiceImpl implements MemberService {
      *
      * @param id, EditNicknameDto       사용자 고유 id, nickname 닉네임
      * @return EditNicknameResponseDto  nickname 닉네임, message 성공 메시지
-     *
      */
     @Override
     public MemberResponseDto.EditNicknameResponseDto editNickname(Long id, MemberRequestDto.EditNicknameDto requestDTO) {
@@ -138,6 +148,26 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(info);
 
         return MemberResponseDto.EditNicknameResponseDto.from(info.getNickname());
+    }
+
+    /**
+     * 로그인
+     *
+     * @param request 로그인 정보
+     * @return TokenInfo 토큰 정보
+     */
+    @Override
+    @Transactional
+    public TokenInfo signIn(SignInDto request) {
+        try {
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.email(), request.password());
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+            TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
+            redisUtils.setData(request.email(), tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExpirationTime());
+            return tokenInfo;
+        } catch (BadCredentialsException e) {
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
+        }
     }
 
 }
