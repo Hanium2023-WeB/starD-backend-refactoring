@@ -28,4 +28,10 @@ public class NoticeController {
                                                                     @Valid @RequestBody NoticeRequestDto.CreateNoticeDto createNoticeDto) {
         return ResponseEntity.ok(noticeService.updateNotice(noticeId, createNoticeDto));
     }
+
+    @Operation(summary = "공지사항 삭제", description = "관리자만 삭제 가능합니다.")
+    @DeleteMapping("/{noticeId}")
+    public ResponseEntity<Long> deleteNotice(@PathVariable(name = "noticeId") Long noticeId) {
+        return ResponseEntity.ok(noticeService.deleteNotice(noticeId));
+    }
 }

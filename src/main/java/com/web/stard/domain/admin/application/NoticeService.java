@@ -7,4 +7,6 @@ public interface NoticeService {
     NoticeResponseDto.NoticeDto createNotice(NoticeRequestDto.CreateNoticeDto createNoticeDto);
 
     NoticeResponseDto.NoticeDto updateNotice(Long noticeId, NoticeRequestDto.CreateNoticeDto createNoticeDto);
+
+    Long deleteNotice(Long noticeId);
 }
