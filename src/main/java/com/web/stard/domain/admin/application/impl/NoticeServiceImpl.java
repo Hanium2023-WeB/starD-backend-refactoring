@@ -17,8 +17,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class NoticeServiceImpl implements NoticeService {
 
@@ -117,6 +119,7 @@ public class NoticeServiceImpl implements NoticeService {
      * @return NoticeListDto    notices, currentPage, totalPages, isLast
      *                          공지 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
      */
+    @Transactional(readOnly = true)
     @Override
     public NoticeResponseDto.NoticeListDto getNoticeList(int page) {
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
@@ -134,6 +137,7 @@ public class NoticeServiceImpl implements NoticeService {
      * @return NoticeDto    noticeId, title, content, hit, writer, updatedAt
      *                      공지 id    제목    내용     조회수 작성자     수정일시
      */
+    @Transactional(readOnly = true)
     @Override
     public NoticeResponseDto.NoticeDto getNoticeDetail(Long noticeId) {
         Post notice = postRepository.findById(noticeId)
@@ -150,6 +154,7 @@ public class NoticeServiceImpl implements NoticeService {
      * @return NoticeListDto    notices, currentPage, totalPages, isLast
      *                          공지 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
      */
+    @Transactional(readOnly = true)
     @Override
     public NoticeResponseDto.NoticeListDto searchNotice(String keyword, int page) {
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
