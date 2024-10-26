@@ -1,4 +1,4 @@
-package com.web.stard.global.error;
+package com.web.stard.global.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class CustomExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
-    protected ResponseEntity<ErrorResponseEntity> handleCustomException(CustomException e){
+    protected ResponseEntity<ErrorResponseEntity> handleCustomException(CustomException e) {
         return ErrorResponseEntity.toResponseEntity(e.getErrorCode());
     }
 }

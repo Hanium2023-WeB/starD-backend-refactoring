@@ -1,5 +1,6 @@
-package com.web.stard.global.error;
+package com.web.stard.global.exception;
 
+import com.web.stard.global.exception.error.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

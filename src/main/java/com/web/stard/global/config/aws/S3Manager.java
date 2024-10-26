@@ -1,7 +1,7 @@
 package com.web.stard.global.config.aws;
 
-import com.web.stard.global.error.CustomException;
-import com.web.stard.global.error.ErrorCode;
+import com.web.stard.global.exception.CustomException;
+import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,7 @@ public class S3Manager {
     private final S3Config amazonConfig;
 
     // 단일 파일 업로드
-    public String uploadFile(String keyName, MultipartFile file){
+    public String uploadFile(String keyName, MultipartFile file) {
         // 원본 파일 이름 가져오기
         String originalFilename = file.getOriginalFilename();
         // 확장자 가져오기
@@ -51,7 +51,7 @@ public class S3Manager {
             // S3에 업로드된 파일의 URL을 가져오기
             URL url = s3Client.utilities().getUrl(b -> b.bucket(amazonConfig.getBucket()).key(keyName + extension));
             return url.toString();
-        } catch (IOException e){
+        } catch (IOException e) {
             log.error("error at AmazonS3Manager uploadFile : {}", e.getMessage(), e);
             throw new CustomException(ErrorCode.UPLOAD_FAILED);
         }
