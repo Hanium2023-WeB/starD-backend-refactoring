@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class NoticeServiceImpl implements NoticeService {
 
@@ -49,6 +48,7 @@ public class NoticeServiceImpl implements NoticeService {
      * @return NoticeDto     noticeId, title, content, hit, writer, updatedAt
      *                       공지 id    제목    내용     조회수 작성자     수정일시
      */
+    @Transactional
     @Override
     public NoticeResponseDto.NoticeDto createNotice(NoticeRequestDto.CreateNoticeDto requestDto) {
         // TODO - 로그인한 멤버 정보로 변경
@@ -70,6 +70,7 @@ public class NoticeServiceImpl implements NoticeService {
      * @return NoticeDto    noticeId, title, content, hit, writer, updatedAt
      *                      공지 id    제목    내용     조회수 작성자     수정일시
      */
+    @Transactional
     @Override
     public NoticeResponseDto.NoticeDto updateNotice(Long noticeId, NoticeRequestDto.CreateNoticeDto requestDto) {
         // TODO - 로그인한 멤버 정보로 변경
@@ -95,6 +96,7 @@ public class NoticeServiceImpl implements NoticeService {
      * @param noticeId      삭제할 공지사항의 id
      * @return Long         삭제한 공지사항의 id
      */
+    @Transactional
     @Override
     public Long deleteNotice(Long noticeId) {
         // TODO - 로그인한 멤버 정보로 변경
