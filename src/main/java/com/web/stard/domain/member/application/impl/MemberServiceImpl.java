@@ -17,6 +17,8 @@ import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import com.web.stard.global.utils.RedisUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -136,6 +138,16 @@ public class MemberServiceImpl implements MemberService {
         return MemberResponseDto.AdditionalInfoResultDto.of(member);
     }
 
+    /**
+     * 현재 비밀번호 확인
+     *
+     * @param currentPassword 사용자 현재 비밀번호, password 사용자가 입력한 비밀번호
+     * @return boolean 비밀번호가 맞으면 true, 틀리면 false
+     */
+    @Override
+    public boolean checkCurrentPassword(String currentPassword, String password) {
+        return passwordEncoder.matches(password, currentPassword); // 입력한 비밀번호와 사용자 비밀번호 같음
+    }
 
     /**
      * 마이페이지 - 개인정보 수정 기존 데이터 상세 조회
@@ -156,9 +168,32 @@ public class MemberServiceImpl implements MemberService {
         return MemberResponseDto.InfoDto.of(info, interests);
     }
 
+    /**
+     * 마이페이지 - 개인정보 수정 : 비밀번호
+     *
+     * @param requestDto 사용자 고유 id, password 비밀번호
+     * @return 없음
+     */
+    @Override
+    public ResponseEntity<String> editPassword(MemberRequestDto.EditPasswordDto requestDto) {
+        // 회원 정보 반환
+        Member info = memberRepository.findById(requestDto.getMemberId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-    // TODO : 비밀번호 변경 : 현재 비밀번호랑 다를 경우 변경 불가능
+        // 현재 비밀번호 확인
+        if (!checkCurrentPassword(info.getPassword(), requestDto.getOriginPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 일치하지 않습니다.");
+        }
 
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
+
+        info.updatePassword(encodedPassword);
+
+        memberRepository.save(info);
+
+        return ResponseEntity.status(HttpStatus.OK).body("비밀번호를 변경하였습니다.");
+    }
 
     /**
      * 마이페이지 - 개인정보 수정 : 닉네임

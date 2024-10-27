@@ -53,10 +53,16 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getInfo(memberId)); // TODO 로그인 한 사용자 가져오기
     }
 
+    @Operation(summary = "비밀번호 변경")
+    @PostMapping("/edit/password")
+    public ResponseEntity<String> editPassword(@RequestBody MemberRequestDto.EditPasswordDto requestDto) {
+        return memberService.editPassword(requestDto);
+    }
+
     @Operation(summary = "닉네임 변경")
     @PostMapping("/edit/nickname")
-    public ResponseEntity<MemberResponseDto.EditNicknameResponseDto> editNickname(@RequestBody MemberRequestDto.EditNicknameDto requestDtO) {
-        return ResponseEntity.ok(memberService.editNickname(requestDtO)); // TODO 로그인 한 사용자 가져오기
+    public ResponseEntity<MemberResponseDto.EditNicknameResponseDto> editNickname(@RequestBody MemberRequestDto.EditNicknameDto requestDto) {
+        return ResponseEntity.ok(memberService.editNickname(requestDto)); // TODO 로그인 한 사용자 가져오기
     }
 
     @Operation(summary = "관심분야 변경")
