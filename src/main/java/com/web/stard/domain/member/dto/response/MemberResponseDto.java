@@ -8,7 +8,6 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class MemberResponseDto {
 
@@ -47,12 +46,10 @@ public class MemberResponseDto {
         private String nickname; // 닉네임
         private List<InterestField> interests; // 관심분야
 
-        public static InfoDto from(Member member, List<Interest> interestList){
+        public static InfoDto of(Member member, List<Interest> interestList){
             return InfoDto.builder()
                     .nickname(member.getNickname())
-                    .interests(interestList.stream()
-                            .map(Interest::getInterestField)
-                            .collect(Collectors.toList()))
+                    .interests(interestList.stream().map(Interest::getInterestField).toList())
                     .build();
         }
     }
@@ -63,10 +60,24 @@ public class MemberResponseDto {
         private String nickname;
         private String message;
 
-        public static EditNicknameResponseDto from(String nickname) {
+        public static EditNicknameResponseDto of(String nickname) {
             return EditNicknameResponseDto.builder()
                     .nickname(nickname)
                     .message("닉네임이 성공적으로 변경되었습니다.")
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    public static class EditInterestResponseDto {
+        private List<InterestField> interests;
+        private String message;
+
+        public static EditInterestResponseDto of(List<Interest> interestList) {
+            return EditInterestResponseDto.builder()
+                    .interests(interestList.stream().map(Interest::getInterestField).toList())
+                    .message("관심분야가 성공적으로 변경되었습니다.")
                     .build();
         }
     }

@@ -17,7 +17,9 @@ public interface MemberService {
 
     MemberResponseDto.InfoDto getInfo(Long id);
 
-    MemberResponseDto.EditNicknameResponseDto editNickname(Long id, MemberRequestDto.EditNicknameDto requestDTO);
+    MemberResponseDto.EditNicknameResponseDto editNickname(MemberRequestDto.EditNicknameDto requestDtO);
+
+    MemberResponseDto.EditInterestResponseDto editInterest(MemberRequestDto.AdditionalInfoRequestDto requestDtO);
 
     TokenInfo signIn(SignInDto request);
 }

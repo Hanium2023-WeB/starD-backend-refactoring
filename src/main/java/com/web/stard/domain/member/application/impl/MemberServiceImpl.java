@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import java.util.List;
@@ -122,7 +123,7 @@ public class MemberServiceImpl implements MemberService {
         if (requestDto.getInterests() != null && !requestDto.getInterests().isEmpty()) {
             requestDto.getInterests().forEach(interest -> {
                 Interest interestEntity = Interest.builder()
-                        .interestField(InterestField.valueOf(interest))
+                        .interestField(InterestField.find(interest))
                         .member(member)
                         .build();
                 interestRepository.save(interestEntity);
@@ -139,21 +140,20 @@ public class MemberServiceImpl implements MemberService {
     /**
      * 마이페이지 - 개인정보 수정 기존 데이터 상세 조회
      *
-     * @param id 사용자 고유 id
-     * @return InfoDto      nickname, phone, city, district, interests
-     * 닉네임     전화번호 시    구         관심분야
+     * @param memberId   사용자 고유 id
+     * @return InfoDto   nickname, interests
+     *                   닉네임     관심분야
      */
-    @Transactional
     @Override
-    public MemberResponseDto.InfoDto getInfo(Long id) {
+    public MemberResponseDto.InfoDto getInfo(Long memberId) {
         // 회원 정보 반환
-        Member info = memberRepository.findById(id)
+        Member info = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 관심분야 반환
         List<Interest> interests = interestRepository.findAllByMember(info);
 
-        return MemberResponseDto.InfoDto.from(info, interests);
+        return MemberResponseDto.InfoDto.of(info, interests);
     }
 
 
@@ -163,21 +163,53 @@ public class MemberServiceImpl implements MemberService {
     /**
      * 마이페이지 - 개인정보 수정 : 닉네임
      *
-     * @param id, EditNicknameDto       사용자 고유 id, nickname 닉네임
+     * @param requestDto                사용자 고유 id, nickname 닉네임
      * @return EditNicknameResponseDto  nickname 닉네임, message 성공 메시지
      */
     @Override
-    public MemberResponseDto.EditNicknameResponseDto editNickname(Long id, MemberRequestDto.EditNicknameDto requestDTO) {
+    public MemberResponseDto.EditNicknameResponseDto editNickname(MemberRequestDto.EditNicknameDto requestDto) {
         // 회원 정보 반환
-        Member info = memberRepository.findById(id)
+        Member info = memberRepository.findById(requestDto.getMemberId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 닉네임 변경
-//        info.setNickname(requestDTO.getNickname());
+        info.updateNickname(requestDto.getNickname());
 
         memberRepository.save(info);
 
-        return MemberResponseDto.EditNicknameResponseDto.from(info.getNickname());
+        return MemberResponseDto.EditNicknameResponseDto.of(info.getNickname());
+    }
+
+    /**
+     * 마이페이지 - 개인정보 수정 : 관심분야
+     * 기존 관심분야 삭제 후 새로 삽입
+     * @param requestDto : EditInterestDto  사용자 고유 id, interestField 관심분야
+     * @return EditInterestResponseDto      interests 관심분야, message 성공 메시지
+     *
+     */
+    @Override
+    public MemberResponseDto.EditInterestResponseDto editInterest(MemberRequestDto.AdditionalInfoRequestDto requestDto) {
+        // 회원 정보 반환
+        Member info = memberRepository.findById(requestDto.getMemberId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        // 기존 관심분야 삭제 후 새로 삽입
+        List<Interest> interests = new ArrayList<>(info.getInterests());
+        info.getInterests().removeAll(interests); // 부모와 관계 삭제
+
+        List<Interest> interestList = new ArrayList<>();
+        if (requestDto.getInterests() != null && !requestDto.getInterests().isEmpty()) {
+            requestDto.getInterests().forEach(interest -> {
+                Interest interestEntity = Interest.builder()
+                        .interestField(InterestField.find(interest))
+                        .member(info)
+                        .build();
+                interestList.add(interestEntity);
+            });
+            interestRepository.saveAll(interestList);
+        }
+
+        return MemberResponseDto.EditInterestResponseDto.of(interestList);
     }
 
     /**
