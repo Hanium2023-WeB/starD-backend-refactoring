@@ -20,4 +20,9 @@ public interface MemberService {
     MemberResponseDto.EditNicknameResponseDto editNickname(Long id, MemberRequestDto.EditNicknameDto requestDTO);
 
     TokenInfo signIn(SignInDto request);
+
+
+    void sendAuthCode(String email) throws Exception;
+
+    void validAuthCode(MemberRequestDto.AuthCodeRequestDto request) throws Exception;
 }
