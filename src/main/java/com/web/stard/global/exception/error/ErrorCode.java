@@ -28,6 +28,9 @@ public enum ErrorCode {
     SIZE_MISMATCH(HttpStatus.INTERNAL_SERVER_ERROR, "파일 수와 키 이름 수가 일치하지 않습니다."),
 
 
+    // Email
+    INVALID_AUTH_CODE(HttpStatus.BAD_REQUEST, "인증 코드 불일치"),
+
     // Post
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다.")
 

@@ -15,6 +15,7 @@ import com.web.stard.global.config.security.JwtTokenProvider;
 import com.web.stard.global.dto.TokenInfo;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
+import com.web.stard.global.utils.EmailUtils;
 import com.web.stard.global.utils.RedisUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,6 +37,7 @@ import java.util.List;
 public class MemberServiceImpl implements MemberService {
 
     private final RedisUtils redisUtils;
+    private final EmailUtils emailUtils;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final InterestRepository interestRepository;
@@ -198,6 +200,16 @@ public class MemberServiceImpl implements MemberService {
         } catch (BadCredentialsException e) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
+    }
+
+    @Override
+    public void sendAuthCode(String email) throws Exception {
+        emailUtils.send(email);
+    }
+
+    @Override
+    public void validAuthCode(MemberRequestDto.AuthCodeRequestDto request) throws Exception {
+        emailUtils.validAuthCode(request.email(), request.authCode());
     }
 
 }
