@@ -27,4 +27,9 @@ public interface MemberService {
     MemberResponseDto.EditInterestResponseDto editInterest(MemberRequestDto.AdditionalInfoRequestDto requestDto);
 
     TokenInfo signIn(SignInDto request);
+
+
+    void sendAuthCode(String email) throws Exception;
+
+    void validAuthCode(MemberRequestDto.AuthCodeRequestDto request) throws Exception;
 }

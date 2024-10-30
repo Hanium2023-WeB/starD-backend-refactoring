@@ -63,6 +63,30 @@ public class MemberRequestDto {
 
     }
 
+    public record AuthCodeRequestDto(
+
+            @NotBlank(message = "이메일을 입력해주세요.")
+            @Schema(example = "user@naver.com", description = "이메일")
+            @Email(message = "이메일 형식에 맞지 않습니다.")
+            String email,
+
+            @NotBlank(message = "인증 코드를 입력해주세요.")
+            @Schema(example = "123456", description = "인증 코드")
+            String authCode
+
+    ) {
+
+    }
+
+    public record EmailRequestDto(
+            @NotBlank(message = "이메일을 입력해주세요.")
+            @Schema(example = "user@naver.com", description = "이메일")
+            @Email(message = "이메일 형식에 맞지 않습니다.")
+            String email
+    ) {
+
+    }
+
     @Getter
     @Builder
     public static class AdditionalInfoRequestDto {
