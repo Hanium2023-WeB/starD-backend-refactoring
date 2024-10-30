@@ -3,6 +3,13 @@ package com.web.stard.domain.board.global.domain.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @Getter
 @AllArgsConstructor
 public enum Category {
@@ -13,4 +20,13 @@ public enum Category {
     OTHERS("기타");
 
     private final String description;
+
+    // description으로 InterestField 반환
+    private static final Map<String, Category> descriptions =
+            Collections.unmodifiableMap(Stream.of(values()) // stream을 1개만 생성
+                    .collect(Collectors.toMap(Category::getDescription, Function.identity())));
+
+    public static Category find(String description) {
+        return Optional.ofNullable(descriptions.get(description)).orElse(NONE); // 찾는 게 없으면 NONE
+    }
 }
