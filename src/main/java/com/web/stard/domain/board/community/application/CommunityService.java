@@ -13,5 +13,7 @@ public interface CommunityService {
 
     CommResponseDto.CommPostDto getCommPostDetail(Long commPostId, Long memberId);
 
+    CommResponseDto.CommPostListDto getCommPostList(int page);
+
 }
 

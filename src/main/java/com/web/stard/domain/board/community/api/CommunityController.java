@@ -42,4 +42,10 @@ public class CommunityController {
                                                                          @RequestParam(name = "memberId") Long memberId) {
         return ResponseEntity.ok(communityService.getCommPostDetail(commPostId, memberId));
     }
+
+    @Operation(summary = "커뮤니티 게시글 목록 조회")
+    @GetMapping
+    public ResponseEntity<CommResponseDto.CommPostListDto> getCommPostList(@RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(communityService.getCommPostList(page));
+    }
 }

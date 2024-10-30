@@ -5,12 +5,17 @@ import com.web.stard.domain.board.community.dto.request.CommRequestDto;
 import com.web.stard.domain.board.community.dto.response.CommResponseDto;
 import com.web.stard.domain.board.global.domain.Post;
 import com.web.stard.domain.board.global.domain.enums.Category;
+import com.web.stard.domain.board.global.domain.enums.PostType;
 import com.web.stard.domain.board.global.repository.PostRepository;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -125,5 +130,23 @@ public class CommunityServiceImpl implements CommunityService {
         }
 
         return CommResponseDto.CommPostDto.from(post);
+    }
+
+    /**
+     * 커뮤니티 게시글 리스트 조회
+     *
+     * @param page              조회할 페이지 번호
+     * @return CommPostListDto  commPostList, currentPage, totalPages, isLast
+     *                     커뮤니티 게시글 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public CommResponseDto.CommPostListDto getCommPostList(int page) {
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<Post> posts = postRepository.findByPostType(PostType.COMM, pageable);
+
+        return CommResponseDto.CommPostListDto.of(posts);
     }
 }
