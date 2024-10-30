@@ -162,10 +162,7 @@ public class MemberServiceImpl implements MemberService {
         Member info = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        // 관심분야 반환
-        List<Interest> interests = interestRepository.findAllByMember(info);
-
-        return MemberResponseDto.InfoDto.of(info, interests);
+        return MemberResponseDto.InfoDto.of(info);
     }
 
     /**
@@ -222,6 +219,7 @@ public class MemberServiceImpl implements MemberService {
      * @return EditInterestResponseDto      interests 관심분야, message 성공 메시지
      *
      */
+    @Transactional
     @Override
     public MemberResponseDto.EditInterestResponseDto editInterest(MemberRequestDto.AdditionalInfoRequestDto requestDto) {
         // 회원 정보 반환
@@ -230,7 +228,11 @@ public class MemberServiceImpl implements MemberService {
 
         // 기존 관심분야 삭제 후 새로 삽입
         List<Interest> interests = new ArrayList<>(info.getInterests());
-        info.getInterests().removeAll(interests); // 부모와 관계 삭제
+        interests.forEach(interest -> {
+            interest.deleteInterest(); // 관계 삭제
+            info.getInterests().remove(interest); // 관계 삭제
+            interestRepository.delete(interest);
+        });
 
         List<Interest> interestList = new ArrayList<>();
         if (requestDto.getInterests() != null && !requestDto.getInterests().isEmpty()) {

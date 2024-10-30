@@ -46,10 +46,10 @@ public class MemberResponseDto {
         private String nickname; // 닉네임
         private List<InterestField> interests; // 관심분야
 
-        public static InfoDto of(Member member, List<Interest> interestList){
+        public static InfoDto of(Member member){
             return InfoDto.builder()
                     .nickname(member.getNickname())
-                    .interests(interestList.stream().map(Interest::getInterestField).toList())
+                    .interests(member.getInterests().stream().map(Interest::getInterestField).toList())
                     .build();
         }
     }

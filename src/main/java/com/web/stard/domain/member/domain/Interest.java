@@ -23,4 +23,8 @@ public class Interest {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public void deleteInterest() {
+        this.member = null;
+    }
 }
