@@ -35,4 +35,11 @@ public class CommunityController {
                                                  @RequestParam(name = "memberId") Long memberId) {
         return communityService.deleteCommPost(commPostId, memberId);
     }
+
+    @Operation(summary = "커뮤니티 게시글 상세조회")
+    @GetMapping("/{commPostId}")
+    public ResponseEntity<CommResponseDto.CommPostDto> getCommPostDetail(@PathVariable(name = "commPostId") Long commPostId,
+                                                                         @RequestParam(name = "memberId") Long memberId) {
+        return ResponseEntity.ok(communityService.getCommPostDetail(commPostId, memberId));
+    }
 }

@@ -11,5 +11,7 @@ public interface CommunityService {
 
     ResponseEntity<String> deleteCommPost(Long commPostId, Long memberId);
 
+    CommResponseDto.CommPostDto getCommPostDetail(Long commPostId, Long memberId);
+
 }
 

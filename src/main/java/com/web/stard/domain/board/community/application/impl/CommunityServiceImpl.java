@@ -24,10 +24,8 @@ public class CommunityServiceImpl implements CommunityService {
     private final PostRepository postRepository;
 
     // 작성자인지 확인
-    private void isPostAuthor(Member member, Post post) {
-        if (!member.getId().equals(post.getMember().getId())) {
-            throw new CustomException(ErrorCode.INVALID_ACCESS);
-        }
+    private boolean isPostAuthor(Member member, Post post) {
+        return member.getId().equals(post.getMember().getId());
     }
 
     /**
@@ -36,7 +34,7 @@ public class CommunityServiceImpl implements CommunityService {
      * @param requestDto     title, content, category
      *                       제목     내용      카테고리
      * @return CommPostDto  commPostId, title, content, category, hit, writer, updatedAt
-     *                       공지 id    제목      내용     카테고리  조회수 작성자     수정일시
+     *                       게시글 id    제목      내용     카테고리  조회수 작성자     수정일시
      */
     @Override
     public CommResponseDto.CommPostDto createCommPost(CommRequestDto.CreateCommPostDto requestDto) {
@@ -56,7 +54,7 @@ public class CommunityServiceImpl implements CommunityService {
      * @param requestDto     title, content, category
      *                       제목     내용      카테고리
      * @return CommPostDto  commPostId, title, content, category, hit, writer, updatedAt
-     *                       공지 id    제목      내용     카테고리  조회수 작성자     수정일시
+     *                       게시글 id    제목      내용     카테고리  조회수 작성자     수정일시
      */
     @Transactional
     @Override
@@ -68,7 +66,9 @@ public class CommunityServiceImpl implements CommunityService {
         Post post = postRepository.findById(commPostId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
-        isPostAuthor(member, post);
+        if(!isPostAuthor(member, post)) {
+            throw new CustomException(ErrorCode.INVALID_ACCESS);
+        }
 
         post.updateComm(requestDto.getTitle(), requestDto.getContent(), Category.find(requestDto.getCategory()));
         Post updatedPost = postRepository.save(post);
@@ -92,10 +92,38 @@ public class CommunityServiceImpl implements CommunityService {
         Post post = postRepository.findById(commPostId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
-        isPostAuthor(member, post);
+        if(!isPostAuthor(member, post)) {
+            throw new CustomException(ErrorCode.INVALID_ACCESS);
+        }
 
         postRepository.delete(post);
 
         return ResponseEntity.status(HttpStatus.OK).body("게시글을 삭제하였습니다.");
+    }
+
+    /**
+     * 커뮤니티 게시글 상세조회
+     *
+     * @param commPostId      조회할 게시글의 id
+     * @return CommPostDto  commPostId, title, content, category, hit, writer, updatedAt
+     *                       게시글 id    제목     내용     카테고리  조회수 작성자     수정일시
+     */
+    @Transactional
+    @Override
+    public CommResponseDto.CommPostDto getCommPostDetail(Long commPostId, Long memberId) {
+        // 회원 정보 반환 TODO: 로그인한 회원
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        Post post = postRepository.findById(commPostId)
+                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+
+        // 작성자가 아니라면 조회수 +1
+        if (!isPostAuthor(member, post)) {
+            post.incrementHitCount();
+            post = postRepository.save(post);
+        }
+
+        return CommResponseDto.CommPostDto.from(post);
     }
 }
