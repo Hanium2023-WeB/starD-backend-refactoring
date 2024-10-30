@@ -14,6 +14,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByPostTypeAndTitleContainingOrContentContaining(PostType postType, String keyword, String keyword1, Pageable pageable);
 
+    Page<Post> findByPostTypeAndCategory(PostType postType, Category category, Pageable pageable);
+
     @Query("SELECT p FROM Post p WHERE p.postType = :postType" +
             " AND (p.title LIKE %:keyword% OR p.content LIKE %:keyword%)" +
             " AND p.category = :category")

@@ -15,6 +15,8 @@ public interface CommunityService {
 
     CommResponseDto.CommPostListDto getCommPostList(int page);
 
+    CommResponseDto.CommPostListDto getCommPostListByCategory(String category, int page);
+
     CommResponseDto.CommPostListDto searchCommPost(String keyword, int page);
 
     CommResponseDto.CommPostListDto searchCommPostWithCategory(String keyword, String category, int page);

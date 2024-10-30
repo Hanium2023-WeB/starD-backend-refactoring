@@ -133,7 +133,7 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     /**
-     * 커뮤니티 게시글 리스트 조회
+     * 커뮤니티 게시글 리스트 조회 (카테고리 - 전체)
      *
      * @param page              조회할 페이지 번호
      * @return CommPostListDto  commPostList, currentPage, totalPages, isLast
@@ -146,6 +146,25 @@ public class CommunityServiceImpl implements CommunityService {
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         Page<Post> posts = postRepository.findByPostType(PostType.COMM, pageable);
+
+        return CommResponseDto.CommPostListDto.of(posts);
+    }
+
+    /**
+     * 커뮤니티 게시글 리스트 조회 - 카테고리 선택
+     *
+     * @param category          조회할 카테고리
+     * @param page              조회할 페이지 번호
+     * @return CommPostListDto  commPostList, currentPage, totalPages, isLast
+     *                     커뮤니티 게시글 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public CommResponseDto.CommPostListDto getCommPostListByCategory(String category, int page) {
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<Post> posts = postRepository.findByPostTypeAndCategory(PostType.COMM, Category.find(category), pageable);
 
         return CommResponseDto.CommPostListDto.of(posts);
     }
