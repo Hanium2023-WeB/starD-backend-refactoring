@@ -11,6 +11,8 @@ import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,5 +74,28 @@ public class CommunityServiceImpl implements CommunityService {
         Post updatedPost = postRepository.save(post);
 
         return CommResponseDto.CommPostDto.from(updatedPost);
+    }
+
+    /**
+     * 커뮤니티 게시글 삭제
+     *
+     * @param commPostId      수정할 게시글의 id
+     * @return 없음
+     */
+    @Transactional
+    @Override
+    public ResponseEntity<String> deleteCommPost(Long commPostId, Long memberId) {
+        // 회원 정보 반환 TODO: 로그인한 회원
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        Post post = postRepository.findById(commPostId)
+                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+
+        isPostAuthor(member, post);
+
+        postRepository.delete(post);
+
+        return ResponseEntity.status(HttpStatus.OK).body("게시글을 삭제하였습니다.");
     }
 }

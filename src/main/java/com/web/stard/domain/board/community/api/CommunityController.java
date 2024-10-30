@@ -28,4 +28,11 @@ public class CommunityController {
                                                                       @Valid @RequestBody CommRequestDto.CreateCommPostDto requestDto) {
         return ResponseEntity.ok(communityService.updateCommPost(commPostId, requestDto));
     }
+
+    @Operation(summary = "커뮤니티 게시글 삭제")
+    @DeleteMapping("/{commPostId}")
+    public ResponseEntity<String> deleteCommPost(@PathVariable(name = "commPostId") Long commPostId,
+                                                 @RequestParam(name = "memberId") Long memberId) {
+        return communityService.deleteCommPost(commPostId, memberId);
+    }
 }
