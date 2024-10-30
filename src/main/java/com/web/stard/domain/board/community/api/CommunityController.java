@@ -48,4 +48,19 @@ public class CommunityController {
     public ResponseEntity<CommResponseDto.CommPostListDto> getCommPostList(@RequestParam(value = "page", defaultValue = "1", required = false) int page) {
         return ResponseEntity.ok(communityService.getCommPostList(page));
     }
+
+    @Operation(summary = "커뮤니티 게시글 검색 (카테고리 - 전체)", description = "전체 카테고리 중 키워드로 검색합니다.")
+    @GetMapping("/search")
+    public ResponseEntity<CommResponseDto.CommPostListDto> searchCommPost(@RequestParam(name = "keyword") String keyword,
+                                                                          @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(communityService.searchCommPost(keyword, page));
+    }
+
+    @Operation(summary = "커뮤니티 게시글 검색 (+ 카테고리)", description = "키워드와 카테고리로 검색합니다.")
+    @GetMapping("/search/category")
+    public ResponseEntity<CommResponseDto.CommPostListDto> searchCommPostWithCategory(@RequestParam(name = "keyword") String keyword,
+                                                                                      @RequestParam(name = "category") String category,
+                                                                                      @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(communityService.searchCommPostWithCategory(keyword, category, page));
+    }
 }

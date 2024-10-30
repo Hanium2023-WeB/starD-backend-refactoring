@@ -149,4 +149,44 @@ public class CommunityServiceImpl implements CommunityService {
 
         return CommResponseDto.CommPostListDto.of(posts);
     }
+
+    /**
+     * 커뮤니티 게시글 - 키워드 검색 조회 (카테고리 - 전체)
+     *
+     * @param keyword           검색할 키워드
+     * @param page              조회할 페이지 번호
+     * @return CommPostListDto  commPostList, currentPage, totalPages, isLast
+     *                     커뮤니티 게시글 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public CommResponseDto.CommPostListDto searchCommPost(String keyword, int page) {
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<Post> posts = postRepository.findByPostTypeAndTitleContainingOrContentContaining(
+                            PostType.COMM, keyword, keyword, pageable);
+
+        return CommResponseDto.CommPostListDto.of(posts);
+    }
+
+    /**
+     * 커뮤니티 게시글 - 키워드 + 카테고리 검색 조회
+     *
+     * @param keyword           검색할 키워드
+     * @param category          검색할 카테고리
+     * @param page              조회할 페이지 번호
+     * @return CommPostListDto  commPostList, currentPage, totalPages, isLast
+     *                     커뮤니티 게시글 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public CommResponseDto.CommPostListDto searchCommPostWithCategory(String keyword, String category, int page) {
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<Post> posts = postRepository.searchCommPostWithCategory(PostType.COMM, keyword, Category.find(category), pageable);
+
+        return CommResponseDto.CommPostListDto.of(posts);
+    }
 }
