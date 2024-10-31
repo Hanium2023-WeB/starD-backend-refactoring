@@ -8,9 +8,11 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
 
+    // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원"),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "이메일이나 비밀번호 불일치"),
-    CONFLICT(HttpStatus.CONFLICT, "중복"),
+    EMAIL_CONFLICT(HttpStatus.CONFLICT, "중복된 이메일입니다."),
+    NICKNAME_CONFLICT(HttpStatus.CONFLICT, "중복된 닉네임입니다."),
     MISMATCH_TOKEN(HttpStatus.BAD_REQUEST, "토큰 불일치"),
 
     //Jwt
@@ -33,7 +35,7 @@ public enum ErrorCode {
     INVALID_OR_EXPIRED_AUTH_CODE(HttpStatus.NOT_FOUND, "이메일을 잘못 입력했거나 인증 시간이 만료되었습니다."),
 
     // Post
-    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다.")
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."),
 
     ;
 
