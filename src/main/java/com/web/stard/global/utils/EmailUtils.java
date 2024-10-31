@@ -72,7 +72,12 @@ public class EmailUtils {
 
     public void validAuthCode(String email, String code) throws Exception {
         String redisCode = redisUtils.getData(email);
-        if (Objects.isNull(redisCode) && !Objects.equals(redisCode, code)) {
+
+        if(Objects.isNull(redisCode)) {
+            throw new CustomException(ErrorCode.INVALID_OR_EXPIRED_AUTH_CODE);
+        }
+
+        if (!Objects.equals(redisCode, code)) {
             throw new CustomException(ErrorCode.INVALID_AUTH_CODE);
         }
     }

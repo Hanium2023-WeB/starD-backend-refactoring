@@ -29,7 +29,8 @@ public enum ErrorCode {
 
 
     // Email
-    INVALID_AUTH_CODE(HttpStatus.BAD_REQUEST, "인증 코드 불일치"),
+    INVALID_AUTH_CODE(HttpStatus.BAD_REQUEST, "인증 코드가 일치하지 않습니다."),
+    INVALID_OR_EXPIRED_AUTH_CODE(HttpStatus.NOT_FOUND, "이메일을 잘못 입력했거나 인증 시간이 만료되었습니다."),
 
     // Post
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다.")
