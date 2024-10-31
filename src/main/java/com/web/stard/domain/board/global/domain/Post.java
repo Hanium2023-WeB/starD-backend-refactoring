@@ -49,4 +49,8 @@ public class Post extends BaseEntity {
         this.content = content;
         this.category = category;
     }
+
+    public void incrementHitCount() {
+        this.hit++;
+    }
 }
