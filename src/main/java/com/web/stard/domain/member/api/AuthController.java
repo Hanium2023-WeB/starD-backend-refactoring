@@ -34,10 +34,11 @@ public class AuthController {
         return ResponseEntity.ok(authService.checkEmailDuplicate(requestDto.email()));
     }
 
-    @Operation(summary = "닉네임 중복 확인", description = "입력한 닉네임을 다른 사용자가 사용 중인지 확인합니다.\n\n" +
+    @Operation(summary = "닉네임 중복 확인", description = "** memberId 없이 nickname만 전달해주세요!!! (추후 수정 예정) **\n\n" +
+            "입력한 닉네임을 다른 사용자가 사용 중인지 확인합니다.\n\n" +
             "사용 가능하면 true, 이미 사용 중이면 false 값을 반환합니다.")
     @PostMapping("/check-nickname")
-    public ResponseEntity<Boolean> checkDuplicateNickname(@Valid @RequestBody MemberRequestDto.NicknameDto requestDto) {
+    public ResponseEntity<Boolean> checkDuplicateNickname(@Valid @RequestBody MemberRequestDto.EditNicknameDto requestDto) {
         return ResponseEntity.ok(authService.checkNicknameDuplicate(requestDto.getNickname()));
     }
 
