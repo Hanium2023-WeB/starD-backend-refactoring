@@ -49,14 +49,26 @@ public class MemberController {
 
     @Operation(summary = "개인정보 반환")
     @GetMapping("/edit")
-    public ResponseEntity<MemberResponseDto.InfoDto> getInfo() {
-        return ResponseEntity.ok(memberService.getInfo(5L)); // TODO 로그인 한 사용자 가져오기
+    public ResponseEntity<MemberResponseDto.InfoDto> getInfo(@RequestParam Long memberId) {
+        return ResponseEntity.ok(memberService.getInfo(memberId)); // TODO 로그인 한 사용자 가져오기
+    }
+
+    @Operation(summary = "비밀번호 변경")
+    @PostMapping("/edit/password")
+    public ResponseEntity<String> editPassword(@RequestBody MemberRequestDto.EditPasswordDto requestDto) {
+        return memberService.editPassword(requestDto);
     }
 
     @Operation(summary = "닉네임 변경")
     @PostMapping("/edit/nickname")
-    public ResponseEntity<MemberResponseDto.EditNicknameResponseDto> editNickname(@RequestBody MemberRequestDto.EditNicknameDto requestDTO) {
-        return ResponseEntity.ok(memberService.editNickname(5L, requestDTO)); // TODO 로그인 한 사용자 가져오기
+    public ResponseEntity<MemberResponseDto.EditNicknameResponseDto> editNickname(@RequestBody MemberRequestDto.EditNicknameDto requestDto) {
+        return ResponseEntity.ok(memberService.editNickname(requestDto)); // TODO 로그인 한 사용자 가져오기
+    }
+
+    @Operation(summary = "관심분야 변경")
+    @PostMapping("/edit/interests")
+    public ResponseEntity<MemberResponseDto.EditInterestResponseDto> editInterests(@RequestBody MemberRequestDto.AdditionalInfoRequestDto requestDto) {
+        return ResponseEntity.ok(memberService.editInterest(requestDto));
     }
 
 }

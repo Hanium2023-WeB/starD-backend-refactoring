@@ -95,9 +95,23 @@ public class MemberRequestDto {
     }
 
     @Getter
+    @Builder
+    public static class EditPasswordDto {
+        private Long memberId;
+        private String originPassword;
+
+        @NotBlank(message = "비밀번호는 필수 입니다.")
+        @Schema(example = "user123!", description = "회원가입 비밀번호")
+        @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,15}$", message = "비밀번호는 8 ~ 15자 영문, 숫자, 특수문자 조합이어야 합니다.")
+        private String password;
+    }
+
+    @Getter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class EditNicknameDto {
+        private Long memberId;
+
         @Size(min = 2, message = "닉네임은 2자 이상이어야 합니다.")
         @Schema(example = "스타", description = "회원 닉네임")
         @NotBlank(message = "닉네임은 필수 입니다.")

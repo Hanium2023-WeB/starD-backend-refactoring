@@ -18,6 +18,8 @@ import com.web.stard.global.exception.error.ErrorCode;
 import com.web.stard.global.utils.EmailUtils;
 import com.web.stard.global.utils.RedisUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,6 +29,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.UUID;
 
 import java.util.List;
@@ -124,7 +128,7 @@ public class MemberServiceImpl implements MemberService {
         if (requestDto.getInterests() != null && !requestDto.getInterests().isEmpty()) {
             requestDto.getInterests().forEach(interest -> {
                 Interest interestEntity = Interest.builder()
-                        .interestField(InterestField.valueOf(interest))
+                        .interestField(InterestField.find(interest))
                         .member(member)
                         .build();
                 interestRepository.save(interestEntity);
@@ -137,49 +141,120 @@ public class MemberServiceImpl implements MemberService {
         return MemberResponseDto.AdditionalInfoResultDto.of(member);
     }
 
+    /**
+     * 현재 비밀번호 확인
+     *
+     * @param currentPassword 사용자 현재 비밀번호, password 사용자가 입력한 비밀번호
+     * @return boolean 비밀번호가 맞으면 true, 틀리면 false
+     */
+    @Override
+    public boolean checkCurrentPassword(String currentPassword, String password) {
+        return passwordEncoder.matches(password, currentPassword); // 입력한 비밀번호와 사용자 비밀번호 같음
+    }
 
     /**
      * 마이페이지 - 개인정보 수정 기존 데이터 상세 조회
      *
-     * @param id 사용자 고유 id
-     * @return InfoDto      nickname, phone, city, district, interests
-     * 닉네임     전화번호 시    구         관심분야
+     * @param memberId   사용자 고유 id
+     * @return InfoDto   nickname, interests
+     *                   닉네임     관심분야
      */
-    @Transactional
     @Override
-    public MemberResponseDto.InfoDto getInfo(Long id) {
+    public MemberResponseDto.InfoDto getInfo(Long memberId) {
         // 회원 정보 반환
-        Member info = memberRepository.findById(id)
+        Member info = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        // 관심분야 반환
-        List<Interest> interests = interestRepository.findAllByMember(info);
-
-        return MemberResponseDto.InfoDto.from(info, interests);
+        return MemberResponseDto.InfoDto.of(info);
     }
 
+    /**
+     * 마이페이지 - 개인정보 수정 : 비밀번호
+     *
+     * @param requestDto 사용자 고유 id, password 비밀번호
+     * @return 없음
+     */
+    @Override
+    public ResponseEntity<String> editPassword(MemberRequestDto.EditPasswordDto requestDto) {
+        // 회원 정보 반환
+        Member info = memberRepository.findById(requestDto.getMemberId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-    // TODO : 비밀번호 변경 : 현재 비밀번호랑 다를 경우 변경 불가능
+        // 현재 비밀번호 확인
+        if (!checkCurrentPassword(info.getPassword(), requestDto.getOriginPassword())) {
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
+        }
 
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
+
+        info.updatePassword(encodedPassword);
+
+        return ResponseEntity.status(HttpStatus.OK).body("비밀번호를 변경하였습니다.");
+    }
 
     /**
      * 마이페이지 - 개인정보 수정 : 닉네임
      *
-     * @param id, EditNicknameDto       사용자 고유 id, nickname 닉네임
+     * @param requestDto                사용자 고유 id, nickname 닉네임
      * @return EditNicknameResponseDto  nickname 닉네임, message 성공 메시지
      */
     @Override
-    public MemberResponseDto.EditNicknameResponseDto editNickname(Long id, MemberRequestDto.EditNicknameDto requestDTO) {
+    public MemberResponseDto.EditNicknameResponseDto editNickname(MemberRequestDto.EditNicknameDto requestDto) {
         // 회원 정보 반환
-        Member info = memberRepository.findById(id)
+        Member info = memberRepository.findById(requestDto.getMemberId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 닉네임 변경
-//        info.setNickname(requestDTO.getNickname());
+        info.updateNickname(requestDto.getNickname());
 
-        memberRepository.save(info);
+        return MemberResponseDto.EditNicknameResponseDto.of(info.getNickname());
+    }
 
-        return MemberResponseDto.EditNicknameResponseDto.from(info.getNickname());
+    /**
+     * 마이페이지 - 개인정보 수정 : 관심분야
+     * 기존 관심분야 삭제 후 새로 삽입
+     * @param requestDto : EditInterestDto  사용자 고유 id, interestField 관심분야
+     * @return EditInterestResponseDto      interests 관심분야, message 성공 메시지
+     *
+     */
+    @Transactional
+    @Override
+    public MemberResponseDto.EditInterestResponseDto editInterest(MemberRequestDto.AdditionalInfoRequestDto requestDto) {
+        // 회원 정보 반환
+        Member info = memberRepository.findById(requestDto.getMemberId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        // 기존 관심분야와 비교 후 삭제 및 추가
+        List<Interest> interests = new ArrayList<>(info.getInterests());
+        Iterator<Interest> iterator = interests.iterator();
+
+        while (iterator.hasNext()) {
+            Interest interest = iterator.next();
+
+            if (!requestDto.getInterests().stream()
+                    .anyMatch(field -> field.equals(interest.getInterestField().getDescription()))) {
+                // 변경할 관심분야에 없는 기존 관심분야 삭제
+                interest.deleteInterest(); // 관계 삭제
+                info.getInterests().remove(interest); // 관계 삭제
+                interestRepository.delete(interest);
+                iterator.remove(); // 요소에서도 삭제
+            }
+        }
+
+        requestDto.getInterests().forEach(interestField -> {
+            if (!interests.stream().anyMatch(interest -> interest.getInterestField().getDescription().equals(interestField))) { // 새로운 관심분야 추가
+                // 기존에 없던 관심분야 추가
+                Interest interestEntity = Interest.builder()
+                        .interestField(InterestField.find(interestField))
+                        .member(info)
+                        .build();
+                interestRepository.save(interestEntity); // 관심분야 추가
+                interests.add(interestEntity); // 요소에 추가
+            }
+        });
+
+        return MemberResponseDto.EditInterestResponseDto.of(interests);
     }
 
     /**
