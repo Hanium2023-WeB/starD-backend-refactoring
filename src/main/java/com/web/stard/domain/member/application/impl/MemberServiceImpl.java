@@ -48,6 +48,7 @@ public class MemberServiceImpl implements MemberService {
      * @return InfoDto   nickname, interests
      *                   닉네임     관심분야
      */
+    @Transactional(readOnly = true)
     @Override
     public MemberResponseDto.InfoDto getInfo(Long memberId) {
         // 회원 정보 반환
