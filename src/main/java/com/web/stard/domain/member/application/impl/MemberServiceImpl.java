@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.UUID;
 
 import java.util.List;
@@ -181,15 +182,13 @@ public class MemberServiceImpl implements MemberService {
 
         // 현재 비밀번호 확인
         if (!checkCurrentPassword(info.getPassword(), requestDto.getOriginPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
         info.updatePassword(encodedPassword);
-
-        memberRepository.save(info);
 
         return ResponseEntity.status(HttpStatus.OK).body("비밀번호를 변경하였습니다.");
     }
@@ -209,8 +208,6 @@ public class MemberServiceImpl implements MemberService {
         // 닉네임 변경
         info.updateNickname(requestDto.getNickname());
 
-        memberRepository.save(info);
-
         return MemberResponseDto.EditNicknameResponseDto.of(info.getNickname());
     }
 
@@ -228,27 +225,36 @@ public class MemberServiceImpl implements MemberService {
         Member info = memberRepository.findById(requestDto.getMemberId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        // 기존 관심분야 삭제 후 새로 삽입
+        // 기존 관심분야와 비교 후 삭제 및 추가
         List<Interest> interests = new ArrayList<>(info.getInterests());
-        interests.forEach(interest -> {
-            interest.deleteInterest(); // 관계 삭제
-            info.getInterests().remove(interest); // 관계 삭제
-            interestRepository.delete(interest);
-        });
+        Iterator<Interest> iterator = interests.iterator();
 
-        List<Interest> interestList = new ArrayList<>();
-        if (requestDto.getInterests() != null && !requestDto.getInterests().isEmpty()) {
-            requestDto.getInterests().forEach(interest -> {
-                Interest interestEntity = Interest.builder()
-                        .interestField(InterestField.find(interest))
-                        .member(info)
-                        .build();
-                interestList.add(interestEntity);
-            });
-            interestRepository.saveAll(interestList);
+        while (iterator.hasNext()) {
+            Interest interest = iterator.next();
+
+            if (!requestDto.getInterests().stream()
+                    .anyMatch(field -> field.equals(interest.getInterestField().getDescription()))) {
+                // 변경할 관심분야에 없는 기존 관심분야 삭제
+                interest.deleteInterest(); // 관계 삭제
+                info.getInterests().remove(interest); // 관계 삭제
+                interestRepository.delete(interest);
+                iterator.remove(); // 요소에서도 삭제
+            }
         }
 
-        return MemberResponseDto.EditInterestResponseDto.of(interestList);
+        requestDto.getInterests().forEach(interestField -> {
+            if (!interests.stream().anyMatch(interest -> interest.getInterestField().getDescription().equals(interestField))) { // 새로운 관심분야 추가
+                // 기존에 없던 관심분야 추가
+                Interest interestEntity = Interest.builder()
+                        .interestField(InterestField.find(interestField))
+                        .member(info)
+                        .build();
+                interestRepository.save(interestEntity); // 관심분야 추가
+                interests.add(interestEntity); // 요소에 추가
+            }
+        });
+
+        return MemberResponseDto.EditInterestResponseDto.of(interests);
     }
 
     /**
