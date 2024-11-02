@@ -1,5 +1,6 @@
 package com.web.stard.global.config.security;
 
+import com.web.stard.domain.member.application.impl.UserDetailsServiceImpl;
 import com.web.stard.global.dto.TokenInfo;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
@@ -18,34 +19,42 @@ import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private final SecretKey secretKey;
-    private final long accessTokenExpTime;
-    private final long refreshTokenExpTime;
+    private SecretKey secretKey;
+
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Value("${jwt.access-token-expiration_time}")
+    private long accessTokenExpTime;
+
+    @Value("${jwt.refresh-token-expiration_time}")
+    private long refreshTokenExpTime;
+
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "Bearer";
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secret,
-                            @Value("${jwt.access-token-expiration_time}") long accessTokenExpTime,
-                            @Value("${jwt.refresh-token-expiration_time}") long refreshTokenExpTime) {
-        this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), SIG.HS256.key().build().getAlgorithm());
-        this.accessTokenExpTime = accessTokenExpTime;
-        this.refreshTokenExpTime = refreshTokenExpTime;
-    }
+    private final UserDetailsServiceImpl userDetailsService;
 
+    @PostConstruct
+    protected void init(){
+        this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), SIG.HS256.key().build().getAlgorithm());
+    }
     public TokenInfo generateToken(Authentication authentication) {
 
         String authorities = authentication.getAuthorities().stream()
@@ -87,7 +96,7 @@ public class JwtTokenProvider {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 
-        UserDetails principal = new User(claims.getSubject(), "", authorities);
+        UserDetails principal = userDetailsService.loadUserByUsername(claims.getSubject());
         return new UsernamePasswordAuthenticationToken(principal, accessToken, authorities);
     }
 

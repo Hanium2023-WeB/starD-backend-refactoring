@@ -8,17 +8,14 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 public class MemberRequestDto {
 
     @Getter
-    @Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class SignupDto {
 
         @NotBlank(message = "이메일은 필수입니다.")
@@ -35,6 +32,13 @@ public class MemberRequestDto {
         @Schema(example = "스타", description = "회원 닉네임")
         @NotBlank(message = "닉네임은 필수 입니다.")
         private String nickname;
+
+        @Builder
+        public void Member(String email, String password, String nickname) {
+            this.email = email;
+            this.password = password;
+            this.nickname = nickname;
+        }
 
         public Member toEntity(String encodedPassword, Profile profile) {
             return Member.builder()

@@ -49,7 +49,7 @@ public class MemberResponseDto {
         public static InfoDto of(Member member){
             return InfoDto.builder()
                     .nickname(member.getNickname())
-                    .interests(member.getInterests().stream().map(Interest::getInterestField).toList())
+//                    .interests(member.getInterests().stream().map(Interest::getInterestField).toList())
                     .build();
         }
     }
