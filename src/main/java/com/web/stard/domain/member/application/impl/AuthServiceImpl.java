@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -44,19 +45,20 @@ public class AuthServiceImpl implements AuthService {
     /**
      * 회원가입
      *
-     * @param file              프로필 이미지 파일
-     * @param requestDto        email, password, nickname
-     *                          이메일    비밀번호    닉네임
+     * @param file       프로필 이미지 파일
+     * @param requestDto email, password, nickname
+     *                   이메일    비밀번호    닉네임
      * @return SignupResultDto  memberId, createdAt
-     *                          멤버 id    생성일시
+     * 멤버 id    생성일시
      */
     @Override
     @Transactional
     public MemberResponseDto.SignupResultDto signUp(MultipartFile file, MemberRequestDto.SignupDto requestDto) {
 
         if (!checkEmailDuplicate(requestDto.getEmail())) {
-           throw new CustomException(ErrorCode.EMAIL_CONFLICT);
-        };
+            throw new CustomException(ErrorCode.EMAIL_CONFLICT);
+        }
+        ;
         if (!checkNicknameDuplicate(requestDto.getNickname())) {
             throw new CustomException(ErrorCode.NICKNAME_CONFLICT);
         }
@@ -91,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
     /**
      * 이메일 중복 확인
      *
-     * @param email     중복 체크할 이메일
+     * @param email 중복 체크할 이메일
      * @return boolean  이메일이 중복되지 않으면 true, 중복되면 false
      */
     @Override
@@ -102,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
     /**
      * 닉네임 중복 확인
      *
-     * @param nickname  중복 체크할 닉네임
+     * @param nickname 중복 체크할 닉네임
      * @return boolean  닉네임이 중복되지 않으면 true, 중복되면 false
      */
     @Override
@@ -114,10 +116,10 @@ public class AuthServiceImpl implements AuthService {
     /**
      * 회원가입 추가 정보 저장
      *
-     * @param requestDto        memberId, interests
-     *                          멤버 id    관심분야
+     * @param requestDto memberId, interests
+     *                   멤버 id    관심분야
      * @return AdditionalInfoResultDto  memberId, interests
-     *                                  멤버 id    관심분야
+     * 멤버 id    관심분야
      */
     @Override
     @Transactional
@@ -162,14 +164,46 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    /**
+     * 이메일로 인증 번호 보내기
+     *
+     * @param email 이메일
+     * @throws Exception 이메일 전송 에러
+     */
     @Override
     public void sendAuthCode(String email) throws Exception {
         emailUtils.send(email);
     }
 
+    /**
+     * 이메일 검증
+     *
+     * @param request 이메일과 인증 번호
+     * @throws Exception 이메일 또는 인증 번호 불알치 / 인증 번호 유효 시간 만료
+     */
     @Override
     public void validAuthCode(MemberRequestDto.AuthCodeRequestDto request) throws Exception {
         emailUtils.validAuthCode(request.email(), request.authCode());
+    }
+
+    /**
+     * 로그아웃
+     *
+     * @param member      로그인한 사용자
+     * @param accessToken 헤더에 전송된 토큰
+     */
+    @Override
+    public void signOut(Member member, String accessToken) {
+        try {
+            jwtTokenProvider.validateToken(accessToken);
+            String refreshToken = redisUtils.getData(member.getEmail());
+            if (Objects.nonNull(refreshToken)) {
+                redisUtils.deleteData(member.getEmail());
+            }
+            redisUtils.setData(accessToken, "signOut", jwtTokenProvider.getExpiration(accessToken));
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
     }
 
 }

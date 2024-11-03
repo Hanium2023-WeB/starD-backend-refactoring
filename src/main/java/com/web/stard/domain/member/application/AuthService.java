@@ -1,5 +1,6 @@
 package com.web.stard.domain.member.application;
 
+import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.dto.response.MemberResponseDto;
 import com.web.stard.global.dto.TokenInfo;
@@ -19,4 +20,6 @@ public interface AuthService {
     void sendAuthCode(String email) throws Exception;
 
     void validAuthCode(MemberRequestDto.AuthCodeRequestDto request) throws Exception;
+
+    void signOut(Member member, String token);
 }

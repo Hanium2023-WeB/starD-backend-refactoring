@@ -1,8 +1,10 @@
 package com.web.stard.domain.member.api;
 
 import com.web.stard.domain.member.application.MemberService;
+import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.dto.response.MemberResponseDto;
+import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +20,9 @@ public class MemberController {
 
     @Operation(summary = "개인정보 반환")
     @GetMapping("/edit")
-    public ResponseEntity<MemberResponseDto.InfoDto> getInfo(@RequestParam Long memberId) {
-        return ResponseEntity.ok(memberService.getInfo(memberId)); // TODO 로그인 한 사용자 가져오기
+    public ResponseEntity<?> getInfo(@CurrentMember Member member) {
+        MemberResponseDto.InfoDto response = MemberResponseDto.InfoDto.of(member);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "비밀번호 변경")
