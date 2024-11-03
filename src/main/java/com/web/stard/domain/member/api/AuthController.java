@@ -66,9 +66,9 @@ public class AuthController {
 
     @PostMapping("/auth-codes/verify")
     @Operation(summary = "인증 번호 검증")
-    public ResponseEntity<?> validAuthCode(@Valid @RequestBody MemberRequestDto.AuthCodeRequestDto request) throws Exception {
+    public ResponseEntity<Boolean> validAuthCode(@Valid @RequestBody MemberRequestDto.AuthCodeRequestDto request) throws Exception {
         authService.validAuthCode(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(true);
     }
 
 }
