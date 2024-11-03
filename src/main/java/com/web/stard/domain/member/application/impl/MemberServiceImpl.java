@@ -44,18 +44,16 @@ public class MemberServiceImpl implements MemberService {
     /**
      * 마이페이지 - 개인정보 수정 기존 데이터 상세 조회
      *
-     * @param memberId   사용자 고유 id
-     * @return InfoDto   nickname, interests
+     * @param member    로그인 사용자
+     * @return InfoDto  nickname, interests
      *                   닉네임     관심분야
      */
     @Transactional(readOnly = true)
     @Override
-    public MemberResponseDto.InfoDto getInfo(Long memberId) {
-        // 회원 정보 반환
-        Member info = memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-        return MemberResponseDto.InfoDto.of(info);
+    public MemberResponseDto.InfoDto getInfo(Member member) {
+        // 관심분야 반환
+        List<Interest> interests = interestRepository.findAllByMember(member);
+        return MemberResponseDto.InfoDto.of(member, interests);
     }
 
     /**
@@ -66,20 +64,18 @@ public class MemberServiceImpl implements MemberService {
      */
     @Transactional
     @Override
-    public ResponseEntity<String> editPassword(MemberRequestDto.EditPasswordDto requestDto) {
-        // 회원 정보 반환
-        Member info = memberRepository.findById(requestDto.getMemberId())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
+    public ResponseEntity<String> editPassword(Member member, MemberRequestDto.EditPasswordDto requestDto) {
         // 현재 비밀번호 확인
-        if (!checkCurrentPassword(info.getPassword(), requestDto.getOriginPassword())) {
+        if (!checkCurrentPassword(member.getPassword(), requestDto.getOriginPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
-        info.updatePassword(encodedPassword);
+        member.updatePassword(encodedPassword);
+
+        memberRepository.save(member);
 
         return ResponseEntity.status(HttpStatus.OK).body("비밀번호를 변경하였습니다.");
     }
@@ -87,39 +83,37 @@ public class MemberServiceImpl implements MemberService {
     /**
      * 마이페이지 - 개인정보 수정 : 닉네임
      *
-     * @param requestDto                사용자 고유 id, nickname 닉네임
+     * @param requestDto                nickname 닉네임
      * @return EditNicknameResponseDto  nickname 닉네임, message 성공 메시지
      */
     @Transactional
     @Override
-    public MemberResponseDto.EditNicknameResponseDto editNickname(MemberRequestDto.EditNicknameDto requestDto) {
-        // 회원 정보 반환
-        Member info = memberRepository.findById(requestDto.getMemberId())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
+    public MemberResponseDto.EditNicknameResponseDto editNickname(Member member, MemberRequestDto.EditNicknameDto requestDto) {
         // 닉네임 중복 확인
         if (memberRepository.existsByNickname(requestDto.getNickname())) {
             throw new CustomException(ErrorCode.NICKNAME_CONFLICT);
         }
         
         // 닉네임 변경
-        info.updateNickname(requestDto.getNickname());
+        member.updateNickname(requestDto.getNickname());
 
-        return MemberResponseDto.EditNicknameResponseDto.of(info.getNickname());
+        memberRepository.save(member);
+
+        return MemberResponseDto.EditNicknameResponseDto.of(member.getNickname());
     }
 
     /**
      * 마이페이지 - 개인정보 수정 : 관심분야
-     * 기존 관심분야 삭제 후 새로 삽입
+     * 기존 관심분야와 비교 - 삭제, 추가
      * @param requestDto : EditInterestDto  사용자 고유 id, interestField 관심분야
      * @return EditInterestResponseDto      interests 관심분야, message 성공 메시지
      *
      */
     @Transactional
     @Override
-    public MemberResponseDto.EditInterestResponseDto editInterest(MemberRequestDto.AdditionalInfoRequestDto requestDto) {
+    public MemberResponseDto.EditInterestResponseDto editInterest(Member member, MemberRequestDto.AdditionalInfoRequestDto requestDto) {
         // 회원 정보 반환
-        Member info = memberRepository.findById(requestDto.getMemberId())
+        Member info = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 기존 관심분야와 비교 후 삭제 및 추가
