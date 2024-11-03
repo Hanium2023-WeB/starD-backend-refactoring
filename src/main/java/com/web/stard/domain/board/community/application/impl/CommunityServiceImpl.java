@@ -42,11 +42,7 @@ public class CommunityServiceImpl implements CommunityService {
      *                       게시글 id    제목      내용     카테고리  조회수 작성자     수정일시
      */
     @Override
-    public CommResponseDto.CommPostDto createCommPost(CommRequestDto.CreateCommPostDto requestDto) {
-        // 회원 정보 반환
-        Member member = memberRepository.findById(requestDto.getMemberId())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
+    public CommResponseDto.CommPostDto createCommPost(Member member, CommRequestDto.CreateCommPostDto requestDto) {
         Post post = postRepository.save(requestDto.toEntity(member));
 
         return CommResponseDto.CommPostDto.from(post);
@@ -63,11 +59,7 @@ public class CommunityServiceImpl implements CommunityService {
      */
     @Transactional
     @Override
-    public CommResponseDto.CommPostDto updateCommPost(Long commPostId, CommRequestDto.CreateCommPostDto requestDto) {
-        // 회원 정보 반환
-        Member member = memberRepository.findById(requestDto.getMemberId())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
+    public CommResponseDto.CommPostDto updateCommPost(Member member, Long commPostId, CommRequestDto.CreateCommPostDto requestDto) {
         Post post = postRepository.findById(commPostId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
@@ -89,11 +81,7 @@ public class CommunityServiceImpl implements CommunityService {
      */
     @Transactional
     @Override
-    public ResponseEntity<String> deleteCommPost(Long commPostId, Long memberId) {
-        // 회원 정보 반환 TODO: 로그인한 회원
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
+    public ResponseEntity<String> deleteCommPost(Member member, Long commPostId) {
         Post post = postRepository.findById(commPostId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
@@ -115,16 +103,12 @@ public class CommunityServiceImpl implements CommunityService {
      */
     @Transactional
     @Override
-    public CommResponseDto.CommPostDto getCommPostDetail(Long commPostId, Long memberId) {
-        // 회원 정보 반환 TODO: 로그인한 회원
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
+    public CommResponseDto.CommPostDto getCommPostDetail(Member member, Long commPostId) {
         Post post = postRepository.findById(commPostId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
         // 작성자가 아니라면 조회수 +1
-        if (!isPostAuthor(member, post)) {
+        if (member == null || !isPostAuthor(member, post)) {
             post.incrementHitCount();
             post = postRepository.save(post);
         }

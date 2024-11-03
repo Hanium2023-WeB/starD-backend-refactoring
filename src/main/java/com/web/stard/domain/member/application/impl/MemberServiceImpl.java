@@ -59,7 +59,7 @@ public class MemberServiceImpl implements MemberService {
     /**
      * 마이페이지 - 개인정보 수정 : 비밀번호
      *
-     * @param requestDto 사용자 고유 id, password 비밀번호
+     * @param requestDto originPassword 현재 비밀번호, password 바꿀 비밀번호
      * @return 없음
      */
     @Transactional
@@ -105,7 +105,7 @@ public class MemberServiceImpl implements MemberService {
     /**
      * 마이페이지 - 개인정보 수정 : 관심분야
      * 기존 관심분야와 비교 - 삭제, 추가
-     * @param requestDto : EditInterestDto  사용자 고유 id, interestField 관심분야
+     * @param requestDto : EditInterestDto  interestField 관심분야
      * @return EditInterestResponseDto      interests 관심분야, message 성공 메시지
      *
      */

@@ -2,16 +2,17 @@ package com.web.stard.domain.board.community.application;
 
 import com.web.stard.domain.board.community.dto.request.CommRequestDto;
 import com.web.stard.domain.board.community.dto.response.CommResponseDto;
+import com.web.stard.domain.member.domain.Member;
 import org.springframework.http.ResponseEntity;
 
 public interface CommunityService {
-    CommResponseDto.CommPostDto createCommPost(CommRequestDto.CreateCommPostDto requestDto);
+    CommResponseDto.CommPostDto createCommPost(Member member, CommRequestDto.CreateCommPostDto requestDto);
 
-    CommResponseDto.CommPostDto updateCommPost(Long commPostId, CommRequestDto.CreateCommPostDto requestDto);
+    CommResponseDto.CommPostDto updateCommPost(Member member, Long commPostId, CommRequestDto.CreateCommPostDto requestDto);
 
-    ResponseEntity<String> deleteCommPost(Long commPostId, Long memberId);
+    ResponseEntity<String> deleteCommPost(Member member, Long commPostId);
 
-    CommResponseDto.CommPostDto getCommPostDetail(Long commPostId, Long memberId);
+    CommResponseDto.CommPostDto getCommPostDetail(Member member, Long commPostId);
 
     CommResponseDto.CommPostListDto getCommPostList(int page);
 

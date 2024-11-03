@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -51,6 +52,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(PERMIT_ALL_PATTERNS).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/communities/**").permitAll() // 커뮤니티 - 조회는 인증 없이 가능
                         .anyRequest().authenticated() // 다른 모든 요청은 인증 필요
                 )
                 .sessionManagement(session -> {
