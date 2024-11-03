@@ -1,10 +1,14 @@
 package com.web.stard.domain.member.api;
 
 import com.web.stard.domain.member.application.AuthService;
+import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.dto.response.MemberResponseDto;
+import com.web.stard.global.domain.CurrentMember;
 import com.web.stard.global.dto.TokenInfo;
+import com.web.stard.global.utils.HeaderUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -17,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class AuthController {
 
+    private final HeaderUtils headerUtils;
     private final AuthService authService;
 
     // 회원가입
@@ -68,6 +73,13 @@ public class AuthController {
     @Operation(summary = "인증 번호 검증")
     public ResponseEntity<Boolean> validAuthCode(@Valid @RequestBody MemberRequestDto.AuthCodeRequestDto request) throws Exception {
         authService.validAuthCode(request);
+        return ResponseEntity.ok().body(true);
+    }
+
+    @PostMapping("/sign-out")
+    @Operation(summary = "로그아웃")
+    public ResponseEntity<Boolean> validAuthCode(@CurrentMember Member member, HttpServletRequest request) {
+        authService.signOut(member, headerUtils.resolveToken(request));
         return ResponseEntity.ok().body(true);
     }
 

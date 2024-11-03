@@ -123,8 +123,16 @@ public class JwtTokenProvider {
         try {
             return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(accessToken).getPayload();
         } catch (ExpiredJwtException e) {
-            return e.getClaims();
+            throw new CustomException(ErrorCode.EMPTY_CLAIMS);
         }
+    }
+
+    public Long getExpiration(String accessToken) {
+        Claims claims = parseClaims(accessToken);
+        Date expiration = claims.getExpiration();
+        long now = (new Date()).getTime();
+
+        return expiration.getTime() - now;
     }
 
 }

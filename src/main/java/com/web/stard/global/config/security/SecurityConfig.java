@@ -1,5 +1,7 @@
 package com.web.stard.global.config.security;
 
+import com.web.stard.global.utils.HeaderUtils;
+import com.web.stard.global.utils.RedisUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -22,9 +24,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final HeaderUtils headerUtils;
+    private final RedisUtils redisUtils;
 
     private static final String[] PERMIT_ALL_PATTERNS = new String[] {
-            "/members/auth/**"
+            "/members/auth/join", "/members/auth/check-email", "/members/auth/check-nickname",
+            "/members/auth/join/additional-info", "/members/auth/sign-in",
+            "/members/auth/auth-codes", "/members/auth/auth-codes/verify"
     };
 
     @Bean
@@ -50,7 +56,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);     // 세션 생성 X
                 })
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, headerUtils, redisUtils),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class);
         return http.build();
