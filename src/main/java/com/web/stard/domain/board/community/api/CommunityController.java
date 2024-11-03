@@ -3,6 +3,8 @@ package com.web.stard.domain.board.community.api;
 import com.web.stard.domain.board.community.application.CommunityService;
 import com.web.stard.domain.board.community.dto.request.CommRequestDto;
 import com.web.stard.domain.board.community.dto.response.CommResponseDto;
+import com.web.stard.domain.member.domain.Member;
+import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,36 +13,38 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/communuties")
+@RequestMapping("/communities")
 public class CommunityController {
 
     private final CommunityService communityService;
 
     @Operation(summary = "커뮤니티 게시글 등록")
     @PostMapping
-    public ResponseEntity<CommResponseDto.CommPostDto> createCommPost(@Valid @RequestBody CommRequestDto.CreateCommPostDto requestDto) {
-        return ResponseEntity.ok(communityService.createCommPost(requestDto));
+    public ResponseEntity<CommResponseDto.CommPostDto> createCommPost(@CurrentMember Member member,
+                                                                      @Valid @RequestBody CommRequestDto.CreateCommPostDto requestDto) {
+        return ResponseEntity.ok(communityService.createCommPost(member, requestDto));
     }
 
     @Operation(summary = "커뮤니티 게시글 수정")
     @PutMapping("/{commPostId}")
-    public ResponseEntity<CommResponseDto.CommPostDto> updateCommPost(@PathVariable(name = "commPostId") Long commPostId,
+    public ResponseEntity<CommResponseDto.CommPostDto> updateCommPost(@CurrentMember Member member,
+                                                                      @PathVariable(name = "commPostId") Long commPostId,
                                                                       @Valid @RequestBody CommRequestDto.CreateCommPostDto requestDto) {
-        return ResponseEntity.ok(communityService.updateCommPost(commPostId, requestDto));
+        return ResponseEntity.ok(communityService.updateCommPost(member, commPostId, requestDto));
     }
 
     @Operation(summary = "커뮤니티 게시글 삭제")
     @DeleteMapping("/{commPostId}")
-    public ResponseEntity<String> deleteCommPost(@PathVariable(name = "commPostId") Long commPostId,
-                                                 @RequestParam(name = "memberId") Long memberId) {
-        return communityService.deleteCommPost(commPostId, memberId);
+    public ResponseEntity<String> deleteCommPost(@CurrentMember Member member,
+                                                 @PathVariable(name = "commPostId") Long commPostId) {
+        return communityService.deleteCommPost(member, commPostId);
     }
 
     @Operation(summary = "커뮤니티 게시글 상세조회")
     @GetMapping("/{commPostId}")
-    public ResponseEntity<CommResponseDto.CommPostDto> getCommPostDetail(@PathVariable(name = "commPostId") Long commPostId,
-                                                                         @RequestParam(name = "memberId") Long memberId) {
-        return ResponseEntity.ok(communityService.getCommPostDetail(commPostId, memberId));
+    public ResponseEntity<CommResponseDto.CommPostDto> getCommPostDetail(@CurrentMember Member member,
+                                                                         @PathVariable(name = "commPostId") Long commPostId) {
+        return ResponseEntity.ok(communityService.getCommPostDetail(member, commPostId));
     }
 
     @Operation(summary = "커뮤니티 게시글 목록 조회")

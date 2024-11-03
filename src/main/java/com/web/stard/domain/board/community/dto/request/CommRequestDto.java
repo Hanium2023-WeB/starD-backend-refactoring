@@ -14,8 +14,6 @@ public class CommRequestDto {
     @Getter
     @Builder
     public static class CreateCommPostDto {
-        private Long memberId; // todo: 로그인 한 사용자로 변경
-
         @Size(max = 100, message = "제목은 최대 100자 이내여야 합니다.")
         @NotBlank(message = "제목은 필수입니다.")
         private String title;

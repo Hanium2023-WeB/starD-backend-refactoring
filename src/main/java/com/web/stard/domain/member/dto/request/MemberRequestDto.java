@@ -101,7 +101,6 @@ public class MemberRequestDto {
     @Getter
     @Builder
     public static class EditPasswordDto {
-        private Long memberId;
         private String originPassword;
 
         @NotBlank(message = "비밀번호는 필수 입니다.")
@@ -114,8 +113,6 @@ public class MemberRequestDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class EditNicknameDto {
-        private Long memberId;
-
         @Size(min = 2, message = "닉네임은 2자 이상이어야 합니다.")
         @Schema(example = "스타", description = "회원 닉네임")
         @NotBlank(message = "닉네임은 필수 입니다.")
