@@ -27,7 +27,7 @@ public class FaqController {
     }
 
     @Operation(summary = "faq 수정")
-    @PostMapping("/faqs/{faqId}")
+    @PutMapping("/faqs/{faqId}")
     public ResponseEntity<PostResponseDto.PostDto> updateFaq(@PathVariable(name = "faqId") Long faqId,
                                                              @Valid @RequestBody PostRequestDto.CreatePostDto requestDto,
                                                              @CurrentMember Member member) {

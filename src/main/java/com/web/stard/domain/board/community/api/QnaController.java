@@ -28,7 +28,7 @@ public class QnaController {
     }
 
     @Operation(summary = "qna 수정")
-    @PostMapping("/{qnaId}")
+    @PutMapping("/{qnaId}")
     public ResponseEntity<PostResponseDto.PostDto> updateQna(@PathVariable(name = "qnaId") Long qnaId,
                                                            @Valid @RequestBody PostRequestDto.CreatePostDto requestDto,
                                                            @CurrentMember Member member) {
