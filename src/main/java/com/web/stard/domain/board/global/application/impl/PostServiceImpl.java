@@ -87,10 +87,10 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-     * 게시긓 삭제
+     * 게시글 삭제
      *
-     * @param postId 삭제할 게시긓 id
-     * @return Long 삭제한 게시긓 id
+     * @param postId 삭제할 게시글 id
+     * @return Long 삭제한 게시글 id
      */
     @Override
     @Transactional
@@ -107,7 +107,7 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-     * 게시긓 목록 조회
+     * 게시글 목록 조회
      *
      * @param page 조회할 페이지 번호
      * @return PostListDto posts 게시글 리스트, currentPage 현재 페이지, totalPages 전체 페이지, isLast 마지막 페이지 여부
@@ -124,9 +124,9 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-     * 게시긓 상세 조회
+     * 게시글 상세 조회
      *
-     * @param postId 조회할 게시긓 id
+     * @param postId 조회할 게시글 id
      * @return PostDto postId 게시글 id, title 제목, content 내용, hit 조회수, writer 작성자, profileImg 프로필 이미지, updatedAt 수정일시
      */
     @Override
@@ -142,7 +142,7 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-     * 게시긓 검색
+     * 게시글 검색
      *
      * @param keyword 조회할 키워드
      * @param page 조회할 페이지 번호
