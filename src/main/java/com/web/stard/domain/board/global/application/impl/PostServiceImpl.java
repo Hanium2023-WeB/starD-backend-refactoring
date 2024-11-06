@@ -1,6 +1,7 @@
 package com.web.stard.domain.board.global.application.impl;
 
 import com.web.stard.domain.board.global.application.PostService;
+import com.web.stard.domain.board.global.domain.enums.Category;
 import com.web.stard.domain.board.global.dto.request.PostRequestDto;
 import com.web.stard.domain.board.global.dto.response.PostResponseDto;
 import com.web.stard.domain.board.global.domain.Post;
@@ -66,6 +67,24 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
+     * 커뮤니티 게시글 생성
+     *
+     * @param requestDto     title, content, category
+     *                       제목     내용      카테고리
+     * @return CommPostDto  commPostId, title, content, category, hit, writer, profileImg, updatedAt
+     *                       게시글 id    제목      내용     카테고리  조회수 작성자 프로필 이미지   수정일시
+     */
+    @Override
+    @Transactional
+    public PostResponseDto.PostDto createCommPost(Member member, PostRequestDto.CreateCommPostDto requestDto) {
+        Post post = postRepository.save(requestDto.toEntity(member));
+        Member writer = memberRepository.findById(member.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        return PostResponseDto.PostDto.from(post, writer);
+    }
+
+    /**
      * 게시글 수정
      *
      * @param postId 수정할 게시글 id
@@ -83,6 +102,26 @@ public class PostServiceImpl implements PostService {
         }
 
         post.updatePost(requestDto.getTitle(), requestDto.getContent());
+        return PostResponseDto.PostDto.from(post, post.getMember());
+    }
+
+    /**
+     * 커뮤니티 게시글 수정
+     *
+     * @param commPostId      수정할 게시글의 id
+     * @param requestDto     title, content, category
+     *                       제목     내용      카테고리
+     * @return CommPostDto  commPostId, title, content, category, hit, writer, profileImg, updatedAt
+     *                       게시글 id    제목      내용     카테고리  조회수 작성자  프로필 이미지   수정일시
+     */
+    @Transactional
+    @Override
+    public PostResponseDto.PostDto updateCommPost(Member member, Long commPostId, PostRequestDto.CreateCommPostDto requestDto) {
+        Post post = findPost(commPostId, PostType.COMM);
+        isPostAuthor(member, post);
+
+        post.updateComm(requestDto.getTitle(), requestDto.getContent(), Category.find(requestDto.getCategory()));
+
         return PostResponseDto.PostDto.from(post, post.getMember());
     }
 
@@ -205,5 +244,44 @@ public class PostServiceImpl implements PostService {
         int end = Math.min((start + pageable.getPageSize()), list.size());
         List<T> slicedResults = list.subList(start, end);
         return new PageImpl<>(slicedResults, pageable, list.size());
+    }
+
+    /**
+     * 커뮤니티 게시글 리스트 조회 - 카테고리 선택
+     *
+     * @param category          조회할 카테고리
+     * @param page              조회할 페이지 번호
+     * @return CommPostListDto  commPostList, currentPage, totalPages, isLast
+     *                     커뮤니티 게시글 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PostResponseDto.PostListDto getCommPostListByCategory(String category, int page) {
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<Post> posts = postRepository.findByPostTypeAndCategory(PostType.COMM, Category.find(category), pageable);
+
+        return PostResponseDto.PostListDto.of(posts);
+    }
+
+    /**
+     * 커뮤니티 게시글 - 키워드 + 카테고리 검색 조회
+     *
+     * @param keyword           검색할 키워드
+     * @param category          검색할 카테고리
+     * @param page              조회할 페이지 번호
+     * @return CommPostListDto  commPostList, currentPage, totalPages, isLast
+     *                     커뮤니티 게시글 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PostResponseDto.PostListDto searchCommPostWithCategory(String keyword, String category, int page) {
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<Post> posts = postRepository.searchCommPostWithCategory(PostType.COMM, keyword, Category.find(category), pageable);
+
+        return PostResponseDto.PostListDto.of(posts);
     }
 }

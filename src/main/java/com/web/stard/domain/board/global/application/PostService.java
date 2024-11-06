@@ -9,7 +9,11 @@ public interface PostService {
 
     PostResponseDto.PostDto createPost(PostRequestDto.CreatePostDto requestDto, Member member, PostType postType);
 
+    PostResponseDto.PostDto createCommPost(Member member, PostRequestDto.CreateCommPostDto requestDto);
+
     PostResponseDto.PostDto updatePost(Long postId, PostRequestDto.CreatePostDto requestDto, Member member, PostType postType);
+
+    PostResponseDto.PostDto updateCommPost(Member member, Long commPostId, PostRequestDto.CreateCommPostDto requestDto);
 
     Long deletePost(Long postId, Member member, PostType postType);
 
@@ -22,4 +26,8 @@ public interface PostService {
     PostResponseDto.PostListDto getAllFaqsAndQnas(int page);
 
     PostResponseDto.PostListDto searchFaqsAndQnas(String keyword, int page);
+
+    PostResponseDto.PostListDto getCommPostListByCategory(String category, int page);
+
+    PostResponseDto.PostListDto searchCommPostWithCategory(String keyword, String category, int page);
 }

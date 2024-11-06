@@ -2,6 +2,7 @@ package com.web.stard.domain.board.global.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.web.stard.domain.board.global.domain.Post;
+import com.web.stard.domain.board.global.domain.enums.Category;
 import com.web.stard.domain.board.global.domain.enums.PostType;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.domain.enums.Role;
@@ -20,6 +21,8 @@ public class PostResponseDto {
         private Long postId;
         private String title;
         private String content;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private Category category;
         private int hit;
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private PostType postType;
@@ -40,6 +43,7 @@ public class PostResponseDto {
                     .postId(post.getId())
                     .title(post.getTitle())
                     .content(post.getContent())
+                    .category(post.getCategory())
                     .hit(post.getHit())
                     .postType(type)
                     .writer(writerName)
