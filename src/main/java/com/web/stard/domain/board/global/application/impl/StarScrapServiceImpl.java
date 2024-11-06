@@ -111,7 +111,7 @@ public class StarScrapServiceImpl implements StarScrapService {
         // 중복 요청 확인 (StarScrap 존재 여부 확인)
         StarScrap starScrap = existsStarScrap(member, targetId, actType, tableType);
         if (starScrap == null) {
-            throw new CustomException(ErrorCode.INVALID_ACCESS);
+            throw new CustomException(ErrorCode.INVALID_STAR_SCRAP_REQUEST);
         }
 
         starScrapRepository.delete(starScrap);
