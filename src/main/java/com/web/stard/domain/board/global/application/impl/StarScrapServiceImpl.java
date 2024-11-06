@@ -118,4 +118,10 @@ public class StarScrapServiceImpl implements StarScrapService {
 
         return true;
     }
+
+    // 총 공감 수 찾기
+    @Override
+    public int findStarCount(Long targetId) {
+        return starScrapRepository.findAllByActTypeAndTableTypeAndTargetId(ActType.STAR, TableType.POST, targetId).size();
+    }
 }

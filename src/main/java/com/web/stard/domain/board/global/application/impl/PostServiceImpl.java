@@ -1,6 +1,7 @@
 package com.web.stard.domain.board.global.application.impl;
 
 import com.web.stard.domain.board.global.application.PostService;
+import com.web.stard.domain.board.global.application.StarScrapService;
 import com.web.stard.domain.board.global.domain.enums.ActType;
 import com.web.stard.domain.board.global.domain.enums.Category;
 import com.web.stard.domain.board.global.domain.enums.TableType;
@@ -28,7 +29,7 @@ public class PostServiceImpl implements PostService {
 
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
-    private final StarScrapRepository starScrapRepository;
+    private final StarScrapService starScrapService;
 
     // 관리자인지 확인
     private void isAdmin(Member member) {
@@ -48,11 +49,6 @@ public class PostServiceImpl implements PostService {
     protected Post findPost(Long id, PostType type) {
         return postRepository.findByIdAndPostType(id, type)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
-    }
-
-    // 총 공감 수 찾기
-    private int findStarCount(Long targetId) {
-        return starScrapRepository.findAllByActTypeAndTableTypeAndTargetId(ActType.STAR, TableType.POST, targetId).size();
     }
 
     /**
@@ -111,7 +107,7 @@ public class PostServiceImpl implements PostService {
         }
 
         post.updatePost(requestDto.getTitle(), requestDto.getContent());
-        int starCount = findStarCount(post.getId());
+        int starCount = starScrapService.findStarCount(post.getId());
 
         return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
     }
@@ -132,7 +128,7 @@ public class PostServiceImpl implements PostService {
         isPostAuthor(member, post);
 
         post.updateComm(requestDto.getTitle(), requestDto.getContent(), Category.find(requestDto.getCategory()));
-        int starCount = findStarCount(post.getId());
+        int starCount = starScrapService.findStarCount(post.getId());
 
         return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
     }
@@ -161,7 +157,7 @@ public class PostServiceImpl implements PostService {
     private List<PostResponseDto.PostDto> findAllStarCount(Page<Post> posts) {
         List<PostResponseDto.PostDto> postDtos = posts.getContent().stream()
                 .map(post -> {
-                    int starCount = findStarCount(post.getId());
+                    int starCount = starScrapService.findStarCount(post.getId());
                     return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
                 })
                 .toList();
@@ -203,7 +199,7 @@ public class PostServiceImpl implements PostService {
             post.incrementHitCount();
         }
 
-        int starCount = findStarCount(post.getId());
+        int starCount = starScrapService.findStarCount(post.getId());
 
         return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
     }

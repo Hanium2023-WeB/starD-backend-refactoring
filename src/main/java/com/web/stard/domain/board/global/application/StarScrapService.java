@@ -9,10 +9,7 @@ public interface StarScrapService {
 
     boolean deleteStarScrap(Member member, Long targetId, ActType actType, TableType tableType);
 
-    // 공감한 Post(COMM, FAQ, QNA) List 조회
-
-    // 해당 Post(COMM, FAQ, QNA)의 공감 개수
-
+    int findStarCount(Long targetId);
 
     // Study 스크랩 List 조회
 
