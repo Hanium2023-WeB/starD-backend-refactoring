@@ -1,12 +1,15 @@
 package com.web.stard.domain.board.global.application.impl;
 
 import com.web.stard.domain.board.global.application.PostService;
+import com.web.stard.domain.board.global.domain.enums.ActType;
 import com.web.stard.domain.board.global.domain.enums.Category;
+import com.web.stard.domain.board.global.domain.enums.TableType;
 import com.web.stard.domain.board.global.dto.request.PostRequestDto;
 import com.web.stard.domain.board.global.dto.response.PostResponseDto;
 import com.web.stard.domain.board.global.domain.Post;
 import com.web.stard.domain.board.global.domain.enums.PostType;
 import com.web.stard.domain.board.global.repository.PostRepository;
+import com.web.stard.domain.board.global.repository.StarScrapRepository;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.domain.enums.Role;
 import com.web.stard.domain.member.repository.MemberRepository;
@@ -25,6 +28,7 @@ public class PostServiceImpl implements PostService {
 
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
+    private final StarScrapRepository starScrapRepository;
 
     // 관리자인지 확인
     private void isAdmin(Member member) {
@@ -46,6 +50,11 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
     }
 
+    // 총 공감 수 찾기
+    private int findStarCount(Long targetId) {
+        return starScrapRepository.findAllByActTypeAndTableTypeAndTargetId(ActType.STAR, TableType.POST, targetId).size();
+    }
+
     /**
      * 게시글 생성
      *
@@ -63,7 +72,7 @@ public class PostServiceImpl implements PostService {
         Member writer = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return PostResponseDto.PostDto.from(post, writer);
+        return PostResponseDto.PostDto.from(post, writer, 0);
     }
 
     /**
@@ -81,7 +90,7 @@ public class PostServiceImpl implements PostService {
         Member writer = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return PostResponseDto.PostDto.from(post, writer);
+        return PostResponseDto.PostDto.from(post, writer, 0);
     }
 
     /**
@@ -102,7 +111,9 @@ public class PostServiceImpl implements PostService {
         }
 
         post.updatePost(requestDto.getTitle(), requestDto.getContent());
-        return PostResponseDto.PostDto.from(post, post.getMember());
+        int starCount = findStarCount(post.getId());
+
+        return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
     }
 
     /**
@@ -121,8 +132,9 @@ public class PostServiceImpl implements PostService {
         isPostAuthor(member, post);
 
         post.updateComm(requestDto.getTitle(), requestDto.getContent(), Category.find(requestDto.getCategory()));
+        int starCount = findStarCount(post.getId());
 
-        return PostResponseDto.PostDto.from(post, post.getMember());
+        return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
     }
 
     /**
@@ -145,6 +157,18 @@ public class PostServiceImpl implements PostService {
         return postId;
     }
 
+    // 목록 조회 - 공감 수 추가 메서드
+    private List<PostResponseDto.PostDto> findAllStarCount(Page<Post> posts) {
+        List<PostResponseDto.PostDto> postDtos = posts.getContent().stream()
+                .map(post -> {
+                    int starCount = findStarCount(post.getId());
+                    return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
+                })
+                .toList();
+
+        return postDtos;
+    }
+
     /**
      * 게시글 목록 조회
      *
@@ -159,7 +183,9 @@ public class PostServiceImpl implements PostService {
 
         Page<Post> posts = postRepository.findByPostType(postType, pageable);
 
-        return PostResponseDto.PostListDto.of(posts);
+        List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts);
+
+        return PostResponseDto.PostListDto.of(posts, postDtos);
     }
 
     /**
@@ -177,7 +203,9 @@ public class PostServiceImpl implements PostService {
             post.incrementHitCount();
         }
 
-        return PostResponseDto.PostDto.from(post, post.getMember());
+        int starCount = findStarCount(post.getId());
+
+        return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
     }
 
     /**
@@ -196,7 +224,9 @@ public class PostServiceImpl implements PostService {
         Page<Post> posts = postRepository.findByPostTypeAndTitleContainingOrContentContaining(
                                 postType, keyword, keyword, pageable);
 
-        return PostResponseDto.PostListDto.of(posts);
+        List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts);
+
+        return PostResponseDto.PostListDto.of(posts, postDtos);
     }
 
     /**
@@ -212,7 +242,11 @@ public class PostServiceImpl implements PostService {
                 List.of(PostType.FAQ, PostType.QNA));
 
         Pageable pageable = PageRequest.of(page - 1, 10);
-        return PostResponseDto.PostListDto.of(paginateList(posts, pageable));
+        Page<Post> paginatePostList = paginateList(posts, pageable);
+
+        List<PostResponseDto.PostDto> postDtos = findAllStarCount(paginatePostList);
+
+        return PostResponseDto.PostListDto.of(paginatePostList, postDtos);
     }
 
     /**
@@ -230,7 +264,12 @@ public class PostServiceImpl implements PostService {
         List<Post> posts = postRepository.findByPostTypeInAndTitleOrContentContaining(
                                 postTypes, keyword, PostType.FAQ, PostType.QNA);
         Pageable pageable = PageRequest.of(page - 1, 10);
-        return PostResponseDto.PostListDto.of(paginateList(posts, pageable));
+
+        Page<Post> paginatePostList = paginateList(posts, pageable);
+
+        List<PostResponseDto.PostDto> postDtos = findAllStarCount(paginatePostList);
+
+        return PostResponseDto.PostListDto.of(paginatePostList, postDtos);
     }
 
     // 페이지 처리 메서드
@@ -262,7 +301,9 @@ public class PostServiceImpl implements PostService {
 
         Page<Post> posts = postRepository.findByPostTypeAndCategory(PostType.COMM, Category.find(category), pageable);
 
-        return PostResponseDto.PostListDto.of(posts);
+        List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts);
+
+        return PostResponseDto.PostListDto.of(posts, postDtos);
     }
 
     /**
@@ -282,6 +323,8 @@ public class PostServiceImpl implements PostService {
 
         Page<Post> posts = postRepository.searchCommPostWithCategory(PostType.COMM, keyword, Category.find(category), pageable);
 
-        return PostResponseDto.PostListDto.of(posts);
+        List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts);
+
+        return PostResponseDto.PostListDto.of(posts, postDtos);
     }
 }

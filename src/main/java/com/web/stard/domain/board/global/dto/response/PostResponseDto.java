@@ -29,8 +29,10 @@ public class PostResponseDto {
         private String writer;
         private String profileImg;
         private LocalDateTime updatedAt;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private int starCount;
 
-        public static PostDto from(Post post, Member writer) {
+        public static PostDto from(Post post, Member writer, int starCount) {
             String writerName = (writer.getRole() == Role.ADMIN) ? "관리자" : writer.getNickname();
             String profileImage = (writer.getRole() == Role.ADMIN) ? null : writer.getProfile().getImgUrl();
 
@@ -49,6 +51,7 @@ public class PostResponseDto {
                     .writer(writerName)
                     .profileImg(profileImage)
                     .updatedAt(post.getUpdatedAt())
+                    .starCount(starCount)
                     .build();
         }
     }
@@ -61,11 +64,7 @@ public class PostResponseDto {
         private int totalPages;     // 전체 페이지 수
         private boolean isLast;     // 마지막 페이지 여부
 
-        public static PostListDto of(Page<Post> posts) {
-            List<PostDto> postDtos = posts.getContent().stream()
-                    .map(post -> PostDto.from(post, post.getMember()))
-                    .toList();
-
+        public static PostListDto of(Page<Post> posts, List<PostDto> postDtos) {
             return PostListDto.builder()
                     .posts(postDtos)
                     .currentPage(posts.getNumber() + 1)
