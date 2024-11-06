@@ -1,4 +1,4 @@
-package com.web.stard.domain.admin.dto.request;
+package com.web.stard.domain.board.global.dto.request;
 
 import com.web.stard.domain.board.global.domain.Post;
 import com.web.stard.domain.board.global.domain.enums.PostType;
@@ -8,11 +8,11 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 
-public class NoticeRequestDto {
+public class PostRequestDto {
 
     @Getter
     @Builder
-    public static class CreateNoticeDto {
+    public static class CreatePostDto {
 
         @Size(max = 100, message = "제목은 최대 100자 이내여야 합니다.")
         @NotBlank(message = "제목은 필수입니다.")
@@ -22,11 +22,11 @@ public class NoticeRequestDto {
         @NotBlank(message = "내용은 필수입니다.")
         private String content;
 
-        public Post toEntity(Member member) {
+        public Post toEntity(Member member, PostType postType) {
             return Post.builder()
                     .title(title)
                     .content((content))
-                    .postType(PostType.NOTICE)
+                    .postType(postType)
                     .hit(0)
                     .member(member)
                     .build();

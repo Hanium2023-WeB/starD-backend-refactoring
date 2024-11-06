@@ -58,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
         if (!checkEmailDuplicate(requestDto.getEmail())) {
             throw new CustomException(ErrorCode.EMAIL_CONFLICT);
         }
-        ;
+
         if (!checkNicknameDuplicate(requestDto.getNickname())) {
             throw new CustomException(ErrorCode.NICKNAME_CONFLICT);
         }

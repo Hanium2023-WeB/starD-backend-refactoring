@@ -53,6 +53,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(PERMIT_ALL_PATTERNS).permitAll()
                         .requestMatchers(HttpMethod.GET, "/communities/**").permitAll() // 커뮤니티 - 조회는 인증 없이 가능
+                        .requestMatchers(HttpMethod.GET, "/notices/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/faqs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/faqs-and-qnas/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/qnas/**").permitAll()
                         .anyRequest().authenticated() // 다른 모든 요청은 인증 필요
                 )
                 .sessionManagement(session -> {

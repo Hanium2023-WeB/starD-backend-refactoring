@@ -22,7 +22,7 @@ public enum ErrorCode {
     INVALID_TOKEN(HttpStatus.FORBIDDEN, "토큰 검증 실패"),
 
     PERMISSION_DENIED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
-    INVALID_ACCESS(HttpStatus.FORBIDDEN, "유효하지 않은 접근입니다."),
+    INVALID_ACCESS(HttpStatus.FORBIDDEN, "수정 또는 삭제 권한이 없습니다."),
 
     // S3
     UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 파일 업로드에 실패했습니다."),
@@ -36,6 +36,7 @@ public enum ErrorCode {
 
     // Post
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."),
+    INVALID_PAGE(HttpStatus.BAD_REQUEST, "유효하지 않은 페이지입니다."),
     DUPLICATE_STAR_SCRAP_REQUEST(HttpStatus.CONFLICT, "이미 공감 및 스크랩을 요청한 게시물입니다."),
 
     ;
