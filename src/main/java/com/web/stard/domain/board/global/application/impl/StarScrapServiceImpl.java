@@ -90,4 +90,32 @@ public class StarScrapServiceImpl implements StarScrapService {
 
         return starScrap.getId();
     }
+
+    /**
+     * 해당 게시글 공감 혹은 스크랩 삭제
+     *
+     * @param member 로그인 회원
+     * @param targetId 해당 게시글 고유 id
+     * @param actType STAR, SCRAP
+     * @param tableType POST,  STUDY, STUDYPOST
+     *
+     * @return boolean 삭제 성공 시 true, 삭제 실패 시 false
+     */
+    @Override
+    public boolean deleteStarScrap(Member member, Long targetId, ActType actType, TableType tableType) {
+        // 관리자는 해당 기능 수행 불가능
+        if (member.getRole() == Role.ADMIN) {
+            throw new CustomException(ErrorCode.PERMISSION_DENIED);
+        }
+
+        // 중복 요청 확인 (StarScrap 존재 여부 확인)
+        StarScrap starScrap = existsStarScrap(member, targetId, actType, tableType);
+        if (starScrap == null) {
+            throw new CustomException(ErrorCode.INVALID_ACCESS);
+        }
+
+        starScrapRepository.delete(starScrap);
+
+        return true;
+    }
 }

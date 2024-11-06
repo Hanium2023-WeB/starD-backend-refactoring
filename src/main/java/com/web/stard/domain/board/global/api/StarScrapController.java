@@ -8,6 +8,7 @@ import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,5 +38,26 @@ public class StarScrapController {
     public ResponseEntity<Long> addStudyPostScrap(@CurrentMember Member member,
                                                   @PathVariable(name = "studyPostId") Long studyPostId) {
         return ResponseEntity.ok(starScrapService.addStarScrap(member, studyPostId, ActType.SCRAP, TableType.STUDYPOST));
+    }
+
+    @Operation(summary = "게시글 공감 삭제")
+    @DeleteMapping("/star/{postId}")
+    public ResponseEntity<Boolean> deletePostStar(@CurrentMember Member member,
+                                                  @PathVariable(name = "postId") Long postId) {
+        return ResponseEntity.ok(starScrapService.deleteStarScrap(member, postId, ActType.STAR, TableType.POST));
+    }
+
+    @Operation(summary = "스터디 스크랩 삭제")
+    @DeleteMapping("/scrap/study/{studyId}")
+    public ResponseEntity<Boolean> deleteStudyScrap(@CurrentMember Member member,
+                                                    @PathVariable(name = "studyId") Long studyId) {
+        return ResponseEntity.ok(starScrapService.deleteStarScrap(member, studyId, ActType.SCRAP, TableType.STUDY));
+    }
+
+    @Operation(summary = "스터디 게시글 스크랩 삭제")
+    @DeleteMapping("/scrap/studypost/{studyPostId}")
+    public ResponseEntity<Boolean> deleteStudyPostScrap(@CurrentMember Member member,
+                                                        @PathVariable(name = "studyPostId") Long studyPostId) {
+        return ResponseEntity.ok(starScrapService.deleteStarScrap(member, studyPostId, ActType.SCRAP, TableType.STUDYPOST));
     }
 }

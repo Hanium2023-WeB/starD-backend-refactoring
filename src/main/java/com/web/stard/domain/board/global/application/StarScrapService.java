@@ -7,7 +7,7 @@ import com.web.stard.domain.member.domain.Member;
 public interface StarScrapService {
     Long addStarScrap(Member member, Long targetId, ActType actType, TableType tableType);
 
-    // 공감 및 스크랩 삭제
+    boolean deleteStarScrap(Member member, Long targetId, ActType actType, TableType tableType);
 
     // 공감한 Post(COMM, FAQ, QNA) List 조회
 
