@@ -20,42 +20,42 @@ public class StarScrapController {
     private final StarScrapService starScrapService;
 
     @Operation(summary = "게시글 공감 등록")
-    @PostMapping("/star/{postId}")
+    @PostMapping("/stars/{postId}")
     public ResponseEntity<Long> addPostStar(@CurrentMember Member member,
                                             @PathVariable(name = "postId") Long postId) {
         return ResponseEntity.ok(starScrapService.addStarScrap(member, postId, ActType.STAR, TableType.POST));
     }
 
     @Operation(summary = "스터디 스크랩 등록")
-    @PostMapping("/scrap/study/{studyId}")
+    @PostMapping("/scraps/studies/{studyId}")
     public ResponseEntity<Long> addStudyScrap(@CurrentMember Member member,
                                               @PathVariable(name = "studyId") Long studyId) {
         return ResponseEntity.ok(starScrapService.addStarScrap(member, studyId, ActType.SCRAP, TableType.STUDY));
     }
 
     @Operation(summary = "스터디 게시글 스크랩 등록")
-    @PostMapping("/scrap/studypost/{studyPostId}")
+    @PostMapping("/scraps/study-posts/{studyPostId}")
     public ResponseEntity<Long> addStudyPostScrap(@CurrentMember Member member,
                                                   @PathVariable(name = "studyPostId") Long studyPostId) {
         return ResponseEntity.ok(starScrapService.addStarScrap(member, studyPostId, ActType.SCRAP, TableType.STUDYPOST));
     }
 
     @Operation(summary = "게시글 공감 삭제")
-    @DeleteMapping("/star/{postId}")
+    @DeleteMapping("/stars/{postId}")
     public ResponseEntity<Boolean> deletePostStar(@CurrentMember Member member,
                                                   @PathVariable(name = "postId") Long postId) {
         return ResponseEntity.ok(starScrapService.deleteStarScrap(member, postId, ActType.STAR, TableType.POST));
     }
 
     @Operation(summary = "스터디 스크랩 삭제")
-    @DeleteMapping("/scrap/study/{studyId}")
+    @DeleteMapping("/scraps/studies/{studyId}")
     public ResponseEntity<Boolean> deleteStudyScrap(@CurrentMember Member member,
                                                     @PathVariable(name = "studyId") Long studyId) {
         return ResponseEntity.ok(starScrapService.deleteStarScrap(member, studyId, ActType.SCRAP, TableType.STUDY));
     }
 
     @Operation(summary = "스터디 게시글 스크랩 삭제")
-    @DeleteMapping("/scrap/studypost/{studyPostId}")
+    @DeleteMapping("/scraps/study-posts/{studyPostId}")
     public ResponseEntity<Boolean> deleteStudyPostScrap(@CurrentMember Member member,
                                                         @PathVariable(name = "studyPostId") Long studyPostId) {
         return ResponseEntity.ok(starScrapService.deleteStarScrap(member, studyPostId, ActType.SCRAP, TableType.STUDYPOST));
