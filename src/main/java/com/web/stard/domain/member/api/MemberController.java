@@ -1,5 +1,7 @@
 package com.web.stard.domain.member.api;
 
+import com.web.stard.domain.board.global.application.StarScrapService;
+import com.web.stard.domain.board.global.dto.response.PostResponseDto;
 import com.web.stard.domain.member.application.MemberService;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final StarScrapService starScrapService;
 
     @Operation(summary = "개인정보 반환")
     @GetMapping("/edit")
@@ -43,6 +46,13 @@ public class MemberController {
     public ResponseEntity<MemberResponseDto.EditInterestResponseDto> editInterests(@CurrentMember Member member,
                                                                                    @Valid @RequestBody MemberRequestDto.AdditionalInfoRequestDto requestDto) {
         return ResponseEntity.ok(memberService.editInterest(member, requestDto));
+    }
+
+    @Operation(summary = "공감한 게시글 리스트 조회")
+    @GetMapping("/stars")
+    public ResponseEntity<PostResponseDto.PostListDto> getStarPostList(@CurrentMember Member member,
+                                                                       @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(starScrapService.getMemberStarPostList(member, page));
     }
 
 }

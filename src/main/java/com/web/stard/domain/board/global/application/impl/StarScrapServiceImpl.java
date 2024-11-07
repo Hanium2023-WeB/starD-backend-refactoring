@@ -5,6 +5,7 @@ import com.web.stard.domain.board.global.domain.Post;
 import com.web.stard.domain.board.global.domain.StarScrap;
 import com.web.stard.domain.board.global.domain.enums.ActType;
 import com.web.stard.domain.board.global.domain.enums.TableType;
+import com.web.stard.domain.board.global.dto.response.PostResponseDto;
 import com.web.stard.domain.board.global.repository.PostRepository;
 import com.web.stard.domain.board.global.repository.StarScrapRepository;
 import com.web.stard.domain.member.domain.Member;
@@ -12,8 +13,11 @@ import com.web.stard.domain.member.domain.enums.Role;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -123,5 +127,31 @@ public class StarScrapServiceImpl implements StarScrapService {
     @Override
     public int findStarCount(Long targetId) {
         return starScrapRepository.findAllByActTypeAndTableTypeAndTargetId(ActType.STAR, TableType.POST, targetId).size();
+    }
+
+    /**
+     * 사용자가 공감한 게시글 리스트 조회
+     *
+     * @param member 로그인 회원
+     * @param page 조회할 페이지 번호
+     *
+     * @return PostListDto posts 게시글 리스트, currentPage 현재 페이지, totalPages 전체 페이지, isLast 마지막 페이지 여부
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PostResponseDto.PostListDto getMemberStarPostList(Member member, int page) {
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<Post> posts = starScrapRepository.findPostsByMember(member, pageable);
+
+        List<PostResponseDto.PostDto> postDtos = posts.getContent().stream()
+                .map(post -> {
+                    int starCount = findStarCount(post.getId());
+                    return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
+                })
+                .toList();
+
+        return PostResponseDto.PostListDto.of(posts, postDtos);
     }
 }
