@@ -3,11 +3,13 @@ package com.web.stard.domain.member.application.impl;
 import com.web.stard.domain.member.application.MemberService;
 import com.web.stard.domain.member.domain.Interest;
 import com.web.stard.domain.member.domain.Member;
+import com.web.stard.domain.member.domain.Profile;
 import com.web.stard.domain.member.domain.enums.InterestField;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.dto.response.MemberResponseDto;
 import com.web.stard.domain.member.repository.InterestRepository;
 import com.web.stard.domain.member.repository.MemberRepository;
+import com.web.stard.global.config.aws.S3Manager;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +18,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +33,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final InterestRepository interestRepository;
     private final PasswordEncoder passwordEncoder;
+    private final S3Manager s3Manager;
 
     /**
      * 현재 비밀번호 확인
@@ -146,6 +151,46 @@ public class MemberServiceImpl implements MemberService {
         });
 
         return MemberResponseDto.EditInterestResponseDto.of(interests);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MemberResponseDto.ProfileImageResponseDto getProfileImage(Member member) {
+        Member fullMember = memberRepository.findByIdWithProfile(member.getId());
+        return MemberResponseDto.ProfileImageResponseDto.from(fullMember.getProfile().getImgUrl());
+    }
+
+    @Override
+    @Transactional
+    public MemberResponseDto.ProfileImageResponseDto updateProfileImage(MultipartFile file, Member member) {
+        // 기존 이미지 삭제
+        Profile profile = memberRepository.findByIdWithProfile(member.getId()).getProfile();
+        if (profile.getImgUrl() != null) {
+            s3Manager.deleteFile(profile.getImgUrl());  // S3에서 파일 삭제
+            profile.deleteImageUrl();   // DB에서 이미지 url 삭제
+        }
+
+        // 새 이미지 업로드
+        String fileUrl = null;
+        if (file != null && !file.isEmpty()) {
+            UUID uuid = UUID.randomUUID();
+            String keyName = s3Manager.generateProfileKeyName(uuid);
+
+            fileUrl = s3Manager.uploadFile(keyName, file);  // S3에 파일 업로드
+            profile.updateImageUrl(fileUrl);    // DB 이미지 url 변경
+        }
+
+        return MemberResponseDto.ProfileImageResponseDto.from(fileUrl);
+    }
+
+    @Override
+    @Transactional
+    public void deleteProfileImage(Member member) {
+        Profile profile = memberRepository.findByIdWithProfile(member.getId()).getProfile();
+        if (profile.getImgUrl() != null) {
+            s3Manager.deleteFile(profile.getImgUrl());
+            profile.deleteImageUrl();
+        }
     }
 
 }

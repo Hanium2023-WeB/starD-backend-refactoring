@@ -82,4 +82,15 @@ public class MemberResponseDto {
         }
     }
 
+    @Getter
+    @Builder
+    public static class ProfileImageResponseDto {
+        private String imageUrl;
+
+        public static ProfileImageResponseDto from(String imageUrl) {
+            return ProfileImageResponseDto.builder()
+                    .imageUrl(imageUrl)
+                    .build();
+        }
+    }
 }
