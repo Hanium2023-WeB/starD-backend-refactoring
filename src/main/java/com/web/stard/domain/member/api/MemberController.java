@@ -10,8 +10,10 @@ import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/members")
@@ -55,4 +57,23 @@ public class MemberController {
         return ResponseEntity.ok(starScrapService.getMemberStarPostList(member, page));
     }
 
+    @Operation(summary = "프로필 이미지 조회")
+    @GetMapping("/profile/image")
+    public ResponseEntity<MemberResponseDto.ProfileImageResponseDto> getProfileImage(@CurrentMember Member member) {
+        return ResponseEntity.ok(memberService.getProfileImage(member));
+    }
+
+    @Operation(summary = "프로필 이미지 변경")
+    @PutMapping(value = "/profile/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MemberResponseDto.ProfileImageResponseDto> updateProfileImage(@RequestPart(value = "file", required = false) MultipartFile file,
+                                                                                        @CurrentMember Member member) {
+        return ResponseEntity.ok(memberService.updateProfileImage(file, member));
+    }
+
+    @Operation(summary = "프로필 이미지 삭제")
+    @DeleteMapping("/profile/image")
+    public ResponseEntity<Void> deleteProfileImage(@CurrentMember Member member) {
+        memberService.deleteProfileImage(member);
+        return ResponseEntity.noContent().build();
+    }
 }
