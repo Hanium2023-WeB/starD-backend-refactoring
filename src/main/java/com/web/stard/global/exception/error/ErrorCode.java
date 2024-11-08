@@ -36,7 +36,9 @@ public enum ErrorCode {
 
     // Post
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."),
-    INVALID_PAGE(HttpStatus.BAD_REQUEST, "유효하지 않은 페이지입니다.")
+    INVALID_PAGE(HttpStatus.BAD_REQUEST, "유효하지 않은 페이지입니다."),
+    DUPLICATE_STAR_SCRAP_REQUEST(HttpStatus.CONFLICT, "이미 공감 및 스크랩을 요청한 게시물입니다."),
+    INVALID_STAR_SCRAP_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 접근입니다.");
 
     ;
 

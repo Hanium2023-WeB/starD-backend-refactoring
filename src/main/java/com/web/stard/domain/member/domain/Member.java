@@ -1,5 +1,6 @@
 package com.web.stard.domain.member.domain;
 
+import com.web.stard.domain.board.global.domain.StarScrap;
 import com.web.stard.domain.member.domain.enums.Role;
 import com.web.stard.global.domain.BaseEntity;
 import jakarta.persistence.*;
@@ -53,6 +54,9 @@ public class Member extends BaseEntity implements UserDetails {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Interest> interests = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<StarScrap> starScraps = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
