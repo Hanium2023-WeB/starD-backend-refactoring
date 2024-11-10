@@ -3,6 +3,7 @@ package com.web.stard.domain.member.api;
 import com.web.stard.domain.board.global.application.PostService;
 import com.web.stard.domain.board.global.application.StarScrapService;
 import com.web.stard.domain.board.global.dto.response.PostResponseDto;
+import com.web.stard.domain.board.study.dto.response.StudyResponseDto;
 import com.web.stard.domain.member.application.MemberService;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
@@ -84,5 +85,12 @@ public class MemberController {
     public ResponseEntity<PostResponseDto.PostListDto> getCommPostList(@CurrentMember Member member,
                                                                        @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
         return ResponseEntity.ok(postService.getCommPostListByMember(member, page));
+    }
+
+    @Operation(summary = "스크랩 스터디 리스트 조회")
+    @GetMapping("/scraps")
+    public ResponseEntity<StudyResponseDto.StudyRecruitListDto> getScrapStudyList(@CurrentMember Member member,
+                                                                                  @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(starScrapService.getMemberScrapStudyList(member, page));
     }
 }

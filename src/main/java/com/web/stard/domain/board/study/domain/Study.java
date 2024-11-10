@@ -3,6 +3,7 @@ package com.web.stard.domain.board.study.domain;
 import com.web.stard.domain.board.global.domain.enums.PostType;
 import com.web.stard.domain.board.study.domain.enums.ProgressStatus;
 import com.web.stard.domain.board.study.domain.enums.RecruitStatus;
+import com.web.stard.domain.member.domain.Member;
 import com.web.stard.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,6 +23,10 @@ public class Study extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "study_id", nullable = false)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member recruiter; // 작성자
 
     private String tags; // 태그들
 

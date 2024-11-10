@@ -3,6 +3,7 @@ package com.web.stard.domain.board.global.application;
 import com.web.stard.domain.board.global.domain.enums.ActType;
 import com.web.stard.domain.board.global.domain.enums.TableType;
 import com.web.stard.domain.board.global.dto.response.PostResponseDto;
+import com.web.stard.domain.board.study.dto.response.StudyResponseDto;
 import com.web.stard.domain.member.domain.Member;
 
 public interface StarScrapService {
@@ -10,11 +11,9 @@ public interface StarScrapService {
 
     boolean deleteStarScrap(Member member, Long targetId, ActType actType, TableType tableType);
 
-    int findStarCount(Long targetId);
+    int findStarScrapCount(Long targetId, ActType actType, TableType tableType);
 
     PostResponseDto.PostListDto getMemberStarPostList(Member member, int page);
 
-    // Study 스크랩 List 조회
-
-    // 해당 Study 공감 개수
+    StudyResponseDto.StudyRecruitListDto getMemberScrapStudyList(Member member, int page);
 }

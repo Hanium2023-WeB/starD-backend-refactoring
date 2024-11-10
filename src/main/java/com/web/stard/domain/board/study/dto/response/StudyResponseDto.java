@@ -41,7 +41,7 @@ public class StudyResponseDto {
         public static StudyRecruitDto from (Study study, Member recruiter, int scrapCount) {
             return StudyRecruitDto.builder()
                     .studyId(study.getId())
-                    .recruiter(recruiter.getUsername())
+                    .recruiter(recruiter.getNickname())
                     .profileImg(recruiter.getProfile().getImgUrl())
                     .title(study.getTitle())
                     .content(study.getContent())

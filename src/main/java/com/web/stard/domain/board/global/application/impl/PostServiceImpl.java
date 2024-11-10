@@ -107,7 +107,7 @@ public class PostServiceImpl implements PostService {
         }
 
         post.updatePost(requestDto.getTitle(), requestDto.getContent());
-        int starCount = starScrapService.findStarCount(post.getId());
+        int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
 
         return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
     }
@@ -128,7 +128,7 @@ public class PostServiceImpl implements PostService {
         isPostAuthor(member, post);
 
         post.updateComm(requestDto.getTitle(), requestDto.getContent(), Category.find(requestDto.getCategory()));
-        int starCount = starScrapService.findStarCount(post.getId());
+        int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
 
         return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
     }
@@ -157,7 +157,7 @@ public class PostServiceImpl implements PostService {
     private List<PostResponseDto.PostDto> findAllStarCount(Page<Post> posts) {
         List<PostResponseDto.PostDto> postDtos = posts.getContent().stream()
                 .map(post -> {
-                    int starCount = starScrapService.findStarCount(post.getId());
+                    int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
                     return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
                 })
                 .toList();
@@ -199,7 +199,7 @@ public class PostServiceImpl implements PostService {
             post.incrementHitCount();
         }
 
-        int starCount = starScrapService.findStarCount(post.getId());
+        int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
 
         return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
     }
