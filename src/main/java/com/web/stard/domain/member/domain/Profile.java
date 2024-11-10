@@ -2,7 +2,6 @@ package com.web.stard.domain.member.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 @Builder
 @Getter
@@ -23,4 +22,12 @@ public class Profile {
 
     @Column(name = "img_url")
     private String imgUrl;  // 이미지 경로
+
+    public void updateImageUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
+    public void deleteImageUrl() {
+        this.imgUrl = null;
+    }
 }

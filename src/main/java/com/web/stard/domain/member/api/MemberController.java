@@ -11,8 +11,10 @@ import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/members")
@@ -50,6 +52,26 @@ public class MemberController {
         return ResponseEntity.ok(memberService.editInterest(member, requestDto));
     }
 
+    @Operation(summary = "프로필 이미지 조회")
+    @GetMapping("/profile/image")
+    public ResponseEntity<MemberResponseDto.ProfileImageResponseDto> getProfileImage(@CurrentMember Member member) {
+        return ResponseEntity.ok(memberService.getProfileImage(member));
+    }
+
+    @Operation(summary = "프로필 이미지 변경")
+    @PutMapping(value = "/profile/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MemberResponseDto.ProfileImageResponseDto> updateProfileImage(@RequestPart(value = "file", required = false) MultipartFile file,
+                                                                                        @CurrentMember Member member) {
+        return ResponseEntity.ok(memberService.updateProfileImage(file, member));
+    }
+
+    @Operation(summary = "프로필 이미지 삭제")
+    @DeleteMapping("/profile/image")
+    public ResponseEntity<Void> deleteProfileImage(@CurrentMember Member member) {
+        memberService.deleteProfileImage(member);
+        return ResponseEntity.noContent().build();
+    }
+
     @Operation(summary = "공감한 게시글 리스트 조회")
     @GetMapping("/stars")
     public ResponseEntity<PostResponseDto.PostListDto> getStarPostList(@CurrentMember Member member,
@@ -63,5 +85,4 @@ public class MemberController {
                                                                        @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
         return ResponseEntity.ok(postService.getCommPostListByMember(member, page));
     }
-
 }
