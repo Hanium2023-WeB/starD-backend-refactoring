@@ -3,6 +3,7 @@ package com.web.stard.domain.board.global.repository;
 import com.web.stard.domain.board.global.domain.Post;
 import com.web.stard.domain.board.global.domain.enums.Category;
 import com.web.stard.domain.board.global.domain.enums.PostType;
+import com.web.stard.domain.member.domain.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -41,4 +42,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByPostTypeInAndTitleOrContentContaining(
             @Param("postTypes") List<PostType> postTypes, @Param("keyword") String keyword,
             @Param("faq") PostType faq, @Param("qna") PostType qna);
+
+    Page<Post> findByMemberAndPostType(Member member, PostType postType, Pageable pageable);
 }

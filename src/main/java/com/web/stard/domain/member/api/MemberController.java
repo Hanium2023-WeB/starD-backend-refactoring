@@ -1,5 +1,6 @@
 package com.web.stard.domain.member.api;
 
+import com.web.stard.domain.board.global.application.PostService;
 import com.web.stard.domain.board.global.application.StarScrapService;
 import com.web.stard.domain.board.global.dto.response.PostResponseDto;
 import com.web.stard.domain.member.application.MemberService;
@@ -20,6 +21,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final StarScrapService starScrapService;
+    private final PostService postService;
 
     @Operation(summary = "개인정보 반환")
     @GetMapping("/edit")
@@ -53,6 +55,13 @@ public class MemberController {
     public ResponseEntity<PostResponseDto.PostListDto> getStarPostList(@CurrentMember Member member,
                                                                        @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
         return ResponseEntity.ok(starScrapService.getMemberStarPostList(member, page));
+    }
+
+    @Operation(summary = "사용자가 작성한 커뮤니티 게시글 조회")
+    @GetMapping("/communities")
+    public ResponseEntity<PostResponseDto.PostListDto> getCommPostList(@CurrentMember Member member,
+                                                                       @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(postService.getCommPostListByMember(member, page));
     }
 
 }

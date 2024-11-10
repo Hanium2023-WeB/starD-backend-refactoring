@@ -30,4 +30,6 @@ public interface PostService {
     PostResponseDto.PostListDto getCommPostListByCategory(String category, int page);
 
     PostResponseDto.PostListDto searchCommPostWithCategory(String keyword, String category, int page);
+
+    PostResponseDto.PostListDto getCommPostListByMember(Member member, int page);
 }
