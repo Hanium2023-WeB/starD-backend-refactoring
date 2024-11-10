@@ -22,7 +22,7 @@ public class PostResponseDto {
         private String title;
         private String content;
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        private Category category;
+        private String category;
         private int hit;
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private PostType postType;
@@ -41,11 +41,16 @@ public class PostResponseDto {
                 type = null;
             }
 
+            String category = null;
+            if (post.getCategory() != null) {
+                category = post.getCategory().getDescription();
+            }
+
             return PostDto.builder()
                     .postId(post.getId())
                     .title(post.getTitle())
                     .content(post.getContent())
-                    .category(post.getCategory())
+                    .category(category)
                     .hit(post.getHit())
                     .postType(type)
                     .writer(writerName)
