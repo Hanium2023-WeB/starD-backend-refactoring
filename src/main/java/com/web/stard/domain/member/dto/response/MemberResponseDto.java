@@ -44,12 +44,12 @@ public class MemberResponseDto {
     @Builder
     public static class InfoDto {
         private String nickname; // 닉네임
-        private List<InterestField> interests; // 관심분야
+        private List<String> interests; // 관심분야
 
         public static InfoDto of(Member member, List<Interest> interests){
             return InfoDto.builder()
                     .nickname(member.getNickname())
-                    .interests(interests.stream().map(Interest::getInterestField).toList())
+                    .interests(interests.stream().map(interest -> interest.getInterestField().getDescription()).toList())
                     .build();
         }
     }
@@ -71,12 +71,12 @@ public class MemberResponseDto {
     @Getter
     @Builder
     public static class EditInterestResponseDto {
-        private List<InterestField> interests;
+        private List<String> interests;
         private String message;
 
         public static EditInterestResponseDto of(List<Interest> interestList) {
             return EditInterestResponseDto.builder()
-                    .interests(interestList.stream().map(Interest::getInterestField).toList())
+                    .interests(interestList.stream().map(interest -> interest.getInterestField().getDescription()).toList())
                     .message("관심분야가 성공적으로 변경되었습니다.")
                     .build();
         }

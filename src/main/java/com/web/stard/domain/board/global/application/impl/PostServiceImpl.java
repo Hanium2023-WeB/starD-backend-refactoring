@@ -107,7 +107,7 @@ public class PostServiceImpl implements PostService {
         }
 
         post.updatePost(requestDto.getTitle(), requestDto.getContent());
-        int starCount = starScrapService.findStarCount(post.getId());
+        int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
 
         return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
     }
@@ -128,7 +128,7 @@ public class PostServiceImpl implements PostService {
         isPostAuthor(member, post);
 
         post.updateComm(requestDto.getTitle(), requestDto.getContent(), Category.find(requestDto.getCategory()));
-        int starCount = starScrapService.findStarCount(post.getId());
+        int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
 
         return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
     }
@@ -157,7 +157,7 @@ public class PostServiceImpl implements PostService {
     private List<PostResponseDto.PostDto> findAllStarCount(Page<Post> posts) {
         List<PostResponseDto.PostDto> postDtos = posts.getContent().stream()
                 .map(post -> {
-                    int starCount = starScrapService.findStarCount(post.getId());
+                    int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
                     return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
                 })
                 .toList();
@@ -199,7 +199,7 @@ public class PostServiceImpl implements PostService {
             post.incrementHitCount();
         }
 
-        int starCount = starScrapService.findStarCount(post.getId());
+        int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
 
         return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
     }
@@ -318,6 +318,27 @@ public class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         Page<Post> posts = postRepository.searchCommPostWithCategory(PostType.COMM, keyword, Category.find(category), pageable);
+
+        List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts);
+
+        return PostResponseDto.PostListDto.of(posts, postDtos);
+    }
+
+    /**
+     * 사용자가 작성한 커뮤니티 게시글 조회
+     *
+     * @param member            사용자
+     * @param page              조회할 페이지 번호
+     * @return CommPostListDto  commPostList, currentPage, totalPages, isLast
+     *                     커뮤니티 게시글 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public PostResponseDto.PostListDto getCommPostListByMember(Member member, int page) {
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<Post> posts = postRepository.findByMemberAndPostType(member, PostType.COMM, pageable);
 
         List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts);
 

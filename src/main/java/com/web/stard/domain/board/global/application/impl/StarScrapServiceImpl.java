@@ -8,6 +8,9 @@ import com.web.stard.domain.board.global.domain.enums.TableType;
 import com.web.stard.domain.board.global.dto.response.PostResponseDto;
 import com.web.stard.domain.board.global.repository.PostRepository;
 import com.web.stard.domain.board.global.repository.StarScrapRepository;
+import com.web.stard.domain.board.study.domain.Study;
+import com.web.stard.domain.board.study.dto.response.StudyResponseDto;
+import com.web.stard.domain.board.study.repository.StudyRepository;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.domain.enums.Role;
 import com.web.stard.global.exception.CustomException;
@@ -26,6 +29,7 @@ public class StarScrapServiceImpl implements StarScrapService {
 
     private final StarScrapRepository starScrapRepository;
     private final PostRepository postRepository;
+    private final StudyRepository studyRepository;
 
 
     // 해당 게시글의 공감 혹은 스크랩 여부 확인
@@ -44,7 +48,14 @@ public class StarScrapServiceImpl implements StarScrapService {
         return post;
     }
 
-    // TODO 존재하는 STUDY(+STUDYPOST)인지 확인
+    // 존재하는 STUDY인지 확인
+    private Study existsStudyRecruitPost(Long targetId) {
+        Study study = studyRepository.findById(targetId)
+                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        return study;
+    }
+
+    // TODO 존재하는 STUDYPOST인지 확인
 
 
 
@@ -78,7 +89,7 @@ public class StarScrapServiceImpl implements StarScrapService {
                 throw new CustomException(ErrorCode.PERMISSION_DENIED);
             }
         } else if (tableType == TableType.STUDY) {
-            // TODO
+            existsStudyRecruitPost(targetId);
         } else { // STUDYPOST
             // TODO
         }
@@ -123,10 +134,10 @@ public class StarScrapServiceImpl implements StarScrapService {
         return true;
     }
 
-    // 총 공감 수 찾기
+    // 총 공감 및 스크랩 수 찾기
     @Override
-    public int findStarCount(Long targetId) {
-        return starScrapRepository.findAllByActTypeAndTableTypeAndTargetId(ActType.STAR, TableType.POST, targetId).size();
+    public int findStarScrapCount(Long targetId, ActType actType, TableType tableType) {
+        return starScrapRepository.findAllByActTypeAndTableTypeAndTargetId(actType, tableType, targetId).size();
     }
 
     /**
@@ -147,11 +158,38 @@ public class StarScrapServiceImpl implements StarScrapService {
 
         List<PostResponseDto.PostDto> postDtos = posts.getContent().stream()
                 .map(post -> {
-                    int starCount = findStarCount(post.getId());
+                    int starCount = findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
                     return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
                 })
                 .toList();
 
         return PostResponseDto.PostListDto.of(posts, postDtos);
+    }
+
+    /**
+     * 사용자가 스크랩한 게시글 리스트 조회
+     *
+     * @param member 로그인 회원
+     * @param page 조회할 페이지 번호
+     *
+     * @return StudyRecruitListDto studyRecruitPosts, currentPage, totalPages, isLast
+     *                              게시글 리스트         현재 페이지   전체 페이지  마지막 페이지 여부
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public StudyResponseDto.StudyRecruitListDto getMemberScrapStudyList(Member member, int page) {
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<Study> studyRecruitPosts = starScrapRepository.findStudyRecruitPostsByMember(member, pageable);
+
+        List<StudyResponseDto.StudyRecruitDto> studyPostDtos = studyRecruitPosts.getContent().stream()
+                .map(post -> {
+                    int scrapCount = findStarScrapCount(post.getId(), ActType.SCRAP, TableType.STUDY);
+                    return StudyResponseDto.StudyRecruitDto.from(post, post.getRecruiter(), scrapCount);
+                })
+                .toList();
+
+        return StudyResponseDto.StudyRecruitListDto.of(studyRecruitPosts, studyPostDtos);
     }
 }

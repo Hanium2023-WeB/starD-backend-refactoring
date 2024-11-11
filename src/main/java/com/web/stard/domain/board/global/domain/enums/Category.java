@@ -21,7 +21,7 @@ public enum Category {
 
     private final String description;
 
-    // description으로 InterestField 반환
+    // description으로 Category 반환
     private static final Map<String, Category> descriptions =
             Collections.unmodifiableMap(Stream.of(values()) // stream을 1개만 생성
                     .collect(Collectors.toMap(Category::getDescription, Function.identity())));
