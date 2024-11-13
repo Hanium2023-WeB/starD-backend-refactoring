@@ -1,8 +1,10 @@
 package com.web.stard.domain.board.study.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.web.stard.domain.board.study.domain.Study;
 import com.web.stard.domain.member.domain.Member;
+import com.web.stard.domain.study.domain.entity.Study;
+import com.web.stard.domain.study.domain.enums.ActivityType;
+import com.web.stard.domain.study.domain.enums.RecruitmentType;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
@@ -21,11 +23,11 @@ public class StudyResponseDto {
         private String profileImg;
         private String title;
         private String content;
-        private int hit;
+        private Long hit;
         private int capacity;
         private String tags;
-        private String onOff;
-        private String recruitStatus;
+        private ActivityType activityType;
+        private RecruitmentType recruitmentType;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
         private LocalDate activityStart;
@@ -47,9 +49,9 @@ public class StudyResponseDto {
                     .content(study.getContent())
                     .hit(study.getHit())
                     .capacity(study.getCapacity())
-                    .tags(study.getTags())
-                    .onOff(study.getOnOff())
-                    .recruitStatus(study.getRecruitStatus().getDescription())
+                    .tags(study.getTagText())
+                    .activityType(study.getActivityType())
+                    .recruitmentType(study.getRecruitmentType())
                     .createdAt(study.getCreatedAt())
                     .updatedAt(study.getUpdatedAt())
                     .activityStart(study.getActivityStart())
