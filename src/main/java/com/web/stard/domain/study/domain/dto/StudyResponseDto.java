@@ -9,9 +9,11 @@ import com.web.stard.domain.study.domain.enums.RecruitmentType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class StudyResponseDto {
 
@@ -83,8 +85,9 @@ public class StudyResponseDto {
         @Schema(description = "스터디 게시글 작성 여부")
         private boolean isAuthor;
 
-        public static DetailInfo toDto(Study study, Member member) {
+        public static DetailInfo toDto(Study study, Member member, int scrapCount) {
             return DetailInfo.builder()
+                    .scrapCount(scrapCount)
                     .studyId(study.getId())
                     .nickname(study.getMember().getNickname())
                     .profileImg(member.getProfile().getImgUrl())
@@ -108,5 +111,23 @@ public class StudyResponseDto {
                     .build();
         }
 
+    }
+
+    @Getter
+    @Builder
+    public static class StudyRecruitListDto {
+        private List<StudyResponseDto.DetailInfo> studyRecruitPosts;
+        private int currentPage;    // 현재 페이지
+        private int totalPages;     // 전체 페이지 수
+        private boolean isLast;     // 마지막 페이지 여부
+
+        public static StudyRecruitListDto of(Page<Study> studyPosts, List<StudyResponseDto.DetailInfo> detailInfos) {
+            return StudyRecruitListDto.builder()
+                    .studyRecruitPosts(detailInfos)
+                    .currentPage(studyPosts.getNumber() + 1)
+                    .totalPages(studyPosts.getTotalPages())
+                    .isLast(studyPosts.isLast())
+                    .build();
+        }
     }
 }

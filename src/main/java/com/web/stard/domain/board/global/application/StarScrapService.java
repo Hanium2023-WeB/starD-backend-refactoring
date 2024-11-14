@@ -3,8 +3,8 @@ package com.web.stard.domain.board.global.application;
 import com.web.stard.domain.board.global.domain.enums.ActType;
 import com.web.stard.domain.board.global.domain.enums.TableType;
 import com.web.stard.domain.board.global.dto.response.PostResponseDto;
-import com.web.stard.domain.board.study.dto.response.StudyResponseDto;
 import com.web.stard.domain.member.domain.Member;
+import com.web.stard.domain.study.domain.dto.StudyResponseDto;
 
 public interface StarScrapService {
     Long addStarScrap(Member member, Long targetId, ActType actType, TableType tableType);
