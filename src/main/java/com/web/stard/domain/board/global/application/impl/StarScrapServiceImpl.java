@@ -134,6 +134,20 @@ public class StarScrapServiceImpl implements StarScrapService {
         return true;
     }
 
+    /**
+     * 해당 게시글의 모든 공감 혹은 스크랩 삭제 (글 삭제 시)
+     *
+     * @param targetId 해당 게시글 고유 id
+     * @param actType STAR, SCRAP
+     * @param tableType POST,  STUDY, STUDYPOST
+     *
+     */
+    @Override
+    public void deletePostStarScraps(Long targetId, ActType actType, TableType tableType) {
+        List<StarScrap> starScraps = starScrapRepository.findAllByActTypeAndTableTypeAndTargetId(actType, tableType, targetId);
+        starScrapRepository.deleteAll(starScraps);
+    }
+
     // 총 공감 및 스크랩 수 찾기
     @Override
     public int findStarScrapCount(Long targetId, ActType actType, TableType tableType) {

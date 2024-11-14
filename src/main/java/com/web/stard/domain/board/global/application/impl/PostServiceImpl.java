@@ -149,6 +149,9 @@ public class PostServiceImpl implements PostService {
             isAdmin(member);
         }
 
+        // 공감 삭제
+        starScrapService.deletePostStarScraps(postId, ActType.STAR, TableType.POST);
+
         postRepository.delete(post);
         return postId;
     }

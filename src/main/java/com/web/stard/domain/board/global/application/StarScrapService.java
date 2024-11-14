@@ -11,6 +11,8 @@ public interface StarScrapService {
 
     boolean deleteStarScrap(Member member, Long targetId, ActType actType, TableType tableType);
 
+    void deletePostStarScraps(Long targetId, ActType actType, TableType tableType);
+
     int findStarScrapCount(Long targetId, ActType actType, TableType tableType);
 
     PostResponseDto.PostListDto getMemberStarPostList(Member member, int page);
