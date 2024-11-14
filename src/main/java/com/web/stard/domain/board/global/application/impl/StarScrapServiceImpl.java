@@ -8,11 +8,11 @@ import com.web.stard.domain.board.global.domain.enums.TableType;
 import com.web.stard.domain.board.global.dto.response.PostResponseDto;
 import com.web.stard.domain.board.global.repository.PostRepository;
 import com.web.stard.domain.board.global.repository.StarScrapRepository;
-import com.web.stard.domain.board.study.domain.Study;
-import com.web.stard.domain.board.study.dto.response.StudyResponseDto;
-import com.web.stard.domain.board.study.repository.StudyRepository;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.domain.enums.Role;
+import com.web.stard.domain.study.domain.dto.StudyResponseDto;
+import com.web.stard.domain.study.domain.entity.Study;
+import com.web.stard.domain.study.repository.StudyRepository;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -183,10 +183,10 @@ public class StarScrapServiceImpl implements StarScrapService {
 
         Page<Study> studyRecruitPosts = starScrapRepository.findStudyRecruitPostsByMember(member, pageable);
 
-        List<StudyResponseDto.StudyRecruitDto> studyPostDtos = studyRecruitPosts.getContent().stream()
+        List<StudyResponseDto.DetailInfo> studyPostDtos = studyRecruitPosts.getContent().stream()
                 .map(post -> {
                     int scrapCount = findStarScrapCount(post.getId(), ActType.SCRAP, TableType.STUDY);
-                    return StudyResponseDto.StudyRecruitDto.from(post, post.getRecruiter(), scrapCount);
+                    return StudyResponseDto.DetailInfo.toDto(post, post.getMember(), scrapCount);
                 })
                 .toList();
 
