@@ -1,5 +1,8 @@
 package com.web.stard.domain.study.service.impl;
 
+import com.web.stard.domain.board.global.application.StarScrapService;
+import com.web.stard.domain.board.global.domain.enums.ActType;
+import com.web.stard.domain.board.global.domain.enums.TableType;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.domain.study.domain.dto.StudyResponseDto;
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StudyServiceImpl implements StudyService {
 
+    private final StarScrapService starScrapService;
     private final StudyRepository studyRepository;
     private final MemberRepository memberRepository;
 
@@ -41,6 +45,7 @@ public class StudyServiceImpl implements StudyService {
     public StudyResponseDto.DetailInfo findStudyDetailInfo(Long studyId, Member member) {
         member = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         Study study = studyRepository.findById(studyId).orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
-        return StudyResponseDto.DetailInfo.toDto(study, member);
+        int scrapCount = starScrapService.findStarScrapCount(study.getId(), ActType.SCRAP, TableType.STUDY);
+        return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount);
     }
 }
