@@ -41,7 +41,8 @@ public enum ErrorCode {
     INVALID_STAR_SCRAP_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 접근입니다."),
 
     // Study
-    STUDY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스터디 게시글입니다.")
+    STUDY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스터디 게시글입니다."),
+    STUDY_NOT_IN_PROGRESS(HttpStatus.BAD_REQUEST, "진행 중인 스터디가 아니므로 작업을 수행할 수 없습니다.");
     ;
 
     private final HttpStatus httpStatus;    // HttpStatus
