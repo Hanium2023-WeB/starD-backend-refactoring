@@ -62,4 +62,12 @@ public class ToDoController {
                                                                 @RequestParam boolean status) {
         return ResponseEntity.ok(toDoService.updateTodoStatus(studyId, toDoId, assigneeId, status, member));
     }
+
+    @Operation(summary = "ToDo 삭제")
+    @DeleteMapping("/{toDoId}")
+    public ResponseEntity<Long> deleteToDo(@CurrentMember Member member,
+                                           @PathVariable(name = "studyId") Long studyId,
+                                           @PathVariable(name = "toDoId") Long toDoId) {
+        return ResponseEntity.ok(toDoService.deleteToDo(studyId, toDoId, member));
+    }
 }

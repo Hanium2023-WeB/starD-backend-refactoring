@@ -3,6 +3,7 @@ package com.web.stard.domain.study.service;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.study.domain.dto.request.ToDoRequestDto;
 import com.web.stard.domain.study.domain.dto.response.ToDoResponseDto;
+import org.springframework.http.ResponseEntity;
 
 public interface ToDoService {
     ToDoResponseDto.ToDoDto createToDo(Long studyId, ToDoRequestDto.CreateDto requestDto, Member member);
@@ -14,4 +15,6 @@ public interface ToDoService {
     ToDoResponseDto.ToDoDto updateAssignee(Long studyId, Long toDoId, ToDoRequestDto.AssigneeDto requestDto, Member member);
 
     ToDoResponseDto.ToDoDto updateTodoStatus(Long studyId, Long toDoId, Long assigneeId, boolean status, Member member);
+
+    Long deleteToDo(Long studyId, Long toDoId, Member member);
 }

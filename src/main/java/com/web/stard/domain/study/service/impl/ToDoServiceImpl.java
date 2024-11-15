@@ -15,6 +15,7 @@ import com.web.stard.domain.study.service.ToDoService;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +45,7 @@ public class ToDoServiceImpl implements ToDoService {
 
     }
 
-    // 투두의 스터디랑 넘어온 스터디가 같은지 확인
+    // 투두의 스터디랑 넘어온 스터디가 같은지 확인 (혹시 모를 오류 방지)
     private void isEqualToDoStudyAndStudy(Study study, ToDo toDo) {
         if (study.getId() != toDo.getStudy().getId()) {
             throw new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST);
@@ -234,6 +235,8 @@ public class ToDoServiceImpl implements ToDoService {
         Assignee assignee = assigneeRepository.findById(assigneeId)
                 .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
 
+        isEqualToDoStudyAndStudy(study, toDo);
+
         if (toDo.getId() != assignee.getToDo().getId()) { // 혹시 모를 오류 방지
             throw new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST);
         }
@@ -247,7 +250,7 @@ public class ToDoServiceImpl implements ToDoService {
             assignee.updateToDoStatus(status);
         }
 
-        // 투두 상태 변화
+        // 투두 상태 변화 (모두 true일 시 true로 변경)
         if (toDo.getAssignees().stream().noneMatch(assigneeEntity -> !assigneeEntity.isToDoStatus())) {
             toDo.updateToDoStatus(true);
         } else {
@@ -255,5 +258,29 @@ public class ToDoServiceImpl implements ToDoService {
         }
 
         return ToDoResponseDto.ToDoDto.from(toDo, toDo.getAssignees());
+    }
+
+    /**
+     * 스터디 - 투두 삭제
+     *
+     * @param studyId 해당 study 고유 id
+     * @param toDoId  해당 투두 고유 id
+     * @param member  로그인 회원
+     */
+    @Transactional
+    @Override
+    public Long deleteToDo(Long studyId, Long toDoId, Member member) {
+        Study study = studyService.findById(studyId);
+        isStudyInProgress(study);
+        isStudyMember(study, member);
+
+        ToDo toDo = toDoRepository.findById(toDoId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
+
+        isEqualToDoStudyAndStudy(study, toDo);
+
+        toDoRepository.delete(toDo);
+
+        return toDoId;
     }
 }
