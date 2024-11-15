@@ -52,4 +52,14 @@ public class ToDoController {
                                                                   @Valid @RequestBody ToDoRequestDto.AssigneeDto requestDto) {
         return ResponseEntity.ok(toDoService.updateAssignee(studyId, toDoId, requestDto, member));
     }
+
+    @Operation(summary = "ToDo 상태 변화")
+    @PutMapping("/{toDoId}/{assigneeId}")
+    public ResponseEntity<ToDoResponseDto.ToDoDto> updateStatus(@CurrentMember Member member,
+                                                                @PathVariable(name = "studyId") Long studyId,
+                                                                @PathVariable(name = "toDoId") Long toDoId,
+                                                                @PathVariable(name = "assigneeId") Long assigneeId,
+                                                                @RequestParam boolean status) {
+        return ResponseEntity.ok(toDoService.updateTodoStatus(studyId, toDoId, assigneeId, status, member));
+    }
 }

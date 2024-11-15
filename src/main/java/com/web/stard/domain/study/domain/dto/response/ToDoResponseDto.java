@@ -13,11 +13,13 @@ public class ToDoResponseDto {
     @Getter
     @Builder
     public static class AssigneeDto {
+        private Long assigneeId;
         private String nickname;
         private boolean toDoStatus;
 
         public static AssigneeDto from (Assignee assignee) {
             return AssigneeDto.builder()
+                    .assigneeId(assignee.getId())
                     .nickname(assignee.getMember().getNickname())
                     .toDoStatus(assignee.isToDoStatus())
                     .build();

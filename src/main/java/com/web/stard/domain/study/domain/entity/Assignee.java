@@ -29,4 +29,8 @@ public class Assignee {
     public void deleteAssignee() {
         this.toDo = null;
     }
+
+    public void updateToDoStatus(boolean status) {
+        toDoStatus = status;
+    }
 }

@@ -201,9 +201,59 @@ public class ToDoServiceImpl implements ToDoService {
 
                 assigneeRepository.save(assigneeEntity);
                 assignees.add(assigneeEntity);
+
+                // 담당자가 새로 추가되었으므로 toDoStatus가 true일 시 false로 변경
+                if (toDo.isToDoStatus()) {
+                    toDo.updateToDoStatus(false);
+                }
             }
         });
 
         return ToDoResponseDto.ToDoDto.from(toDo, assignees);
+    }
+
+    /**
+     * 스터디 - 투두 상태 변화
+     *
+     * @param studyId 해당 study 고유 id
+     * @param toDoId 해당 투두 고유 id
+     * @param status 상태 (true - 완료, false - 미완료)
+     * @param member 로그인 회원
+     *
+     * @return ToDoDto toDoId, task 담당 업무, dueDate 마감일, studyId, toDoStatus 투두 상태, assignees 담당자 (닉네임, 투두 상태)
+     */
+    @Transactional
+    @Override
+    public ToDoResponseDto.ToDoDto updateTodoStatus(Long studyId, Long toDoId, Long assigneeId, boolean status, Member member) {
+        Study study = studyService.findById(studyId);
+        isStudyInProgress(study);
+        isStudyMember(study, member);
+
+        ToDo toDo = toDoRepository.findById(toDoId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
+        Assignee assignee = assigneeRepository.findById(assigneeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
+
+        if (toDo.getId() != assignee.getToDo().getId()) { // 혹시 모를 오류 방지
+            throw new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST);
+        }
+
+        // member == assignee의 member 확인 (본인 거 외에는 상태 변화 금지)
+        if (assignee.getMember().getId() != member.getId()) {
+            throw new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST);
+        }
+
+        if (assignee.isToDoStatus() != status) {
+            assignee.updateToDoStatus(status);
+        }
+
+        // 투두 상태 변화
+        if (toDo.getAssignees().stream().noneMatch(assigneeEntity -> !assigneeEntity.isToDoStatus())) {
+            toDo.updateToDoStatus(true);
+        } else {
+            toDo.updateToDoStatus(false);
+        }
+
+        return ToDoResponseDto.ToDoDto.from(toDo, toDo.getAssignees());
     }
 }

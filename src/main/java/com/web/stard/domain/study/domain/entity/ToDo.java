@@ -44,4 +44,8 @@ public class ToDo {
     public void updateDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
     }
+
+    public void updateToDoStatus(boolean status) {
+        toDoStatus = status;
+    }
 }
