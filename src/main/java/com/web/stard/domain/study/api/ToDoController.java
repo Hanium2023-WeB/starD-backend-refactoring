@@ -12,17 +12,44 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/to-dos")
+@RequestMapping("/studies/{studyId}/to-dos")
 @RequiredArgsConstructor
 public class ToDoController {
 
     private final ToDoService toDoService;
 
     @Operation(summary = "ToDo 등록")
-    @PostMapping("/{studyId}")
+    @PostMapping
     public ResponseEntity<ToDoResponseDto.ToDoDto> createToDo(@CurrentMember Member member,
                                                               @PathVariable(name = "studyId") Long studyId,
-                                                              @Valid @RequestBody ToDoRequestDto.ToDoCreateDto requestDto) {
+                                                              @Valid @RequestBody ToDoRequestDto.CreateDto requestDto) {
         return ResponseEntity.ok(toDoService.createToDo(studyId, requestDto, member));
+    }
+
+    @Operation(summary = "ToDo 업무 내용 수정")
+    @PutMapping("/{toDoId}/task")
+    public ResponseEntity<ToDoResponseDto.ToDoDto> updateTask(@CurrentMember Member member,
+                                                              @PathVariable(name = "studyId") Long studyId,
+                                                              @PathVariable(name = "toDoId") Long toDoId,
+                                                              @Valid @RequestBody ToDoRequestDto.TaskDto requestDto) {
+        return ResponseEntity.ok(toDoService.updateTask(studyId, toDoId, requestDto, member));
+    }
+
+    @Operation(summary = "ToDo 마감일 수정")
+    @PutMapping("/{toDoId}/dueDate")
+    public ResponseEntity<ToDoResponseDto.ToDoDto> updateDueDate(@CurrentMember Member member,
+                                                                 @PathVariable(name = "studyId") Long studyId,
+                                                                 @PathVariable(name = "toDoId") Long toDoId,
+                                                                 @Valid @RequestBody ToDoRequestDto.DueDateDto requestDto) {
+        return ResponseEntity.ok(toDoService.updateDueDate(studyId, toDoId, requestDto, member));
+    }
+
+    @Operation(summary = "ToDo 담당자 수정")
+    @PutMapping("/{toDoId}/assignees")
+    public ResponseEntity<ToDoResponseDto.ToDoDto> updateAssignee(@CurrentMember Member member,
+                                                                  @PathVariable(name = "studyId") Long studyId,
+                                                                  @PathVariable(name = "toDoId") Long toDoId,
+                                                                  @Valid @RequestBody ToDoRequestDto.AssigneeDto requestDto) {
+        return ResponseEntity.ok(toDoService.updateAssignee(studyId, toDoId, requestDto, member));
     }
 }

@@ -25,4 +25,8 @@ public class Assignee {
 
     @Column(name = "to_do_status", nullable = false)
     private boolean toDoStatus; // TO DO 상태 (false 미완료, true 완료)
+
+    public void deleteAssignee() {
+        this.toDo = null;
+    }
 }

@@ -35,4 +35,13 @@ public class ToDo {
 
     @OneToMany(mappedBy = "toDo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Assignee> assignees = new ArrayList<>();
+
+
+    public void updateTask(String task) {
+        this.task = task;
+    }
+
+    public void updateDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
 }
