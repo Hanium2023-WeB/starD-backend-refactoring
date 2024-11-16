@@ -5,7 +5,7 @@ import com.web.stard.domain.board.global.domain.enums.ActType;
 import com.web.stard.domain.board.global.domain.enums.TableType;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
-import com.web.stard.domain.study.domain.dto.StudyResponseDto;
+import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.repository.StudyRepository;
 import com.web.stard.domain.study.service.StudyService;

@@ -10,7 +10,7 @@ import com.web.stard.domain.board.global.repository.PostRepository;
 import com.web.stard.domain.board.global.repository.StarScrapRepository;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.domain.enums.Role;
-import com.web.stard.domain.study.domain.dto.StudyResponseDto;
+import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.repository.StudyRepository;
 import com.web.stard.global.exception.CustomException;

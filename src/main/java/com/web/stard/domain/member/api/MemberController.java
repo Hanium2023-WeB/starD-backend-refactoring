@@ -7,7 +7,7 @@ import com.web.stard.domain.member.application.MemberService;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.dto.response.MemberResponseDto;
-import com.web.stard.domain.study.domain.dto.StudyResponseDto;
+import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.dto.response.ToDoResponseDto;
 import com.web.stard.domain.study.service.ToDoService;
 import com.web.stard.global.domain.CurrentMember;

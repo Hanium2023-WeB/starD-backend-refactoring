@@ -1,4 +1,4 @@
-package com.web.stard.domain.study.domain.dto;
+package com.web.stard.domain.study.domain.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.web.stard.domain.member.domain.Member;

@@ -2,14 +2,13 @@ package com.web.stard.domain.study.api;
 
 import com.web.stard.domain.member.application.MemberService;
 import com.web.stard.domain.member.domain.Member;
-import com.web.stard.domain.study.domain.dto.StudyRequestDto;
-import com.web.stard.domain.study.domain.dto.StudyResponseDto;
+import com.web.stard.domain.study.domain.dto.request.StudyRequestDto;
+import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.service.StudyService;
 import com.web.stard.domain.study.service.StudyTagService;
 import com.web.stard.global.domain.CurrentMember;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
