@@ -8,6 +8,8 @@ import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.dto.response.MemberResponseDto;
 import com.web.stard.domain.study.domain.dto.StudyResponseDto;
+import com.web.stard.domain.study.domain.dto.response.ToDoResponseDto;
+import com.web.stard.domain.study.service.ToDoService;
 import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -17,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
@@ -25,6 +29,7 @@ public class MemberController {
     private final MemberService memberService;
     private final StarScrapService starScrapService;
     private final PostService postService;
+    private final ToDoService toDoService;
 
     @Operation(summary = "개인정보 반환")
     @GetMapping("/edit")
@@ -92,5 +97,22 @@ public class MemberController {
     public ResponseEntity<StudyResponseDto.StudyRecruitListDto> getScrapStudyList(@CurrentMember Member member,
                                                                                   @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
         return ResponseEntity.ok(starScrapService.getMemberScrapStudyList(member, page));
+    }
+
+    @Operation(summary = "사용자 전체 ToDo 조회 - 월 단위")
+    @GetMapping("/to-dos")
+    public ResponseEntity<List<ToDoResponseDto.MemberToDoDto>> getToDoList(@CurrentMember Member member,
+                                                                           @RequestParam int year,
+                                                                           @RequestParam int month) {
+        return ResponseEntity.ok(toDoService.getMemberToDoList(member, year, month));
+    }
+
+    @Operation(summary = "사용자 스터디 별 전체 ToDo 조회 - 월 단위")
+    @GetMapping("/to-dos/{studyId}")
+    public ResponseEntity<List<ToDoResponseDto.MemberToDoDto>> getToDoListByStudy(@CurrentMember Member member,
+                                                                                  @PathVariable(name = "studyId") Long studyId,
+                                                                                  @RequestParam int year,
+                                                                                  @RequestParam int month) {
+        return ResponseEntity.ok(toDoService.getMemberToDoListByStudy(studyId, member, year, month));
     }
 }

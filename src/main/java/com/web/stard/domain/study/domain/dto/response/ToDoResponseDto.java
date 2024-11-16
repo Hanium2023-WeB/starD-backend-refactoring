@@ -50,4 +50,24 @@ public class ToDoResponseDto {
                     .build();
         }
     }
+
+    @Getter
+    @Builder
+    public static class MemberToDoDto {
+        private Long toDoId;
+        private String task;
+        private LocalDate dueDate;
+        private Long studyId;
+        private boolean toDoStatus;
+
+        public static MemberToDoDto of (Assignee assignee) {
+            return MemberToDoDto.builder()
+                    .toDoId(assignee.getToDo().getId())
+                    .task(assignee.getToDo().getTask())
+                    .dueDate(assignee.getToDo().getDueDate())
+                    .studyId(assignee.getToDo().getStudy().getId())
+                    .toDoStatus(assignee.isToDoStatus())
+                    .build();
+        }
+    }
 }

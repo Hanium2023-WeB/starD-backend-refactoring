@@ -15,10 +15,11 @@ import com.web.stard.domain.study.service.ToDoService;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -282,5 +283,76 @@ public class ToDoServiceImpl implements ToDoService {
         toDoRepository.delete(toDo);
 
         return toDoId;
+    }
+
+    /**
+     * 스터디 - 전체 투두 조회 (월 단위)
+     *
+     * @param studyId 해당 study 고유 id
+     * @param year 년도
+     * @param month 월
+     *
+     * @return ToDoDto 리스트
+     *          toDoId, task 담당 업무, dueDate 마감일, studyId, toDoStatus 투두 상태, assignees 담당자 (닉네임, 투두 상태)
+     */
+    @Transactional
+    @Override
+    public List<ToDoResponseDto.ToDoDto> getAllToDoListByStudy(Long studyId, int year, int month) {
+        Study study = studyService.findById(studyId);
+
+        LocalDate start = LocalDate.of(year, month, 1);
+        LocalDate end = LocalDate.of(year, month, YearMonth.of(year, month).lengthOfMonth());
+
+        List<ToDo> toDoList = toDoRepository.findAllByStudyAndDueDateBetween(study, start, end);
+
+        return toDoList.stream().map(toDo -> ToDoResponseDto.ToDoDto.from(toDo, toDo.getAssignees())).toList();
+    }
+
+    /**
+     * 사용자 - 전체 투두 조회 (월 단위)
+     *
+     * @param member 로그인 회원
+     * @param year 년도
+     * @param month 월
+     *
+     * @return MemberToDoDto 리스트
+     *          toDoId, task 담당 업무, dueDate 마감일, studyId, toDoStatus 투두 상태, assignees 담당자 (닉네임, 투두 상태)
+     */
+    @Transactional
+    @Override
+    public List<ToDoResponseDto.MemberToDoDto> getMemberToDoList(Member member, int year, int month) {
+        LocalDate start = LocalDate.of(year, month, 1);
+        LocalDate end = LocalDate.of(year, month, YearMonth.of(year, month).lengthOfMonth());
+
+        // TODO: StudyMember로 변경
+        List<Assignee> toDoList = assigneeRepository.findAllByMemberAndToDoDueDateBetween(member, start, end);
+
+        return toDoList.stream().map(ToDoResponseDto.MemberToDoDto::of).toList();
+    }
+
+    /**
+     * 사용자 - 스터디 별 투두 조회 (월 단위)
+     *
+     * @param studyId 해당 study 고유 id
+     * @param member 로그인 회원
+     * @param year 년도
+     * @param month 월
+     *
+     * @return MemberToDoDto 리스트
+     *          toDoId, task 담당 업무, dueDate 마감일, studyId, toDoStatus 투두 상태
+     */
+    @Transactional
+    @Override
+    public List<ToDoResponseDto.MemberToDoDto> getMemberToDoListByStudy(Long studyId, Member member, int year, int month) {
+        Study study = studyService.findById(studyId);
+        isStudyMember(study, member);
+
+        LocalDate start = LocalDate.of(year, month, 1);
+        LocalDate end = LocalDate.of(year, month, YearMonth.of(year, month).lengthOfMonth());
+
+        // TODO: StudyMember로 변경
+        List<Assignee> toDoList = assigneeRepository.findAllByMemberAndToDoStudyAndToDoDueDateBetween(member, study, start, end);
+
+        return toDoList.stream().map(ToDoResponseDto.MemberToDoDto::of).toList();
     }
 }
