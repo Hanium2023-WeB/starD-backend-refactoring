@@ -1,5 +1,7 @@
 package com.web.stard.domain.board.global.service.impl;
 
+import com.web.stard.domain.board.global.domain.Reply;
+import com.web.stard.domain.board.global.repository.ReplyRepository;
 import com.web.stard.domain.board.global.service.PostService;
 import com.web.stard.domain.board.global.service.StarScrapService;
 import com.web.stard.domain.board.global.domain.enums.ActType;
@@ -29,6 +31,7 @@ public class PostServiceImpl implements PostService {
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
     private final StarScrapService starScrapService;
+    private final ReplyRepository replyRepository;
 
     // 관리자인지 확인
     private void isAdmin(Member member) {
@@ -146,6 +149,12 @@ public class PostServiceImpl implements PostService {
 
         if (post.getPostType() == PostType.NOTICE || postType == PostType.FAQ) {
             isAdmin(member);
+        }
+
+        // 댓글 삭제
+        if (post.getPostType() == PostType.COMM || post.getPostType() == PostType.QNA) {
+            List<Reply> replies = replyRepository.findAllByTargetId(postId);
+            replyRepository.deleteAll(replies);
         }
 
         postRepository.delete(post);

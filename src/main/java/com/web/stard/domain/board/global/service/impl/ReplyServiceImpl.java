@@ -128,6 +128,8 @@ public class ReplyServiceImpl implements ReplyService {
     @Override
     @Transactional(readOnly = true)
     public ReplyResponseDto.ReplyListDto getReplyList(Long targetId, String type, int page, Member member) {
+        validatePostExists(targetId, convertType(type));
+
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC, "createdAt"));   // 최신 순
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
