@@ -12,6 +12,7 @@ import com.web.stard.domain.board.global.dto.response.PostResponseDto;
 import com.web.stard.domain.board.global.domain.Post;
 import com.web.stard.domain.board.global.domain.enums.PostType;
 import com.web.stard.domain.board.global.repository.PostRepository;
+import com.web.stard.domain.board.global.repository.StarScrapRepository;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.domain.enums.Role;
 import com.web.stard.domain.member.repository.MemberRepository;
@@ -150,6 +151,9 @@ public class PostServiceImpl implements PostService {
         if (post.getPostType() == PostType.NOTICE || postType == PostType.FAQ) {
             isAdmin(member);
         }
+
+        // 공감 삭제
+        starScrapService.deletePostStarScraps(postId, ActType.STAR, TableType.POST);
 
         // 댓글 삭제
         if (post.getPostType() == PostType.COMM || post.getPostType() == PostType.QNA) {

@@ -10,7 +10,7 @@ import com.web.stard.domain.board.global.repository.PostRepository;
 import com.web.stard.domain.board.global.repository.StarScrapRepository;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.domain.enums.Role;
-import com.web.stard.domain.study.domain.dto.StudyResponseDto;
+import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.repository.StudyRepository;
 import com.web.stard.global.exception.CustomException;
@@ -132,6 +132,20 @@ public class StarScrapServiceImpl implements StarScrapService {
         starScrapRepository.delete(starScrap);
 
         return true;
+    }
+
+    /**
+     * 해당 게시글의 모든 공감 혹은 스크랩 삭제 (글 삭제 시)
+     *
+     * @param targetId 해당 게시글 고유 id
+     * @param actType STAR, SCRAP
+     * @param tableType POST,  STUDY, STUDYPOST
+     *
+     */
+    @Override
+    public void deletePostStarScraps(Long targetId, ActType actType, TableType tableType) {
+        List<StarScrap> starScraps = starScrapRepository.findAllByActTypeAndTableTypeAndTargetId(actType, tableType, targetId);
+        starScrapRepository.deleteAll(starScraps);
     }
 
     // 총 공감 및 스크랩 수 찾기
