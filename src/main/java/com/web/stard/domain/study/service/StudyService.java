@@ -1,7 +1,7 @@
 package com.web.stard.domain.study.service;
 
 import com.web.stard.domain.member.domain.Member;
-import com.web.stard.domain.study.domain.dto.StudyResponseDto;
+import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.entity.Study;
 
 public interface StudyService {

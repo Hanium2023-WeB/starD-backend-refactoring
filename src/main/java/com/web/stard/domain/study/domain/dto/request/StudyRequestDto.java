@@ -1,4 +1,4 @@
-package com.web.stard.domain.study.domain.dto;
+package com.web.stard.domain.study.domain.dto.request;
 
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.domain.enums.ActivityType;
