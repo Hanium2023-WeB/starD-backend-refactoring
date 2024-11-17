@@ -1,7 +1,9 @@
-package com.web.stard.domain.board.global.application.impl;
+package com.web.stard.domain.board.global.service.impl;
 
-import com.web.stard.domain.board.global.application.PostService;
-import com.web.stard.domain.board.global.application.StarScrapService;
+import com.web.stard.domain.board.global.domain.Reply;
+import com.web.stard.domain.board.global.repository.ReplyRepository;
+import com.web.stard.domain.board.global.service.PostService;
+import com.web.stard.domain.board.global.service.StarScrapService;
 import com.web.stard.domain.board.global.domain.enums.ActType;
 import com.web.stard.domain.board.global.domain.enums.Category;
 import com.web.stard.domain.board.global.domain.enums.TableType;
@@ -30,6 +32,7 @@ public class PostServiceImpl implements PostService {
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
     private final StarScrapService starScrapService;
+    private final ReplyRepository replyRepository;
 
     // 관리자인지 확인
     private void isAdmin(Member member) {
@@ -151,6 +154,12 @@ public class PostServiceImpl implements PostService {
 
         // 공감 삭제
         starScrapService.deletePostStarScraps(postId, ActType.STAR, TableType.POST);
+
+        // 댓글 삭제
+        if (post.getPostType() == PostType.COMM || post.getPostType() == PostType.QNA) {
+            List<Reply> replies = replyRepository.findAllByTargetId(postId);
+            replyRepository.deleteAll(replies);
+        }
 
         postRepository.delete(post);
         return postId;

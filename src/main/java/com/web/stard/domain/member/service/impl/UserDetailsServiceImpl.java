@@ -1,4 +1,4 @@
-package com.web.stard.domain.member.application.impl;
+package com.web.stard.domain.member.service.impl;
 
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.repository.MemberRepository;

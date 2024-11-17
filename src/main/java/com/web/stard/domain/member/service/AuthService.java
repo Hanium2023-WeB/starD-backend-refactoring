@@ -1,4 +1,4 @@
-package com.web.stard.domain.member.application;
+package com.web.stard.domain.member.service;
 
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;

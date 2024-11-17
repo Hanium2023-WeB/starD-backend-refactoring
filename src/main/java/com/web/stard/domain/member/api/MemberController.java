@@ -1,9 +1,9 @@
 package com.web.stard.domain.member.api;
 
-import com.web.stard.domain.board.global.application.PostService;
-import com.web.stard.domain.board.global.application.StarScrapService;
+import com.web.stard.domain.board.global.service.PostService;
+import com.web.stard.domain.board.global.service.StarScrapService;
 import com.web.stard.domain.board.global.dto.response.PostResponseDto;
-import com.web.stard.domain.member.application.MemberService;
+import com.web.stard.domain.member.service.MemberService;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.dto.response.MemberResponseDto;

@@ -1,6 +1,6 @@
-package com.web.stard.domain.member.application.impl;
+package com.web.stard.domain.member.service.impl;
 
-import com.web.stard.domain.member.application.MemberService;
+import com.web.stard.domain.member.service.MemberService;
 import com.web.stard.domain.member.domain.Interest;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.domain.Profile;

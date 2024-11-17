@@ -1,6 +1,6 @@
-package com.web.stard.domain.board.global.application.impl;
+package com.web.stard.domain.board.global.service.impl;
 
-import com.web.stard.domain.board.global.application.StarScrapService;
+import com.web.stard.domain.board.global.service.StarScrapService;
 import com.web.stard.domain.board.global.domain.Post;
 import com.web.stard.domain.board.global.domain.StarScrap;
 import com.web.stard.domain.board.global.domain.enums.ActType;

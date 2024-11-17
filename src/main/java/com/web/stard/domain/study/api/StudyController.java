@@ -1,6 +1,6 @@
 package com.web.stard.domain.study.api;
 
-import com.web.stard.domain.member.application.MemberService;
+import com.web.stard.domain.member.service.MemberService;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.study.domain.dto.request.StudyRequestDto;
 import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
