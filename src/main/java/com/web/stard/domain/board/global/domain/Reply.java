@@ -1,6 +1,5 @@
 package com.web.stard.domain.board.global.domain;
 
-import com.web.stard.domain.board.global.domain.enums.Category;
 import com.web.stard.domain.board.global.domain.enums.PostType;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.global.domain.BaseEntity;
@@ -12,45 +11,27 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
-public class Post extends BaseEntity {
+public class Reply extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_id", nullable = false)
     private Long id;
-
-    @Column(nullable = false)
-    private String title;   // 제목
 
     @Column(nullable = false)
     private String content; // 내용
 
-    @Enumerated(EnumType.STRING)
-    private Category category;  // 카테고리
+    @Column(name = "target_id", nullable = false)
+    private Long targetId;  // 대상 게시글 id
 
     @Enumerated(EnumType.STRING)
     @Column(name = "post_type", nullable = false)
     private PostType postType;  // 게시글 타입
 
-    @Column(nullable = false)
-    private int hit;    // 조회수
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public void updatePost(String title, String content) {
-        this.title = title;
+    public void updateReply(String content) {
         this.content = content;
-    }
-
-    public void updateComm(String title, String content, Category category) {
-        this.title = title;
-        this.content = content;
-        this.category = category;
-    }
-
-    public void incrementHitCount() {
-        this.hit++;
     }
 }
