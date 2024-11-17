@@ -1,6 +1,6 @@
 package com.web.stard.domain.board.global.api;
 
-import com.web.stard.domain.board.global.application.StarScrapService;
+import com.web.stard.domain.board.global.service.StarScrapService;
 import com.web.stard.domain.board.global.domain.enums.ActType;
 import com.web.stard.domain.board.global.domain.enums.TableType;
 import com.web.stard.domain.member.domain.Member;

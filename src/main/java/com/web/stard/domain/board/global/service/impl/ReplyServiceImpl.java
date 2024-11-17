@@ -1,6 +1,6 @@
-package com.web.stard.domain.board.global.application.impl;
+package com.web.stard.domain.board.global.service.impl;
 
-import com.web.stard.domain.board.global.application.ReplyService;
+import com.web.stard.domain.board.global.service.ReplyService;
 import com.web.stard.domain.board.global.domain.Reply;
 import com.web.stard.domain.board.global.domain.enums.PostType;
 import com.web.stard.domain.board.global.dto.request.ReplyRequestDto;

@@ -1,4 +1,4 @@
-package com.web.stard.domain.board.global.application;
+package com.web.stard.domain.board.global.service;
 
 import com.web.stard.domain.board.global.dto.request.ReplyRequestDto;
 import com.web.stard.domain.board.global.dto.response.ReplyResponseDto;

@@ -1,6 +1,6 @@
 package com.web.stard.domain.member.api;
 
-import com.web.stard.domain.member.application.AuthService;
+import com.web.stard.domain.member.service.AuthService;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.dto.response.MemberResponseDto;

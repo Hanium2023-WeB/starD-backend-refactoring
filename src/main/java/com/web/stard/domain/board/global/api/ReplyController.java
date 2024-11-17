@@ -1,6 +1,6 @@
 package com.web.stard.domain.board.global.api;
 
-import com.web.stard.domain.board.global.application.ReplyService;
+import com.web.stard.domain.board.global.service.ReplyService;
 import com.web.stard.domain.board.global.dto.request.ReplyRequestDto;
 import com.web.stard.domain.board.global.dto.response.ReplyResponseDto;
 import com.web.stard.domain.member.domain.Member;

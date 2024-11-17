@@ -1,6 +1,6 @@
 package com.web.stard.domain.board.community.api;
 
-import com.web.stard.domain.board.global.application.PostService;
+import com.web.stard.domain.board.global.service.PostService;
 import com.web.stard.domain.board.global.domain.enums.PostType;
 import com.web.stard.domain.board.global.dto.request.PostRequestDto;
 import com.web.stard.domain.board.global.dto.response.PostResponseDto;

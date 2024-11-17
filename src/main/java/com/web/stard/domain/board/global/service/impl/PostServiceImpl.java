@@ -1,7 +1,7 @@
-package com.web.stard.domain.board.global.application.impl;
+package com.web.stard.domain.board.global.service.impl;
 
-import com.web.stard.domain.board.global.application.PostService;
-import com.web.stard.domain.board.global.application.StarScrapService;
+import com.web.stard.domain.board.global.service.PostService;
+import com.web.stard.domain.board.global.service.StarScrapService;
 import com.web.stard.domain.board.global.domain.enums.ActType;
 import com.web.stard.domain.board.global.domain.enums.Category;
 import com.web.stard.domain.board.global.domain.enums.TableType;
@@ -10,7 +10,6 @@ import com.web.stard.domain.board.global.dto.response.PostResponseDto;
 import com.web.stard.domain.board.global.domain.Post;
 import com.web.stard.domain.board.global.domain.enums.PostType;
 import com.web.stard.domain.board.global.repository.PostRepository;
-import com.web.stard.domain.board.global.repository.StarScrapRepository;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.domain.enums.Role;
 import com.web.stard.domain.member.repository.MemberRepository;

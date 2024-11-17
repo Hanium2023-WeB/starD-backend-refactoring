@@ -1,6 +1,6 @@
 package com.web.stard.global.config.security;
 
-import com.web.stard.domain.member.application.impl.UserDetailsServiceImpl;
+import com.web.stard.domain.member.service.impl.UserDetailsServiceImpl;
 import com.web.stard.global.dto.TokenInfo;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
