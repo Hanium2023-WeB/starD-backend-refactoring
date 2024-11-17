@@ -19,14 +19,14 @@ public class CommunityController {
 
     private final PostService postService;
 
-    @Operation(summary = "커뮤니티 게시글 등록")
+    @Operation(summary = "커뮤니티 게시글 등록", description = "카테고리로는 '없음', '취미', '공부', '잡담', '기타' 중 하나의 값을 전달해주세요.")
     @PostMapping
     public ResponseEntity<PostResponseDto.PostDto> createCommPost(@CurrentMember Member member,
                                                                   @Valid @RequestBody PostRequestDto.CreateCommPostDto requestDto) {
         return ResponseEntity.ok(postService.createCommPost(member, requestDto));
     }
 
-    @Operation(summary = "커뮤니티 게시글 수정")
+    @Operation(summary = "커뮤니티 게시글 수정", description = "카테고리로는 '없음', '취미', '공부', '잡담', '기타' 중 하나의 값을 전달해 주세요.")
     @PutMapping("/{commPostId}")
     public ResponseEntity<PostResponseDto.PostDto> updateCommPost(@CurrentMember Member member,
                                                                   @PathVariable(name = "commPostId") Long commPostId,
