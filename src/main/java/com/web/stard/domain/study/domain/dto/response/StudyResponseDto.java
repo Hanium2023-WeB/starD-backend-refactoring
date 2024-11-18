@@ -103,7 +103,6 @@ public class StudyResponseDto {
                     .updatedAt(study.getUpdatedAt())
                     .activityStart(study.getActivityStart())
                     .activityDeadline(study.getActivityDeadline())
-                    .recruitmentStart(study.getRecruitmentStart())
                     .recruitmentDeadline(study.getRecruitmentDeadline())
                     .city(study.getCity())
                     .district(study.getDistrict())
