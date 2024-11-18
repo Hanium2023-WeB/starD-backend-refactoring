@@ -37,4 +37,16 @@ public class ScheduleRequestDto {
         }
     }
 
+    @Getter
+    public static class UpdateDto {
+        @Schema(description = "일정명")
+        @NotBlank(message = "일정명을 입력하세요.")
+        @Size(max = 50, message = "최대 {max}자까지 입력 가능합니다.")
+        private String title;
+
+        @Schema(example = "#ffffff", description = "달력 표시 색상")
+        @NotBlank(message = "달력 표시 색상을 입력하세요.")
+        private String color;
+    }
+
 }

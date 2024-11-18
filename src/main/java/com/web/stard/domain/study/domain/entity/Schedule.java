@@ -30,4 +30,9 @@ public class Schedule {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_id")
     private Study study;
+
+    public void updateSchedule(String title, String color) {
+        this.title = title;
+        this.color = color;
+    }
 }

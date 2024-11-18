@@ -6,4 +6,6 @@ import com.web.stard.domain.study.domain.dto.response.ScheduleResponseDto;
 
 public interface ScheduleService {
     ScheduleResponseDto.ScheduleDto createSchedule(Long studyId, ScheduleRequestDto.CreateDto requestDto, Member member);
+
+    ScheduleResponseDto.ScheduleDto updateSchedule(Long studyId, Long scheduleId, ScheduleRequestDto.UpdateDto requestDto, Member member);
 }

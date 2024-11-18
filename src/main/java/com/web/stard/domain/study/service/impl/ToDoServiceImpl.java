@@ -34,6 +34,12 @@ public class ToDoServiceImpl implements ToDoService {
     private final MemberRepository memberRepository;
 
 
+    // id로 투두 찾기
+    private ToDo findToDo(Long id) {
+        return toDoRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
+    }
+
     // 투두의 스터디랑 넘어온 스터디가 같은지 확인 (혹시 모를 오류 방지)
     private void isEqualToDoStudyAndStudy(Study study, ToDo toDo) {
         if (study.getId() != toDo.getStudy().getId()) {
@@ -102,8 +108,7 @@ public class ToDoServiceImpl implements ToDoService {
         studyService.isStudyInProgress(study);
         studyService.isStudyMember(study, member);
 
-        ToDo toDo = toDoRepository.findById(toDoId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
+        ToDo toDo = findToDo(toDoId);
 
         isEqualToDoStudyAndStudy(study, toDo);
 
@@ -129,8 +134,7 @@ public class ToDoServiceImpl implements ToDoService {
         studyService.isStudyInProgress(study);
         studyService.isStudyMember(study, member);
 
-        ToDo toDo = toDoRepository.findById(toDoId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
+        ToDo toDo = findToDo(toDoId);
 
         isEqualToDoStudyAndStudy(study, toDo);
 
@@ -156,8 +160,7 @@ public class ToDoServiceImpl implements ToDoService {
         studyService.isStudyInProgress(study);
         studyService.isStudyMember(study, member);
 
-        ToDo toDo = toDoRepository.findById(toDoId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
+        ToDo toDo = findToDo(toDoId);
 
         isEqualToDoStudyAndStudy(study, toDo);
 
@@ -219,8 +222,7 @@ public class ToDoServiceImpl implements ToDoService {
         studyService.isStudyInProgress(study);
         studyService.isStudyMember(study, member);
 
-        ToDo toDo = toDoRepository.findById(toDoId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
+        ToDo toDo = findToDo(toDoId);
         Assignee assignee = assigneeRepository.findById(assigneeId)
                 .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
 
@@ -263,8 +265,7 @@ public class ToDoServiceImpl implements ToDoService {
         studyService.isStudyInProgress(study);
         studyService.isStudyMember(study, member);
 
-        ToDo toDo = toDoRepository.findById(toDoId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
+        ToDo toDo = findToDo(toDoId);
 
         isEqualToDoStudyAndStudy(study, toDo);
 
