@@ -102,8 +102,8 @@ public class MemberController {
     @Operation(summary = "사용자 전체 ToDo 조회 - 월 단위")
     @GetMapping("/to-dos")
     public ResponseEntity<List<ToDoResponseDto.MemberToDoDto>> getToDoList(@CurrentMember Member member,
-                                                                           @RequestParam int year,
-                                                                           @RequestParam int month) {
+                                                                           @RequestParam(name = "year") int year,
+                                                                           @RequestParam(name = "month") int month) {
         return ResponseEntity.ok(toDoService.getMemberToDoList(member, year, month));
     }
 
@@ -111,8 +111,8 @@ public class MemberController {
     @GetMapping("/to-dos/{studyId}")
     public ResponseEntity<List<ToDoResponseDto.MemberToDoDto>> getToDoListByStudy(@CurrentMember Member member,
                                                                                   @PathVariable(name = "studyId") Long studyId,
-                                                                                  @RequestParam int year,
-                                                                                  @RequestParam int month) {
+                                                                                  @RequestParam(name = "year") int year,
+                                                                                  @RequestParam(name = "month") int month) {
         return ResponseEntity.ok(toDoService.getMemberToDoListByStudy(studyId, member, year, month));
     }
 }

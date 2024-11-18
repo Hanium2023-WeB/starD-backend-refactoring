@@ -61,7 +61,7 @@ public class ToDoController {
                                                                 @PathVariable(name = "studyId") Long studyId,
                                                                 @PathVariable(name = "toDoId") Long toDoId,
                                                                 @PathVariable(name = "assigneeId") Long assigneeId,
-                                                                @RequestParam boolean status) {
+                                                                @RequestParam(name = "status") boolean status) {
         return ResponseEntity.ok(toDoService.updateTodoStatus(studyId, toDoId, assigneeId, status, member));
     }
 
@@ -76,8 +76,8 @@ public class ToDoController {
     @Operation(summary = "스터디 별 전체 ToDo 조회 - 월 단위")
     @GetMapping
     public ResponseEntity<List<ToDoResponseDto.ToDoDto>> getStudyToDoList(@PathVariable(name = "studyId") Long studyId,
-                                                                          @RequestParam int year,
-                                                                          @RequestParam int month) {
+                                                                          @RequestParam(name = "year") int year,
+                                                                          @RequestParam(name = "month") int month) {
         return ResponseEntity.ok(toDoService.getAllToDoListByStudy(studyId, year, month));
     }
 }
