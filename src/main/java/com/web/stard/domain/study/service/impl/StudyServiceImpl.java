@@ -102,6 +102,7 @@ public class StudyServiceImpl implements StudyService {
     public void deleteStudy(Member member, Long studyId) {
         Study study = findById(studyId);
         validateAuthor(member, study.getMember());
+        starScrapService.deletePostStarScraps(studyId, ActType.SCRAP, TableType.STUDY);
         studyRepository.delete(study);
     }
 
