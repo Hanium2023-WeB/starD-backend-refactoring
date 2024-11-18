@@ -19,7 +19,7 @@ public interface ToDoService {
 
     Long deleteToDo(Long studyId, Long toDoId, Member member);
 
-    List<ToDoResponseDto.ToDoDto> getAllToDoListByStudy(Long studyId, int year, int month);
+    List<ToDoResponseDto.ToDoDto> getAllToDoListByStudy(Long studyId, Member member, int year, int month);
 
     List<ToDoResponseDto.MemberToDoDto> getMemberToDoList(Member member, int year, int month);
 

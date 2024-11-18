@@ -14,6 +14,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ScheduleServiceImpl implements ScheduleService {
@@ -102,5 +107,56 @@ public class ScheduleServiceImpl implements ScheduleService {
         scheduleRepository.delete(schedule);
 
         return scheduleId;
+    }
+
+    /**
+     * 스터디 - 전체 일정 조회 (월 단위)
+     * 사용자 - 스터디 별 일정 조회 함께 사용
+     *
+     * @param studyId 해당 study 고유 id
+     * @param year 년도
+     * @param month 월
+     * @param member  로그인 회원
+     *
+     * @return ScheduleDto 리스트 : scheduleId, title 일정명, color 달력 표시 색상, startDate 일정일, studyId
+     */
+    @Transactional
+    @Override
+    public List<ScheduleResponseDto.ScheduleDto> getAllScheduleListByStudy(Long studyId, Member member, int year, int month) {
+        Study study = studyService.findById(studyId);
+        studyService.isStudyMember(study, member);
+
+        LocalDate start = LocalDate.of(year, month, 1);
+        LocalDate end = LocalDate.of(year, month, YearMonth.of(year, month).lengthOfMonth());
+
+        List<Schedule> scheduleList = scheduleRepository.findAllByStudyAndStartDateBetween(study, start, end);
+
+        return scheduleList.stream().map(ScheduleResponseDto.ScheduleDto::from).toList();
+    }
+
+    /**
+     * 사용자 - 전체 일정 조회 (월 단위)
+     *
+     * @param member 로그인 회원
+     * @param year 년도
+     * @param month 월
+     *
+     * @return ScheduleDto 리스트 : scheduleId, title 일정명, color 달력 표시 색상, startDate 일정일, studyId
+     */
+    @Transactional
+    @Override
+    public List<ScheduleResponseDto.ScheduleDto> getMemberScheduleList(Member member, int year, int month) {
+        LocalDate start = LocalDate.of(year, month, 1);
+        LocalDate end = LocalDate.of(year, month, YearMonth.of(year, month).lengthOfMonth());
+
+        // TODO: StudyMember 구현 시 수정
+//        List<StudyMember> studies = studyMemberRepository.findByMember(member);
+        List<Schedule> scheduleList = new ArrayList<>();
+
+//        for (StudyMember study : studies) {
+//            scheduleList.addAll(scheduleRepository.findAllByStudyAndStartDateBetween(study.getStudy(), start, end));
+//        }
+
+        return scheduleList.stream().map(ScheduleResponseDto.ScheduleDto::from).toList();
     }
 }

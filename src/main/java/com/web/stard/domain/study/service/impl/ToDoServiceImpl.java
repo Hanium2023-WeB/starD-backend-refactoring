@@ -286,8 +286,9 @@ public class ToDoServiceImpl implements ToDoService {
      */
     @Transactional
     @Override
-    public List<ToDoResponseDto.ToDoDto> getAllToDoListByStudy(Long studyId, int year, int month) {
+    public List<ToDoResponseDto.ToDoDto> getAllToDoListByStudy(Long studyId, Member member, int year, int month) {
         Study study = studyService.findById(studyId);
+        studyService.isStudyMember(study, member);
 
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = LocalDate.of(year, month, YearMonth.of(year, month).lengthOfMonth());

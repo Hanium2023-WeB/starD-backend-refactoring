@@ -75,9 +75,10 @@ public class ToDoController {
 
     @Operation(summary = "스터디 별 전체 ToDo 조회 - 월 단위")
     @GetMapping
-    public ResponseEntity<List<ToDoResponseDto.ToDoDto>> getStudyToDoList(@PathVariable(name = "studyId") Long studyId,
+    public ResponseEntity<List<ToDoResponseDto.ToDoDto>> getStudyToDoList(@CurrentMember Member member,
+                                                                          @PathVariable(name = "studyId") Long studyId,
                                                                           @RequestParam(name = "year") int year,
                                                                           @RequestParam(name = "month") int month) {
-        return ResponseEntity.ok(toDoService.getAllToDoListByStudy(studyId, year, month));
+        return ResponseEntity.ok(toDoService.getAllToDoListByStudy(studyId, member, year, month));
     }
 }

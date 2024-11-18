@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/studies/{studyId}/schedules")
 @RequiredArgsConstructor
@@ -37,9 +39,18 @@ public class ScheduleController {
 
     @Operation(summary = "일정 삭제")
     @DeleteMapping("/{scheduleId}")
-    ResponseEntity<Long> deleteSchedule(@CurrentMember Member member,
-                                        @PathVariable(name = "studyId") Long studyId,
-                                        @PathVariable(name = "scheduleId") Long scheduleId) {
+    public ResponseEntity<Long> deleteSchedule(@CurrentMember Member member,
+                                               @PathVariable(name = "studyId") Long studyId,
+                                               @PathVariable(name = "scheduleId") Long scheduleId) {
         return ResponseEntity.ok(scheduleService.deleteSchedule(studyId, scheduleId, member));
+    }
+
+    @Operation(summary = "스터디 별 일정 조회")
+    @GetMapping
+    public ResponseEntity<List<ScheduleResponseDto.ScheduleDto>> getStudyScheduleList(@CurrentMember Member member,
+                                                                                      @PathVariable(name = "studyId") Long studyId,
+                                                                                      @RequestParam(name = "year") int year,
+                                                                                      @RequestParam(name = "month") int month) {
+        return ResponseEntity.ok(scheduleService.getAllScheduleListByStudy(studyId, member, year, month));
     }
 }
