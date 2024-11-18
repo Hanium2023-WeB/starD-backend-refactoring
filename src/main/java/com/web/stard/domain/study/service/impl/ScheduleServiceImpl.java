@@ -56,7 +56,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     /**
-     * 스터디 - 일정 등록
+     * 스터디 - 일정 수정
      *
      * @param studyId 해당 study 고유 id
      * @param scheduleId 해당 일정 고유 id
@@ -79,5 +79,28 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.updateSchedule(requestDto.getTitle(), requestDto.getColor());
 
         return ScheduleResponseDto.ScheduleDto.from(schedule);
+    }
+
+    /**
+     * 스터디 - 일정 삭제
+     *
+     * @param studyId 해당 study 고유 id
+     * @param scheduleId  해당 일정 고유 id
+     * @param member  로그인 회원
+     */
+    @Transactional
+    @Override
+    public Long deleteSchedule(Long studyId, Long scheduleId, Member member) {
+        Study study = studyService.findById(studyId);
+        studyService.isStudyInProgress(study);
+        studyService.isStudyMember(study, member);
+
+        Schedule schedule = findSchedule(scheduleId);
+
+        isEqualScheduleStudyAndStudy(study, schedule);
+
+        scheduleRepository.delete(schedule);
+
+        return scheduleId;
     }
 }

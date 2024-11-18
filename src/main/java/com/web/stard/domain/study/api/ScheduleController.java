@@ -34,4 +34,12 @@ public class ScheduleController {
                                                                           @Valid @RequestBody ScheduleRequestDto.UpdateDto requestDto) {
         return ResponseEntity.ok(scheduleService.updateSchedule(studyId, scheduleId, requestDto, member));
     }
+
+    @Operation(summary = "일정 삭제")
+    @DeleteMapping("/{scheduleId}")
+    ResponseEntity<Long> deleteSchedule(@CurrentMember Member member,
+                                        @PathVariable(name = "studyId") Long studyId,
+                                        @PathVariable(name = "scheduleId") Long scheduleId) {
+        return ResponseEntity.ok(scheduleService.deleteSchedule(studyId, scheduleId, member));
+    }
 }

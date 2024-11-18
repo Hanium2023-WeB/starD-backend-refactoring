@@ -8,4 +8,6 @@ public interface ScheduleService {
     ScheduleResponseDto.ScheduleDto createSchedule(Long studyId, ScheduleRequestDto.CreateDto requestDto, Member member);
 
     ScheduleResponseDto.ScheduleDto updateSchedule(Long studyId, Long scheduleId, ScheduleRequestDto.UpdateDto requestDto, Member member);
+
+    Long deleteSchedule(Long studyId, Long scheduleId, Member member);
 }
