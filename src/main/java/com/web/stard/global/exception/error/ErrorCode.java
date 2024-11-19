@@ -44,7 +44,8 @@ public enum ErrorCode {
     // Study
     STUDY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스터디 게시글입니다."),
     STUDY_NOT_IN_PROGRESS(HttpStatus.BAD_REQUEST, "진행 중인 스터디가 아니므로 작업을 수행할 수 없습니다."),
-    STUDY_TODO_BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    STUDY_TODO_BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 투두 요청입니다."),
+    STUDY_SCHEDULE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 일정 요청입니다."),
 
     // Reply
     REPLY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다.")

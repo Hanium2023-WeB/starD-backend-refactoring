@@ -34,16 +34,10 @@ public class ToDoServiceImpl implements ToDoService {
     private final MemberRepository memberRepository;
 
 
-    // 진행 중인 스터디인지 확인
-    private void isStudyInProgress(Study study) {
-        if (study.getProgressType() != ProgressType.IN_PROGRESS) {
-            throw new CustomException(ErrorCode.STUDY_NOT_IN_PROGRESS);
-        }
-    }
-
-    // TODO : 등록하는 회원이 스터디 멤버인지 확인
-    private void isStudyMember(Study study, Member member) {
-
+    // id로 투두 찾기
+    private ToDo findToDo(Long id) {
+        return toDoRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
     }
 
     // 투두의 스터디랑 넘어온 스터디가 같은지 확인 (혹시 모를 오류 방지)
@@ -66,8 +60,8 @@ public class ToDoServiceImpl implements ToDoService {
     @Override
     public ToDoResponseDto.ToDoDto createToDo(Long studyId, ToDoRequestDto.CreateDto requestDto, Member member) {
         Study study = studyService.findById(studyId);
-        isStudyInProgress(study);
-        isStudyMember(study, member);
+        studyService.isStudyInProgress(study);
+        studyService.isStudyMember(study, member);
 
         // 투두 저장
         ToDo toDo = ToDo.builder()
@@ -111,11 +105,10 @@ public class ToDoServiceImpl implements ToDoService {
     @Override
     public ToDoResponseDto.ToDoDto updateTask(Long studyId, Long toDoId, ToDoRequestDto.TaskDto requestDto, Member member) {
         Study study = studyService.findById(studyId);
-        isStudyInProgress(study);
-        isStudyMember(study, member);
+        studyService.isStudyInProgress(study);
+        studyService.isStudyMember(study, member);
 
-        ToDo toDo = toDoRepository.findById(toDoId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
+        ToDo toDo = findToDo(toDoId);
 
         isEqualToDoStudyAndStudy(study, toDo);
 
@@ -138,11 +131,10 @@ public class ToDoServiceImpl implements ToDoService {
     @Override
     public ToDoResponseDto.ToDoDto updateDueDate(Long studyId, Long toDoId, ToDoRequestDto.DueDateDto requestDto, Member member) {
         Study study = studyService.findById(studyId);
-        isStudyInProgress(study);
-        isStudyMember(study, member);
+        studyService.isStudyInProgress(study);
+        studyService.isStudyMember(study, member);
 
-        ToDo toDo = toDoRepository.findById(toDoId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
+        ToDo toDo = findToDo(toDoId);
 
         isEqualToDoStudyAndStudy(study, toDo);
 
@@ -165,11 +157,10 @@ public class ToDoServiceImpl implements ToDoService {
     @Override
     public ToDoResponseDto.ToDoDto updateAssignee(Long studyId, Long toDoId, ToDoRequestDto.AssigneeDto requestDto, Member member) {
         Study study = studyService.findById(studyId);
-        isStudyInProgress(study);
-        isStudyMember(study, member);
+        studyService.isStudyInProgress(study);
+        studyService.isStudyMember(study, member);
 
-        ToDo toDo = toDoRepository.findById(toDoId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
+        ToDo toDo = findToDo(toDoId);
 
         isEqualToDoStudyAndStudy(study, toDo);
 
@@ -228,11 +219,10 @@ public class ToDoServiceImpl implements ToDoService {
     @Override
     public ToDoResponseDto.ToDoDto updateTodoStatus(Long studyId, Long toDoId, Long assigneeId, boolean status, Member member) {
         Study study = studyService.findById(studyId);
-        isStudyInProgress(study);
-        isStudyMember(study, member);
+        studyService.isStudyInProgress(study);
+        studyService.isStudyMember(study, member);
 
-        ToDo toDo = toDoRepository.findById(toDoId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
+        ToDo toDo = findToDo(toDoId);
         Assignee assignee = assigneeRepository.findById(assigneeId)
                 .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
 
@@ -272,11 +262,10 @@ public class ToDoServiceImpl implements ToDoService {
     @Override
     public Long deleteToDo(Long studyId, Long toDoId, Member member) {
         Study study = studyService.findById(studyId);
-        isStudyInProgress(study);
-        isStudyMember(study, member);
+        studyService.isStudyInProgress(study);
+        studyService.isStudyMember(study, member);
 
-        ToDo toDo = toDoRepository.findById(toDoId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST));
+        ToDo toDo = findToDo(toDoId);
 
         isEqualToDoStudyAndStudy(study, toDo);
 
@@ -297,8 +286,9 @@ public class ToDoServiceImpl implements ToDoService {
      */
     @Transactional
     @Override
-    public List<ToDoResponseDto.ToDoDto> getAllToDoListByStudy(Long studyId, int year, int month) {
+    public List<ToDoResponseDto.ToDoDto> getAllToDoListByStudy(Long studyId, Member member, int year, int month) {
         Study study = studyService.findById(studyId);
+        studyService.isStudyMember(study, member);
 
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = LocalDate.of(year, month, YearMonth.of(year, month).lengthOfMonth());
@@ -345,7 +335,7 @@ public class ToDoServiceImpl implements ToDoService {
     @Override
     public List<ToDoResponseDto.MemberToDoDto> getMemberToDoListByStudy(Long studyId, Member member, int year, int month) {
         Study study = studyService.findById(studyId);
-        isStudyMember(study, member);
+        studyService.isStudyMember(study, member);
 
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = LocalDate.of(year, month, YearMonth.of(year, month).lengthOfMonth());

@@ -6,6 +6,10 @@ import com.web.stard.domain.study.domain.entity.Study;
 
 public interface StudyService {
 
+    void isStudyInProgress(Study study);
+
+    void isStudyMember(Study study, Member member);
+
     Study createStudy(Member member, Study study);
 
     Study findById(Long id);

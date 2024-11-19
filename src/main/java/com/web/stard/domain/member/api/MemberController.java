@@ -7,8 +7,10 @@ import com.web.stard.domain.member.service.MemberService;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.dto.response.MemberResponseDto;
+import com.web.stard.domain.study.domain.dto.response.ScheduleResponseDto;
 import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.dto.response.ToDoResponseDto;
+import com.web.stard.domain.study.service.ScheduleService;
 import com.web.stard.domain.study.service.ToDoService;
 import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +32,7 @@ public class MemberController {
     private final StarScrapService starScrapService;
     private final PostService postService;
     private final ToDoService toDoService;
+    private final ScheduleService scheduleService;
 
     @Operation(summary = "개인정보 반환")
     @GetMapping("/edit")
@@ -102,8 +105,8 @@ public class MemberController {
     @Operation(summary = "사용자 전체 ToDo 조회 - 월 단위")
     @GetMapping("/to-dos")
     public ResponseEntity<List<ToDoResponseDto.MemberToDoDto>> getToDoList(@CurrentMember Member member,
-                                                                           @RequestParam int year,
-                                                                           @RequestParam int month) {
+                                                                           @RequestParam(name = "year") int year,
+                                                                           @RequestParam(name = "month") int month) {
         return ResponseEntity.ok(toDoService.getMemberToDoList(member, year, month));
     }
 
@@ -111,8 +114,25 @@ public class MemberController {
     @GetMapping("/to-dos/{studyId}")
     public ResponseEntity<List<ToDoResponseDto.MemberToDoDto>> getToDoListByStudy(@CurrentMember Member member,
                                                                                   @PathVariable(name = "studyId") Long studyId,
-                                                                                  @RequestParam int year,
-                                                                                  @RequestParam int month) {
+                                                                                  @RequestParam(name = "year") int year,
+                                                                                  @RequestParam(name = "month") int month) {
         return ResponseEntity.ok(toDoService.getMemberToDoListByStudy(studyId, member, year, month));
+    }
+
+    @Operation(summary = "사용자 전체 일정 조회 - 월 단위")
+    @GetMapping("/schedules")
+    public ResponseEntity<List<ScheduleResponseDto.ScheduleDto>> getScheduleList(@CurrentMember Member member,
+                                                                                 @RequestParam(name = "year") int year,
+                                                                                 @RequestParam(name = "month") int month) {
+        return ResponseEntity.ok(scheduleService.getMemberScheduleList(member, year, month));
+    }
+
+    @Operation(summary = "사용자 스터디 별 일정 조회 - 월 단위")
+    @GetMapping("/schedules/{studyId}")
+    public ResponseEntity<List<ScheduleResponseDto.ScheduleDto>> getScheduleListByStudy(@CurrentMember Member member,
+                                                                                        @PathVariable(name = "studyId") Long studyId,
+                                                                                        @RequestParam(name = "year") int year,
+                                                                                        @RequestParam(name = "month") int month) {
+        return ResponseEntity.ok(scheduleService.getAllScheduleListByStudy(studyId, member, year, month));
     }
 }
