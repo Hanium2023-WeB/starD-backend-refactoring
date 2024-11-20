@@ -9,7 +9,6 @@ import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.domain.entity.StudyTag;
 import com.web.stard.domain.study.domain.enums.ProgressType;
-import com.web.stard.domain.study.domain.enums.ProgressType;
 import com.web.stard.domain.study.repository.StudyRepository;
 import com.web.stard.domain.study.repository.StudyTagRepository;
 import com.web.stard.domain.study.service.StudyService;
@@ -194,6 +193,11 @@ public class StudyServiceImpl implements StudyService {
         }
     }
 
+    /**
+     * 스터디 모집 게시글 태그 생성
+     *
+     * @param study 스터디 모집 게시글 정보
+     */
     private void createStudyTags(Study study) {
         List<String> tagTexts = Arrays.stream(study.getTagText().split(","))
                 .map(String::trim)
