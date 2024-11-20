@@ -1,6 +1,7 @@
 package com.web.stard.domain.study.domain.dto.request;
 
 import com.web.stard.domain.study.domain.entity.Study;
+import com.web.stard.domain.study.domain.entity.StudyApplicant;
 import com.web.stard.domain.study.domain.enums.ActivityType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
@@ -9,7 +10,7 @@ import java.time.LocalDate;
 
 public class StudyRequestDto {
 
-    public record SaveDto(
+    public record Save(
 
             @Schema(description = "제목")
             @NotBlank(message = "제목을 입력하세요.")
@@ -67,6 +68,16 @@ public class StudyRequestDto {
                     .activityStart(activityStart)
                     .activityDeadline(activityDeadline)
                     .recruitmentDeadline(recruitmentDeadline).build();
+        }
+    }
+
+    public record ApplyStudy(
+            String introduce
+    ) {
+        public StudyApplicant toEntity() {
+            return StudyApplicant.builder()
+                    .introduction(introduce)
+                    .build();
         }
     }
 
