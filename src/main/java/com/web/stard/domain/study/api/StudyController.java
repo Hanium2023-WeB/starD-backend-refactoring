@@ -6,8 +6,8 @@ import com.web.stard.domain.study.domain.dto.request.StudyRequestDto;
 import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.service.StudyService;
-import com.web.stard.domain.study.service.StudyTagService;
 import com.web.stard.global.domain.CurrentMember;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,20 +20,37 @@ public class StudyController {
 
     private final MemberService memberService;
     private final StudyService studyService;
-    private final StudyTagService studyTagService;
 
+    @Operation(summary = "스터디 모집 게시글 생성")
     @PostMapping
-    public ResponseEntity<Long> createStudy(@CurrentMember Member member, @Valid @RequestBody StudyRequestDto.CreateDto request) {
+    public ResponseEntity<Long> createStudy(@CurrentMember Member member,
+                                            @Valid @RequestBody StudyRequestDto.SaveDto request) {
         Study study = request.toEntity();
         study.updateMember(member);
         Study saveStudy = studyService.createStudy(member, study);
-        studyTagService.createStudyTags(saveStudy);
         return ResponseEntity.ok().body(saveStudy.getId());
     }
 
+    @Operation(summary = "스터디 모집 게시글 수정")
+    @PutMapping("/{studyId}")
+    public ResponseEntity<Long> updateStudy(@CurrentMember Member member, @PathVariable("studyId") Long studyId,
+                                            @Valid @RequestBody StudyRequestDto.SaveDto request) {
+        Study updateStudy = request.toEntity();
+        updateStudy = studyService.updateStudy(member, updateStudy, studyId);
+        return ResponseEntity.ok().body(updateStudy.getId());
+    }
+
+    @Operation(summary = "스터디 모집 게시글 삭제")
+    @DeleteMapping("/{studyId}")
+    public ResponseEntity<Void> deleteStudy(@CurrentMember Member member, @PathVariable("studyId") Long studyId) {
+        studyService.deleteStudy(member, studyId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "스터디 모집 게시글 상세 조회")
     @GetMapping("/{studyId}")
     public ResponseEntity<StudyResponseDto.DetailInfo> findStudyDetailInfo(@CurrentMember Member member,
-                                                                @PathVariable("studyId") Long studyId) {
+                                                                           @PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok().body(studyService.findStudyDetailInfo(studyId, member));
     }
 

@@ -15,4 +15,8 @@ public interface StudyService {
     Study findById(Long id);
 
     StudyResponseDto.DetailInfo findStudyDetailInfo(Long studyId, Member member);
+
+    Study updateStudy(Member member, Study updateStudy, Long studyId);
+
+    void deleteStudy(Member member, Long studyId);
 }

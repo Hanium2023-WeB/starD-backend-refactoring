@@ -26,7 +26,6 @@ public class Study extends BaseEntity {
             int capacity,
             LocalDate activityStart,
             LocalDate activityDeadline,
-            LocalDate recruitmentStart,
             LocalDate recruitmentDeadline,
             ActivityType activityType,
             String city,
@@ -40,7 +39,6 @@ public class Study extends BaseEntity {
         this.hit = 0L;
         this.activityStart = activityStart;
         this.activityDeadline = activityDeadline;
-        this.recruitmentStart = recruitmentStart;
         this.recruitmentDeadline = recruitmentDeadline;
         this.postType = PostType.STUDY;
         this.progressType = ProgressType.NOT_STARTED;
@@ -49,7 +47,7 @@ public class Study extends BaseEntity {
         this.tags = new ArrayList<>();
         this.city = (activityType.equals(ActivityType.OFFLINE)) ? null : city;
         this.district = (activityType.equals(ActivityType.OFFLINE)) ? null : district;
-        this.recruitmentType = (LocalDate.now().isBefore(recruitmentStart)) ? RecruitmentType.PRE_RECRUITMENT : RecruitmentType.RECRUITING;
+        this.recruitmentType = RecruitmentType.RECRUITING;
     }
 
     @Id
@@ -101,10 +99,6 @@ public class Study extends BaseEntity {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate activityDeadline;
 
-    @Column(name = "recruitment_start")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate recruitmentStart;
-
     @Column(name = "recruitment_deadline")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate recruitmentDeadline;
@@ -116,13 +110,49 @@ public class Study extends BaseEntity {
         this.member = member;
     }
 
-    public void updateStudy(String title, String content) {
-        if (!this.title.equals(title)) {
-            this.title = title;
+    public void updateStudy(Study updateStudy) {
+        if (!this.title.equals(updateStudy.getTitle())) {
+            this.title = updateStudy.getTitle();
         }
 
-        if (!this.content.equals(content)) {
-            this.content = content;
+        if (!this.content.equals(updateStudy.getContent())) {
+            this.content = updateStudy.getContent();
+        }
+
+        if (!(this.capacity == updateStudy.getCapacity())) {
+            this.capacity = updateStudy.getCapacity();
+        }
+
+        if (!this.activityType.equals(updateStudy.getActivityType())) {
+            this.activityType = updateStudy.getActivityType();
+        }
+
+        if (!this.city.equals(updateStudy.getCity())) {
+            this.city = updateStudy.getCity();
+        }
+
+        if (!this.district.equals(updateStudy.getDistrict())) {
+            this.district = updateStudy.getDistrict();
+        }
+
+        if (!this.tagText.equals(updateStudy.getTagText())) {
+            this.tagText = updateStudy.getTagText();
+        }
+
+        if (!this.activityStart.equals(updateStudy.getActivityStart())) {
+            this.activityStart = updateStudy.getActivityStart();
+        }
+
+        if (!this.activityDeadline.equals(updateStudy.getActivityDeadline())) {
+            this.activityDeadline = updateStudy.getActivityDeadline();
+        }
+
+        if (!this.recruitmentDeadline.equals(updateStudy.getRecruitmentDeadline())) {
+            this.recruitmentDeadline = updateStudy.getRecruitmentDeadline();
+        }
+
+        if (!this.recruitmentType.equals(RecruitmentType.RECRUITING)) {
+            this.recruitmentType = RecruitmentType.RECRUITING;
         }
     }
 
@@ -130,7 +160,6 @@ public class Study extends BaseEntity {
         if (studyTags.isEmpty()) {
             studyTags = new ArrayList<>();
         }
-
         this.tags.addAll(studyTags);
     }
 }

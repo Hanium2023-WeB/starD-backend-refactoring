@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 public class StudyRequestDto {
 
-    public record CreateDto(
+    public record SaveDto(
 
             @Schema(description = "제목")
             @NotBlank(message = "제목을 입력하세요.")
@@ -51,10 +51,6 @@ public class StudyRequestDto {
             LocalDate activityDeadline,
 
             @Schema(description = "스터디 모집 마감일")
-            @NotNull(message = "스터디 모집 시작일을 선택하세요.")
-            LocalDate recruitmentStart,
-
-            @Schema(description = "스터디 모집 마감일")
             @NotNull(message = "스터디 모집 마감일을 선택하세요.")
             LocalDate recruitmentDeadline
     ) {
@@ -70,7 +66,6 @@ public class StudyRequestDto {
                     .district(district)
                     .activityStart(activityStart)
                     .activityDeadline(activityDeadline)
-                    .recruitmentStart(recruitmentStart)
                     .recruitmentDeadline(recruitmentDeadline).build();
         }
     }

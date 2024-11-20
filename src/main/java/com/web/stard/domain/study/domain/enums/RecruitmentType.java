@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 
 @Getter
 public enum RecruitmentType {
-    PRE_RECRUITMENT("모집 전"),
     RECRUITING("모집 중"),
     COMPLETED("모집 완료"),
     UNKNOWN("알 수 없음");
