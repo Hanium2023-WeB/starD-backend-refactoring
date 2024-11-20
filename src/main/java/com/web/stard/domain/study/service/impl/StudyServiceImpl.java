@@ -9,6 +9,7 @@ import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.domain.entity.StudyTag;
 import com.web.stard.domain.study.domain.enums.ProgressType;
+import com.web.stard.domain.study.domain.enums.ProgressType;
 import com.web.stard.domain.study.repository.StudyRepository;
 import com.web.stard.domain.study.repository.StudyTagRepository;
 import com.web.stard.domain.study.service.StudyService;
@@ -31,6 +32,20 @@ public class StudyServiceImpl implements StudyService {
     private final MemberRepository memberRepository;
     private final StudyTagRepository studyTagRepository;
     private final TagRepository tagRepository;
+
+    // 진행 중인 스터디인지 확인
+    @Override
+    public void isStudyInProgress(Study study) {
+        if (study.getProgressType() != ProgressType.IN_PROGRESS) {
+            throw new CustomException(ErrorCode.STUDY_NOT_IN_PROGRESS);
+        }
+    }
+
+    // TODO : 등록하는 회원이 스터디 멤버인지 확인
+    @Override
+    public void isStudyMember(Study study, Member member) {
+
+    }
 
     /**
      * 스터디 모집 게시글 생성
