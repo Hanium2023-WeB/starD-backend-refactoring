@@ -21,7 +21,8 @@ public class StudyMember {
         this.study = study;
         this.member = member;
         this.studyRemoved = false;
-        this.commentNotification = false;
+        this.commentNotification = true;
+        this.scheduleNotification = true;
     }
 
     @Id
@@ -41,6 +42,9 @@ public class StudyMember {
 
     @Column(nullable = false)
     private boolean studyRemoved;
+
+    @Column(nullable = false)
+    private boolean scheduleNotification;
 
     public void updateStudyRemoved(boolean studyRemoved) {
         this.studyRemoved = studyRemoved;

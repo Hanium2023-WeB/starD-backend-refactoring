@@ -74,7 +74,7 @@ public class StudyController {
     @Operation(summary = "스터디 신청자 목록 조회")
     @GetMapping("/{studyId}/applications")
     public ResponseEntity<List<StudyResponseDto.StudyApplicantInfo>> getApplicants(@CurrentMember Member member,
-                                                                                   @PathVariable("studyId") long studyId) {
+                                                                                   @PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok().body(studyService.getApplicants(member, studyId).stream()
                 .map(StudyResponseDto.StudyApplicantInfo::toDto).toList());
     }
