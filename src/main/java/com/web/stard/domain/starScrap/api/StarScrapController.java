@@ -1,0 +1,63 @@
+package com.web.stard.domain.starScrap.api;
+
+import com.web.stard.domain.starScrap.service.StarScrapService;
+import com.web.stard.domain.starScrap.domain.enums.ActType;
+import com.web.stard.domain.starScrap.domain.enums.TableType;
+import com.web.stard.domain.member.domain.entity.Member;
+import com.web.stard.global.domain.CurrentMember;
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+public class StarScrapController {
+
+    private final StarScrapService starScrapService;
+
+    @Operation(summary = "게시글 공감 등록")
+    @PostMapping("/stars/{postId}")
+    public ResponseEntity<Long> addPostStar(@CurrentMember Member member,
+                                            @PathVariable(name = "postId") Long postId) {
+        return ResponseEntity.ok(starScrapService.addStarScrap(member, postId, ActType.STAR, TableType.POST));
+    }
+
+    @Operation(summary = "스터디 스크랩 등록")
+    @PostMapping("/scraps/studies/{studyId}")
+    public ResponseEntity<Long> addStudyScrap(@CurrentMember Member member,
+                                              @PathVariable(name = "studyId") Long studyId) {
+        return ResponseEntity.ok(starScrapService.addStarScrap(member, studyId, ActType.SCRAP, TableType.STUDY));
+    }
+
+    @Operation(summary = "스터디 게시글 스크랩 등록")
+    @PostMapping("/scraps/study-posts/{studyPostId}")
+    public ResponseEntity<Long> addStudyPostScrap(@CurrentMember Member member,
+                                                  @PathVariable(name = "studyPostId") Long studyPostId) {
+        return ResponseEntity.ok(starScrapService.addStarScrap(member, studyPostId, ActType.SCRAP, TableType.STUDYPOST));
+    }
+
+    @Operation(summary = "게시글 공감 삭제")
+    @DeleteMapping("/stars/{postId}")
+    public ResponseEntity<Boolean> deletePostStar(@CurrentMember Member member,
+                                                  @PathVariable(name = "postId") Long postId) {
+        return ResponseEntity.ok(starScrapService.deleteStarScrap(member, postId, ActType.STAR, TableType.POST));
+    }
+
+    @Operation(summary = "스터디 스크랩 삭제")
+    @DeleteMapping("/scraps/studies/{studyId}")
+    public ResponseEntity<Boolean> deleteStudyScrap(@CurrentMember Member member,
+                                                    @PathVariable(name = "studyId") Long studyId) {
+        return ResponseEntity.ok(starScrapService.deleteStarScrap(member, studyId, ActType.SCRAP, TableType.STUDY));
+    }
+
+    @Operation(summary = "스터디 게시글 스크랩 삭제")
+    @DeleteMapping("/scraps/study-posts/{studyPostId}")
+    public ResponseEntity<Boolean> deleteStudyPostScrap(@CurrentMember Member member,
+                                                        @PathVariable(name = "studyPostId") Long studyPostId) {
+        return ResponseEntity.ok(starScrapService.deleteStarScrap(member, studyPostId, ActType.SCRAP, TableType.STUDYPOST));
+    }
+}

@@ -1,13 +1,12 @@
 package com.web.stard.domain.study.service.impl;
 
-import com.web.stard.domain.member.domain.Member;
+import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.domain.study.domain.dto.request.ToDoRequestDto;
 import com.web.stard.domain.study.domain.dto.response.ToDoResponseDto;
 import com.web.stard.domain.study.domain.entity.Assignee;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.domain.entity.ToDo;
-import com.web.stard.domain.study.domain.enums.ProgressType;
 import com.web.stard.domain.study.repository.AssigneeRepository;
 import com.web.stard.domain.study.repository.ToDoRepository;
 import com.web.stard.domain.study.service.StudyService;

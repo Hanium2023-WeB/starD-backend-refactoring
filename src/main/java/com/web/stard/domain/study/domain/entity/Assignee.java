@@ -1,6 +1,6 @@
 package com.web.stard.domain.study.domain.entity;
 
-import com.web.stard.domain.member.domain.Member;
+import com.web.stard.domain.member.domain.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 

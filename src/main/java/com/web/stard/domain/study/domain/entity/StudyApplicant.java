@@ -1,7 +1,7 @@
 package com.web.stard.domain.study.domain.entity;
 
 
-import com.web.stard.domain.member.domain.Member;
+import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.study.domain.enums.ApplicationStatus;
 import com.web.stard.global.domain.BaseEntity;
 import jakarta.persistence.*;

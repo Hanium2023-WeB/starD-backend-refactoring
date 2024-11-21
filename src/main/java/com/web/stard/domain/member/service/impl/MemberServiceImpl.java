@@ -1,12 +1,12 @@
 package com.web.stard.domain.member.service.impl;
 
 import com.web.stard.domain.member.service.MemberService;
-import com.web.stard.domain.member.domain.Interest;
-import com.web.stard.domain.member.domain.Member;
-import com.web.stard.domain.member.domain.Profile;
+import com.web.stard.domain.member.domain.entity.Interest;
+import com.web.stard.domain.member.domain.entity.Member;
+import com.web.stard.domain.member.domain.entity.Profile;
 import com.web.stard.domain.member.domain.enums.InterestField;
-import com.web.stard.domain.member.dto.request.MemberRequestDto;
-import com.web.stard.domain.member.dto.response.MemberResponseDto;
+import com.web.stard.domain.member.domain.dto.request.MemberRequestDto;
+import com.web.stard.domain.member.domain.dto.response.MemberResponseDto;
 import com.web.stard.domain.member.repository.InterestRepository;
 import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.global.config.aws.S3Manager;

@@ -1,9 +1,9 @@
 package com.web.stard.domain.study.service.impl;
 
-import com.web.stard.domain.board.global.service.StarScrapService;
-import com.web.stard.domain.board.global.domain.enums.ActType;
-import com.web.stard.domain.board.global.domain.enums.TableType;
-import com.web.stard.domain.member.domain.Member;
+import com.web.stard.domain.starScrap.service.StarScrapService;
+import com.web.stard.domain.starScrap.domain.enums.ActType;
+import com.web.stard.domain.starScrap.domain.enums.TableType;
+import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.entity.Study;

@@ -1,12 +1,12 @@
 package com.web.stard.domain.member.api;
 
-import com.web.stard.domain.board.global.service.PostService;
-import com.web.stard.domain.board.global.service.StarScrapService;
-import com.web.stard.domain.board.global.dto.response.PostResponseDto;
+import com.web.stard.domain.board.service.PostService;
+import com.web.stard.domain.starScrap.service.StarScrapService;
+import com.web.stard.domain.board.domain.dto.response.PostResponseDto;
 import com.web.stard.domain.member.service.MemberService;
-import com.web.stard.domain.member.domain.Member;
-import com.web.stard.domain.member.dto.request.MemberRequestDto;
-import com.web.stard.domain.member.dto.response.MemberResponseDto;
+import com.web.stard.domain.member.domain.entity.Member;
+import com.web.stard.domain.member.domain.dto.request.MemberRequestDto;
+import com.web.stard.domain.member.domain.dto.response.MemberResponseDto;
 import com.web.stard.domain.study.domain.dto.response.ScheduleResponseDto;
 import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.dto.response.ToDoResponseDto;

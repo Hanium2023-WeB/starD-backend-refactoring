@@ -1,9 +1,9 @@
 package com.web.stard.domain.member.api;
 
 import com.web.stard.domain.member.service.AuthService;
-import com.web.stard.domain.member.domain.Member;
-import com.web.stard.domain.member.dto.request.MemberRequestDto;
-import com.web.stard.domain.member.dto.response.MemberResponseDto;
+import com.web.stard.domain.member.domain.entity.Member;
+import com.web.stard.domain.member.domain.dto.request.MemberRequestDto;
+import com.web.stard.domain.member.domain.dto.response.MemberResponseDto;
 import com.web.stard.global.domain.CurrentMember;
 import com.web.stard.global.dto.TokenInfo;
 import com.web.stard.global.utils.HeaderUtils;
