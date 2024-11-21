@@ -7,8 +7,11 @@ import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.entity.Study;
+import com.web.stard.domain.study.domain.entity.StudyApplicant;
 import com.web.stard.domain.study.domain.entity.StudyTag;
+import com.web.stard.domain.study.domain.enums.ApplicationStatus;
 import com.web.stard.domain.study.domain.enums.ProgressType;
+import com.web.stard.domain.study.repository.StudyApplicantRepository;
 import com.web.stard.domain.study.repository.StudyRepository;
 import com.web.stard.domain.study.repository.StudyTagRepository;
 import com.web.stard.domain.study.service.StudyService;
@@ -31,6 +34,7 @@ public class StudyServiceImpl implements StudyService {
     private final MemberRepository memberRepository;
     private final StudyTagRepository studyTagRepository;
     private final TagRepository tagRepository;
+    private final StudyApplicantRepository studyApplicantRepository;
 
     // 진행 중인 스터디인지 확인
     @Override
@@ -121,6 +125,73 @@ public class StudyServiceImpl implements StudyService {
     }
 
     /**
+     * 스터디 참여 신청
+     *
+     * @param member  로그인한 회원 정보
+     * @param studyId 스터디 모집 게시글 id
+     */
+    @Override
+    @Transactional
+    public void registerApplication(Member member, Long studyId, StudyApplicant studyApplicant) {
+        member = memberRepository.findById(member.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Study study = findById(studyId);
+
+        if (studyApplicantRepository.existsByMemberAndStudy(member, study)) {
+            throw new CustomException(ErrorCode.STUDY_DUPLICATE_APPLICATION);
+        }
+
+        studyApplicantRepository.save(StudyApplicant.builder()
+                .member(member)
+                .study(study)
+                .introduction(studyApplicant.getIntroduction())
+                .build());
+    }
+
+    /**
+     * 스터디 참여자 선택
+     *
+     * @param member        로그인한 회원 정보
+     * @param studyId       스터디 모집 게시글 id
+     * @param applicationId 스터디 참여자 id
+     */
+    @Override
+    @Transactional
+    public void selectApplicant(Member member, Long studyId, Long applicationId) {
+        member = memberRepository.findById(member.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Study study = findById(studyId);
+        validateAuthor(member, study.getMember());
+
+        StudyApplicant applicant = studyApplicantRepository.findById(applicationId).orElseThrow(()
+                -> new CustomException(ErrorCode.STUDY_APPLICATION_NOT_FOUND));
+
+        if (applicant.getStatus().equals(ApplicationStatus.ACCEPTED)) {
+            applicant.updateStatus(ApplicationStatus.REJECTED);
+        } else {
+            applicant.updateStatus(ApplicationStatus.ACCEPTED);
+        }
+
+    }
+
+    /**
+     * 스터디 신청자 목록 조회
+     *
+     * @param member  로그인한 회원 정보
+     * @param studyId 스터디 모집 게시글 id
+     */
+    @Override
+    @Transactional
+    public List<StudyApplicant> getApplicants(Member member, Long studyId) {
+        member = memberRepository.findById(member.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Study study = findById(studyId);
+        validateAuthor(member, study.getMember());
+
+        return studyApplicantRepository.findByStudy(study);
+    }
+
+    /**
      * 스터디 모집 게시글 작성자 확인
      *
      * @param member 로그인한 회원 정보
@@ -146,8 +217,8 @@ public class StudyServiceImpl implements StudyService {
     /**
      * 스터디 모집 게시글 태그 수정
      *
-     * @param study
-     * @param newTagText
+     * @param study      스터디 모집 게시글 정보
+     * @param newTagText 새로운 태그 문자열
      */
     private void updateStudyTags(Study study, String newTagText) {
         List<Tag> existingStudyTags = studyTagRepository.findByStudy(study);

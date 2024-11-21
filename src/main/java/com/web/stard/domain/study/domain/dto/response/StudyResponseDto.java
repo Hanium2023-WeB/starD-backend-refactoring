@@ -3,7 +3,9 @@ package com.web.stard.domain.study.domain.dto.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.web.stard.domain.member.domain.Member;
 import com.web.stard.domain.study.domain.entity.Study;
+import com.web.stard.domain.study.domain.entity.StudyApplicant;
 import com.web.stard.domain.study.domain.enums.ActivityType;
+import com.web.stard.domain.study.domain.enums.ApplicationStatus;
 import com.web.stard.domain.study.domain.enums.ProgressType;
 import com.web.stard.domain.study.domain.enums.RecruitmentType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -126,6 +128,31 @@ public class StudyResponseDto {
                     .currentPage(studyPosts.getNumber() + 1)
                     .totalPages(studyPosts.getTotalPages())
                     .isLast(studyPosts.isLast())
+                    .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    public static class StudyApplicantInfo {
+        @Schema(description = "스터디 참여 id")
+        private Long applicantId;
+
+        @Schema(description = "스터디 참여자 닉네임")
+        private String nickname;
+
+        @Schema(description = "스터디 지원 동기")
+        private String introduce;
+
+        @Schema(description = "스터디 신청 상태")
+        private ApplicationStatus status;
+
+        public static StudyApplicantInfo toDto(StudyApplicant studyApplicant) {
+            return StudyApplicantInfo.builder()
+                    .applicantId(studyApplicant.getId())
+                    .introduce(studyApplicant.getIntroduction())
+                    .nickname(studyApplicant.getMember().getNickname())
+                    .status(studyApplicant.getStatus())
                     .build();
         }
     }

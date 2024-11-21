@@ -48,6 +48,8 @@ public enum ErrorCode {
     STUDY_NOT_EDITABLE(HttpStatus.BAD_REQUEST, "진행 전인 스터디만 수정 및 삭제가 가능합니다."),
     STUDY_TODO_BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 투두 요청입니다."),
     STUDY_SCHEDULE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 일정 요청입니다."),
+    STUDY_DUPLICATE_APPLICATION(HttpStatus.BAD_REQUEST,"중복 신청은 불가능합니다."),
+    STUDY_APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스터디 신청자입니다."),
 
     // Reply
     REPLY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다.")
