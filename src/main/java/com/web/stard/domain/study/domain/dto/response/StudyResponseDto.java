@@ -1,7 +1,7 @@
 package com.web.stard.domain.study.domain.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.web.stard.domain.member.domain.Member;
+import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.domain.entity.StudyApplicant;
 import com.web.stard.domain.study.domain.enums.ActivityType;

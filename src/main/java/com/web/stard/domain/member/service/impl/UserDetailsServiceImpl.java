@@ -1,6 +1,6 @@
 package com.web.stard.domain.member.service.impl;
 
-import com.web.stard.domain.member.domain.Member;
+import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.global.domain.MemberAdapter;
 import com.web.stard.global.exception.CustomException;

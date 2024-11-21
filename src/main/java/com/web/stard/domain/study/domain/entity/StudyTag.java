@@ -1,6 +1,5 @@
 package com.web.stard.domain.study.domain.entity;
 
-import com.web.stard.domain.tag.domain.entity.Tag;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

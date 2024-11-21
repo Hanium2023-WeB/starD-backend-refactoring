@@ -1,7 +1,7 @@
 package com.web.stard.domain.study.domain.entity;
 
-import com.web.stard.domain.board.global.domain.enums.PostType;
-import com.web.stard.domain.member.domain.Member;
+import com.web.stard.domain.post.domain.enums.PostType;
+import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.study.domain.enums.ActivityType;
 import com.web.stard.domain.study.domain.enums.ProgressType;
 import com.web.stard.domain.study.domain.enums.RecruitmentType;

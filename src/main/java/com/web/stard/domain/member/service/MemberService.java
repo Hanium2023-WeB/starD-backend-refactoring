@@ -1,8 +1,8 @@
 package com.web.stard.domain.member.service;
 
-import com.web.stard.domain.member.domain.Member;
-import com.web.stard.domain.member.dto.request.MemberRequestDto;
-import com.web.stard.domain.member.dto.response.MemberResponseDto;
+import com.web.stard.domain.member.domain.entity.Member;
+import com.web.stard.domain.member.domain.dto.request.MemberRequestDto;
+import com.web.stard.domain.member.domain.dto.response.MemberResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
