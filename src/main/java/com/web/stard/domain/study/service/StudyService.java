@@ -27,5 +27,5 @@ public interface StudyService {
 
     void selectApplicant(Member member, Long studyId, Long applicationId);
 
-    List<StudyApplicant> getApplicants(Member member, long studyId);
+    List<StudyApplicant> getApplicants(Member member, Long studyId);
 }
