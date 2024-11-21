@@ -1,12 +1,12 @@
 package com.web.stard.domain.starScrap.service.impl;
 
 import com.web.stard.domain.starScrap.service.StarScrapService;
-import com.web.stard.domain.board.domain.entity.Post;
+import com.web.stard.domain.post.domain.entity.Post;
 import com.web.stard.domain.starScrap.domain.entity.StarScrap;
 import com.web.stard.domain.starScrap.domain.enums.ActType;
 import com.web.stard.domain.starScrap.domain.enums.TableType;
-import com.web.stard.domain.board.domain.dto.response.PostResponseDto;
-import com.web.stard.domain.board.repository.PostRepository;
+import com.web.stard.domain.post.domain.dto.response.PostResponseDto;
+import com.web.stard.domain.post.repository.PostRepository;
 import com.web.stard.domain.starScrap.repository.StarScrapRepository;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.domain.enums.Role;

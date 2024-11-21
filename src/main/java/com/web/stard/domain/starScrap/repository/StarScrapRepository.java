@@ -1,6 +1,6 @@
 package com.web.stard.domain.starScrap.repository;
 
-import com.web.stard.domain.board.domain.entity.Post;
+import com.web.stard.domain.post.domain.entity.Post;
 import com.web.stard.domain.starScrap.domain.entity.StarScrap;
 import com.web.stard.domain.starScrap.domain.enums.ActType;
 import com.web.stard.domain.starScrap.domain.enums.TableType;

@@ -2,10 +2,10 @@ package com.web.stard.domain.reply.service.impl;
 
 import com.web.stard.domain.reply.service.ReplyService;
 import com.web.stard.domain.reply.domain.entity.Reply;
-import com.web.stard.domain.board.domain.enums.PostType;
+import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.reply.domain.dto.request.ReplyRequestDto;
 import com.web.stard.domain.reply.domain.dto.response.ReplyResponseDto;
-import com.web.stard.domain.board.repository.PostRepository;
+import com.web.stard.domain.post.repository.PostRepository;
 import com.web.stard.domain.reply.repository.ReplyRepository;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.repository.MemberRepository;

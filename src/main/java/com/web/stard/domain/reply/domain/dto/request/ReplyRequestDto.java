@@ -1,7 +1,7 @@
 package com.web.stard.domain.reply.domain.dto.request;
 
 import com.web.stard.domain.reply.domain.entity.Reply;
-import com.web.stard.domain.board.domain.enums.PostType;
+import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.member.domain.entity.Member;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

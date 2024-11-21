@@ -2,7 +2,7 @@ package com.web.stard.domain.starScrap.service;
 
 import com.web.stard.domain.starScrap.domain.enums.ActType;
 import com.web.stard.domain.starScrap.domain.enums.TableType;
-import com.web.stard.domain.board.domain.dto.response.PostResponseDto;
+import com.web.stard.domain.post.domain.dto.response.PostResponseDto;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 

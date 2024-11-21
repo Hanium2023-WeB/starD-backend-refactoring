@@ -1,9 +1,9 @@
 package com.web.stard.domain.admin.api;
 
-import com.web.stard.domain.board.service.PostService;
-import com.web.stard.domain.board.domain.enums.PostType;
-import com.web.stard.domain.board.domain.dto.request.PostRequestDto;
-import com.web.stard.domain.board.domain.dto.response.PostResponseDto;
+import com.web.stard.domain.post.service.PostService;
+import com.web.stard.domain.post.domain.enums.PostType;
+import com.web.stard.domain.post.domain.dto.request.PostRequestDto;
+import com.web.stard.domain.post.domain.dto.response.PostResponseDto;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;

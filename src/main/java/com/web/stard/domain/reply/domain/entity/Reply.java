@@ -1,6 +1,6 @@
 package com.web.stard.domain.reply.domain.entity;
 
-import com.web.stard.domain.board.domain.enums.PostType;
+import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.global.domain.BaseEntity;
 import jakarta.persistence.*;
