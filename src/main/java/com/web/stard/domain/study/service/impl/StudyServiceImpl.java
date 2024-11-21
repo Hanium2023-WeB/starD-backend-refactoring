@@ -182,7 +182,7 @@ public class StudyServiceImpl implements StudyService {
      */
     @Override
     @Transactional
-    public List<StudyApplicant> getApplicants(Member member, long studyId) {
+    public List<StudyApplicant> getApplicants(Member member, Long studyId) {
         member = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         Study study = findById(studyId);
