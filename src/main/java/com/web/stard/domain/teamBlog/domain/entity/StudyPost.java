@@ -1,7 +1,8 @@
-package com.web.stard.domain.study.domain.entity;
+package com.web.stard.domain.teamBlog.domain.entity;
 
-import com.web.stard.domain.board.global.domain.enums.PostType;
-import com.web.stard.domain.member.domain.Member;
+import com.web.stard.domain.post.domain.enums.PostType;
+import com.web.stard.domain.study.domain.entity.Study;
+import com.web.stard.domain.study.domain.entity.StudyMember;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,7 +23,7 @@ public class StudyPost {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_member_id", nullable = false)
-    private Member member; // TODO: StudyMember로 변경
+    private StudyMember studyMember; // TODO: StudyMember로 변경
 
     @Column(nullable = false)
     private String title;   // 제목

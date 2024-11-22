@@ -11,12 +11,9 @@ import com.web.stard.domain.study.domain.entity.StudyApplicant;
 import com.web.stard.domain.study.domain.entity.StudyTag;
 import com.web.stard.domain.study.domain.enums.ApplicationStatus;
 import com.web.stard.domain.study.domain.enums.ProgressType;
-import com.web.stard.domain.study.repository.StudyApplicantRepository;
-import com.web.stard.domain.study.repository.StudyRepository;
-import com.web.stard.domain.study.repository.StudyTagRepository;
+import com.web.stard.domain.study.repository.*;
 import com.web.stard.domain.study.service.StudyService;
 import com.web.stard.domain.study.domain.entity.Tag;
-import com.web.stard.domain.study.repository.TagRepository;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +32,7 @@ public class StudyServiceImpl implements StudyService {
     private final StudyTagRepository studyTagRepository;
     private final TagRepository tagRepository;
     private final StudyApplicantRepository studyApplicantRepository;
+    private final StudyMemberRepository studyMemberRepository;
 
     // 진행 중인 스터디인지 확인
     @Override
@@ -44,10 +42,11 @@ public class StudyServiceImpl implements StudyService {
         }
     }
 
-    // TODO : 등록하는 회원이 스터디 멤버인지 확인
     @Override
     public void isStudyMember(Study study, Member member) {
-
+        if(!studyMemberRepository.existsByStudyAndMember(study, member)) {
+            throw new CustomException(ErrorCode.STUDY_MEMBER_NOT_FOUND);
+        }
     }
 
     /**

@@ -2,12 +2,14 @@ package com.web.stard.domain.teamBlog.service.impl;
 
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
+import com.web.stard.domain.study.domain.entity.StudyMember;
+import com.web.stard.domain.study.repository.StudyMemberRepository;
 import com.web.stard.domain.teamBlog.domain.dto.request.ToDoRequestDto;
 import com.web.stard.domain.teamBlog.domain.dto.response.ToDoResponseDto;
-import com.web.stard.domain.study.domain.entity.Assignee;
+import com.web.stard.domain.teamBlog.domain.entity.Assignee;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.teamBlog.domain.entity.ToDo;
-import com.web.stard.domain.study.repository.AssigneeRepository;
+import com.web.stard.domain.teamBlog.repository.AssigneeRepository;
 import com.web.stard.domain.teamBlog.repository.ToDoRepository;
 import com.web.stard.domain.study.service.StudyService;
 import com.web.stard.domain.teamBlog.service.ToDoService;
@@ -30,7 +32,7 @@ public class ToDoServiceImpl implements ToDoService {
     private final ToDoRepository toDoRepository;
     private final AssigneeRepository assigneeRepository;
     private final StudyService studyService;
-    private final MemberRepository memberRepository;
+    private final StudyMemberRepository studyMemberRepository;
 
 
     // id로 투두 찾기
@@ -75,12 +77,12 @@ public class ToDoServiceImpl implements ToDoService {
         // 담당자 저장
         List<Assignee> assignees = requestDto.getAssignees().stream().map(nickname -> {
             // TODO: Member -> StudyMember 변경
-            Member assignee = memberRepository.findByNickname(nickname)
-                    .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+            StudyMember assignee = studyMemberRepository.findByStudyAndMember_Nickname(study, nickname)
+                    .orElseThrow(() -> new CustomException(ErrorCode.STUDY_MEMBER_NOT_FOUND));
 
             return Assignee.builder()
                     .toDo(toDo)
-                    .member(assignee)
+                    .studyMember(assignee)
                     .toDoStatus(false)
                     .build();
         }).toList();
@@ -171,7 +173,7 @@ public class ToDoServiceImpl implements ToDoService {
             Assignee assignee = iterator.next();
 
             if (!requestDto.getAssignees().stream()
-                    .anyMatch(nickname -> nickname.equals(assignee.getMember().getNickname()))) {
+                    .anyMatch(nickname -> nickname.equals(assignee.getStudyMember().getMember().getNickname()))) {
                 assignee.deleteAssignee(); // 관계 삭제
                 toDo.getAssignees().remove(assignee); // 관계 삭제
                 assigneeRepository.delete(assignee);
@@ -180,14 +182,13 @@ public class ToDoServiceImpl implements ToDoService {
         }
 
         requestDto.getAssignees().forEach(nickname -> {
-            if (!assignees.stream().anyMatch(assignee -> assignee.getMember().getNickname().equals(nickname))) {
-                // TODO: Member -> StudyMember 변경
-                Member assigneeMember = memberRepository.findByNickname(nickname)
-                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+            if (!assignees.stream().anyMatch(assignee -> assignee.getStudyMember().getMember().getNickname().equals(nickname))) {
+                StudyMember assigneeMember = studyMemberRepository.findByStudyAndMember_Nickname(study, nickname)
+                        .orElseThrow(() -> new CustomException(ErrorCode.STUDY_MEMBER_NOT_FOUND));
 
                 Assignee assigneeEntity = Assignee.builder()
                         .toDo(toDo)
-                        .member(assigneeMember)
+                        .studyMember(assigneeMember)
                         .toDoStatus(false)
                         .build();
 
@@ -232,7 +233,7 @@ public class ToDoServiceImpl implements ToDoService {
         }
 
         // member == assignee의 member 확인 (본인 거 외에는 상태 변화 금지)
-        if (assignee.getMember().getId() != member.getId()) {
+        if (assignee.getStudyMember().getId() != member.getId()) {
             throw new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST);
         }
 
@@ -257,7 +258,7 @@ public class ToDoServiceImpl implements ToDoService {
      * @param toDoId  해당 투두 고유 id
      * @param member  로그인 회원
      */
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Long deleteToDo(Long studyId, Long toDoId, Member member) {
         Study study = studyService.findById(studyId);
@@ -283,7 +284,7 @@ public class ToDoServiceImpl implements ToDoService {
      * @return ToDoDto 리스트
      *          toDoId, task 담당 업무, dueDate 마감일, studyId, toDoStatus 투두 상태, assignees 담당자 (닉네임, 투두 상태)
      */
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<ToDoResponseDto.ToDoDto> getAllToDoListByStudy(Long studyId, Member member, int year, int month) {
         Study study = studyService.findById(studyId);
@@ -307,14 +308,18 @@ public class ToDoServiceImpl implements ToDoService {
      * @return MemberToDoDto 리스트
      *          toDoId, task 담당 업무, dueDate 마감일, studyId, toDoStatus 투두 상태, assignees 담당자 (닉네임, 투두 상태)
      */
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<ToDoResponseDto.MemberToDoDto> getMemberToDoList(Member member, int year, int month) {
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = LocalDate.of(year, month, YearMonth.of(year, month).lengthOfMonth());
 
-        // TODO: StudyMember로 변경
-        List<Assignee> toDoList = assigneeRepository.findAllByMemberAndToDoDueDateBetween(member, start, end);
+        List<StudyMember> studyMembers = studyMemberRepository.findByMember(member);
+        List<Assignee> toDoList = new ArrayList<>();
+
+        for (StudyMember studyMember : studyMembers) {
+            toDoList.addAll(assigneeRepository.findAllByStudyMemberAndToDoDueDateBetween(studyMember, start, end));
+        }
 
         return toDoList.stream().map(ToDoResponseDto.MemberToDoDto::of).toList();
     }
@@ -339,8 +344,9 @@ public class ToDoServiceImpl implements ToDoService {
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = LocalDate.of(year, month, YearMonth.of(year, month).lengthOfMonth());
 
-        // TODO: StudyMember로 변경
-        List<Assignee> toDoList = assigneeRepository.findAllByMemberAndToDoStudyAndToDoDueDateBetween(member, study, start, end);
+        StudyMember studyMember = studyMemberRepository.findByStudyAndMember(study, member)
+                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_MEMBER_NOT_FOUND));
+        List<Assignee> toDoList = assigneeRepository.findAllByStudyMemberAndToDoStudyAndToDoDueDateBetween(studyMember, study, start, end);
 
         return toDoList.stream().map(ToDoResponseDto.MemberToDoDto::of).toList();
     }

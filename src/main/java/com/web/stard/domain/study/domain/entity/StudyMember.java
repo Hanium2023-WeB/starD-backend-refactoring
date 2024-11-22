@@ -27,6 +27,7 @@ public class StudyMember {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "study_member_id")
     private Long id;
 
     @ManyToOne

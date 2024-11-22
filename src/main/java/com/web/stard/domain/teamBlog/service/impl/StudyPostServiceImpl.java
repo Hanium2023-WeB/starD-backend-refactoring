@@ -1,7 +1,7 @@
-package com.web.stard.domain.study.service.impl;
+package com.web.stard.domain.teamBlog.service.impl;
 
-import com.web.stard.domain.study.repository.StudyPostRepository;
-import com.web.stard.domain.study.service.StudyPostService;
+import com.web.stard.domain.teamBlog.repository.StudyPostRepository;
+import com.web.stard.domain.teamBlog.service.StudyPostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

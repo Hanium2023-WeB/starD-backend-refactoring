@@ -29,6 +29,7 @@ public class StudyApplicant extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "study_applicant_id")
     private Long id;
 
     @ManyToOne
