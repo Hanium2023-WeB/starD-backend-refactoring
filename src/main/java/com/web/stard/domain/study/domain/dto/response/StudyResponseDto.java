@@ -87,6 +87,9 @@ public class StudyResponseDto {
         @Schema(description = "스터디 게시글 작성 여부")
         private boolean isAuthor;
 
+        @Schema(description = "스터디 분야")
+        private String field;
+
         public static DetailInfo toDto(Study study, Member member, int scrapCount) {
             return DetailInfo.builder()
                     .scrapCount(scrapCount)
@@ -109,6 +112,7 @@ public class StudyResponseDto {
                     .city(study.getCity())
                     .district(study.getDistrict())
                     .isAuthor(study.getMember().equals(member))
+                    .field(study.getField().getDescription())
                     .build();
         }
 

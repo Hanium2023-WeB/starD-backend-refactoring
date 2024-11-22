@@ -1,5 +1,6 @@
 package com.web.stard.domain.study.domain.dto.request;
 
+import com.web.stard.domain.member.domain.enums.InterestField;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.domain.entity.StudyApplicant;
 import com.web.stard.domain.study.domain.enums.ActivityType;
@@ -38,6 +39,11 @@ public class StudyRequestDto {
             @Schema(description = "스터디 활동 구 (활동 방식이 온라인이라면 작성 X)")
             String district,
 
+            @Schema(description = "스터디 분야",
+                    allowableValues = {"기타", "개발/IT", "취업/자격증", "디자인", "언어", "자기계발", "취미"})
+            @NotBlank(message = "스터디 분야를 선택하세요.")
+            String field,
+
             @Schema(description = "스터디 태그 (최대 10개)")
             String tags,
 
@@ -67,11 +73,15 @@ public class StudyRequestDto {
                     .district(district)
                     .activityStart(activityStart)
                     .activityDeadline(activityDeadline)
-                    .recruitmentDeadline(recruitmentDeadline).build();
+                    .recruitmentDeadline(recruitmentDeadline)
+                    .field(InterestField.find(field)).build();
         }
     }
 
     public record ApplyStudy(
+            @Schema(description = "지원 동기")
+            @NotBlank(message = "지원 동기를 입력하세요.")
+            @Size(max = 500, message = "최대 {max}자까지 입력 가능합니다.")
             String introduce
     ) {
         public StudyApplicant toEntity() {

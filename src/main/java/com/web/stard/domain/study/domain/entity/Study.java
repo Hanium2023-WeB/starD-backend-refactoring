@@ -1,5 +1,6 @@
 package com.web.stard.domain.study.domain.entity;
 
+import com.web.stard.domain.member.domain.enums.InterestField;
 import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.study.domain.enums.ActivityType;
@@ -30,7 +31,8 @@ public class Study extends BaseEntity {
             ActivityType activityType,
             String city,
             String district,
-            String tagText
+            String tagText,
+            InterestField field
     ) {
         this.title = title;
         this.content = content;
@@ -43,6 +45,7 @@ public class Study extends BaseEntity {
         this.postType = PostType.STUDY;
         this.progressType = ProgressType.NOT_STARTED;
         this.activityType = activityType;
+        this.field = field;
 
         this.tags = new ArrayList<>();
         this.city = (activityType.equals(ActivityType.OFFLINE)) ? null : city;
@@ -59,10 +62,10 @@ public class Study extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(nullable = false)
+    @Column(length = 200, nullable = false)
     private String title;
 
-    @Column(columnDefinition = "longtext", length = 1000, nullable = false)
+    @Column(length = 1000, nullable = false)
     private String content;
 
     private int capacity;
@@ -102,6 +105,10 @@ public class Study extends BaseEntity {
     @Column(name = "recruitment_deadline")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate recruitmentDeadline;
+
+    @Column(name = "study_field", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private InterestField field;
 
     @OneToMany(mappedBy = "study", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<StudyTag> tags;
@@ -154,6 +161,10 @@ public class Study extends BaseEntity {
         if (!this.recruitmentType.equals(RecruitmentType.RECRUITING)) {
             this.recruitmentType = RecruitmentType.RECRUITING;
         }
+
+        if (!this.field.equals(updateStudy.getField())) {
+            this.field = updateStudy.getField();
+        }
     }
 
     public void addTags(List<StudyTag> studyTags) {
@@ -161,5 +172,9 @@ public class Study extends BaseEntity {
             studyTags = new ArrayList<>();
         }
         this.tags.addAll(studyTags);
+    }
+
+    public void updateRecruitmentType(RecruitmentType recruitmentType) {
+        this.recruitmentType = recruitmentType;
     }
 }
