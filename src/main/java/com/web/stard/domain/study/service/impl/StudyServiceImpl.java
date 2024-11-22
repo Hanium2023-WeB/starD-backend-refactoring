@@ -1,9 +1,9 @@
 package com.web.stard.domain.study.service.impl;
 
-import com.web.stard.domain.board.global.service.StarScrapService;
-import com.web.stard.domain.board.global.domain.enums.ActType;
-import com.web.stard.domain.board.global.domain.enums.TableType;
-import com.web.stard.domain.member.domain.Member;
+import com.web.stard.domain.starScrap.service.StarScrapService;
+import com.web.stard.domain.starScrap.domain.enums.ActType;
+import com.web.stard.domain.starScrap.domain.enums.TableType;
+import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.entity.Study;
@@ -15,8 +15,8 @@ import com.web.stard.domain.study.repository.StudyApplicantRepository;
 import com.web.stard.domain.study.repository.StudyRepository;
 import com.web.stard.domain.study.repository.StudyTagRepository;
 import com.web.stard.domain.study.service.StudyService;
-import com.web.stard.domain.tag.domain.entity.Tag;
-import com.web.stard.domain.tag.repository.TagRepository;
+import com.web.stard.domain.study.domain.entity.Tag;
+import com.web.stard.domain.study.repository.TagRepository;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;

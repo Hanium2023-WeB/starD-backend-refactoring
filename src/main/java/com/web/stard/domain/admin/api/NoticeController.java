@@ -1,10 +1,10 @@
 package com.web.stard.domain.admin.api;
 
-import com.web.stard.domain.board.global.service.PostService;
-import com.web.stard.domain.board.global.domain.enums.PostType;
-import com.web.stard.domain.board.global.dto.request.PostRequestDto;
-import com.web.stard.domain.board.global.dto.response.PostResponseDto;
-import com.web.stard.domain.member.domain.Member;
+import com.web.stard.domain.post.service.PostService;
+import com.web.stard.domain.post.domain.enums.PostType;
+import com.web.stard.domain.post.domain.dto.request.PostRequestDto;
+import com.web.stard.domain.post.domain.dto.response.PostResponseDto;
+import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
