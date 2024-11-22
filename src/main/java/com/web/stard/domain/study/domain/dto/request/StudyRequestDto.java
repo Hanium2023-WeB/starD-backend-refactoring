@@ -44,7 +44,7 @@ public class StudyRequestDto {
             @NotBlank(message = "스터디 분야를 선택하세요.")
             String field,
 
-            @Schema(description = "스터디 태그 (최대 10개)")
+            @Schema(description = "스터디 태그 (최대 5개)")
             String tags,
 
             @Schema(description = "스터디 활동 시작일")
