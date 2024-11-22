@@ -59,10 +59,10 @@ public class Study extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(nullable = false)
+    @Column(length = 200, nullable = false)
     private String title;
 
-    @Column(columnDefinition = "longtext", length = 1000, nullable = false)
+    @Column(length = 1000, nullable = false)
     private String content;
 
     private int capacity;
@@ -161,5 +161,9 @@ public class Study extends BaseEntity {
             studyTags = new ArrayList<>();
         }
         this.tags.addAll(studyTags);
+    }
+
+    public void updateRecruitmentType(RecruitmentType recruitmentType) {
+        this.recruitmentType = recruitmentType;
     }
 }
