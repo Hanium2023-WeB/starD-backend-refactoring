@@ -1,6 +1,7 @@
-package com.web.stard.domain.study.domain.entity;
+package com.web.stard.domain.teamBlog.domain.entity;
 
 import com.web.stard.domain.member.domain.entity.Member;
+import com.web.stard.domain.study.domain.entity.StudyMember;
 import com.web.stard.domain.teamBlog.domain.entity.ToDo;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,7 +23,7 @@ public class Assignee {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_member_id")
-    private Member member; // TODO: StudyMember로 변경
+    private StudyMember studyMember;
 
     @Column(name = "to_do_status", nullable = false)
     private boolean toDoStatus; // TO DO 상태 (false 미완료, true 완료)

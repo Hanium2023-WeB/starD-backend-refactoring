@@ -1,6 +1,6 @@
 package com.web.stard.domain.teamBlog.domain.dto.response;
 
-import com.web.stard.domain.study.domain.entity.Assignee;
+import com.web.stard.domain.teamBlog.domain.entity.Assignee;
 import com.web.stard.domain.teamBlog.domain.entity.ToDo;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +20,7 @@ public class ToDoResponseDto {
         public static AssigneeDto from (Assignee assignee) {
             return AssigneeDto.builder()
                     .assigneeId(assignee.getId())
-                    .nickname(assignee.getMember().getNickname())
+                    .nickname(assignee.getStudyMember().getMember().getNickname())
                     .toDoStatus(assignee.isToDoStatus())
                     .build();
         }
