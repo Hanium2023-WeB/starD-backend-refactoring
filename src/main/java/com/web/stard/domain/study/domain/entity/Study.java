@@ -1,5 +1,6 @@
 package com.web.stard.domain.study.domain.entity;
 
+import com.web.stard.domain.member.domain.enums.InterestField;
 import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.study.domain.enums.ActivityType;
@@ -30,7 +31,8 @@ public class Study extends BaseEntity {
             ActivityType activityType,
             String city,
             String district,
-            String tagText
+            String tagText,
+            InterestField field
     ) {
         this.title = title;
         this.content = content;
@@ -43,6 +45,7 @@ public class Study extends BaseEntity {
         this.postType = PostType.STUDY;
         this.progressType = ProgressType.NOT_STARTED;
         this.activityType = activityType;
+        this.field = field;
 
         this.tags = new ArrayList<>();
         this.city = (activityType.equals(ActivityType.OFFLINE)) ? null : city;
@@ -103,6 +106,10 @@ public class Study extends BaseEntity {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate recruitmentDeadline;
 
+    @Column(name = "study_field", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private InterestField field;
+
     @OneToMany(mappedBy = "study", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<StudyTag> tags;
 
@@ -153,6 +160,10 @@ public class Study extends BaseEntity {
 
         if (!this.recruitmentType.equals(RecruitmentType.RECRUITING)) {
             this.recruitmentType = RecruitmentType.RECRUITING;
+        }
+
+        if (!this.field.equals(updateStudy.getField())) {
+            this.field = updateStudy.getField();
         }
     }
 
