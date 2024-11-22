@@ -68,9 +68,6 @@ public class StudyResponseDto {
         @Schema(description = "스터디 활동 마감일")
         private LocalDate activityDeadline;
 
-        @Schema(description = "스터디 모집 시작일")
-        private LocalDate recruitmentStart;
-
         @Schema(description = "스터디 모집 마감일")
         private LocalDate recruitmentDeadline;
 
