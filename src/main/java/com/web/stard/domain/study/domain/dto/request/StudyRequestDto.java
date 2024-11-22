@@ -72,6 +72,9 @@ public class StudyRequestDto {
     }
 
     public record ApplyStudy(
+            @Schema(description = "지원 동기")
+            @NotBlank(message = "지원 동기를 입력하세요.")
+            @Size(max = 500, message = "최대 {max}자까지 입력 가능합니다.")
             String introduce
     ) {
         public StudyApplicant toEntity() {
