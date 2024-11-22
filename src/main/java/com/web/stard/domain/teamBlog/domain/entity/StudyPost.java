@@ -6,6 +6,8 @@ import com.web.stard.domain.study.domain.entity.StudyMember;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,7 +25,7 @@ public class StudyPost {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_member_id", nullable = false)
-    private StudyMember studyMember; // TODO: StudyMember로 변경
+    private StudyMember studyMember;
 
     @Column(nullable = false)
     private String title;   // 제목
@@ -31,8 +33,8 @@ public class StudyPost {
     @Column(nullable = false)
     private String content; // 내용
 
-    @Column(name = "file_url")
-    private String fileUrl;  // 파일 경로
+    @OneToMany(mappedBy = "studyPost", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<StudyPostFile> files;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "post_type")

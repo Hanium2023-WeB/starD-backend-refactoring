@@ -76,7 +76,6 @@ public class ToDoServiceImpl implements ToDoService {
 
         // 담당자 저장
         List<Assignee> assignees = requestDto.getAssignees().stream().map(nickname -> {
-            // TODO: Member -> StudyMember 변경
             StudyMember assignee = studyMemberRepository.findByStudyAndMember_Nickname(study, nickname)
                     .orElseThrow(() -> new CustomException(ErrorCode.STUDY_MEMBER_NOT_FOUND));
 
