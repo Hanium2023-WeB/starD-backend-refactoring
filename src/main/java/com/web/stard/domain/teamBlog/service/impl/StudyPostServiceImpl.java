@@ -36,8 +36,22 @@ public class StudyPostServiceImpl implements StudyPostService {
     private final StudyPostFileRepository studyPostFileRepository;
 
 
+    // id로 StudyPost 찾기
+    private StudyPost findStudyPost(Long id) {
+        return studyPostRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_POST_NOT_FOUND));
+    }
+
+    // 스터디게시글의 스터디랑 넘어온 스터디가 같은지 확인 (혹시 모를 오류 방지)
+    private void isEqualStudyPostStudyAndStudy(Study study, StudyPost studyPost) {
+        if (study.getId() != studyPost.getStudy().getId()) {
+            throw new CustomException(ErrorCode.STUDY_POST_BAD_REQUEST);
+        }
+    }
+
+
     /**
-     * 회원가입
+     * 스터디 - 커뮤니티 게시글 등록
      *
      * @param studyId 해당 study 고유 id
      * @param member 로그인 회원
@@ -45,6 +59,7 @@ public class StudyPostServiceImpl implements StudyPostService {
      * @param requestDto title 제목, content 내용
      *
      * @return StudyPostDto
+     *      studyPostId, studyId, writer 작성자, profileImg 프로필 이미지, title 제목, content 내용, files 파일경로들
      */
     @Transactional
     @Override
@@ -99,5 +114,37 @@ public class StudyPostServiceImpl implements StudyPostService {
         }
 
         return StudyPostResponseDto.StudyPostDto.from(studyPost, studyPostFiles);
+    }
+
+
+
+
+    /**
+     * 스터디 - 커뮤니티 게시글 삭제
+     *
+     * @param studyId 해당 study 고유 id
+     * @param studyPostId  해당 게시글 고유 id
+     * @param member  로그인 회원
+     */
+    @Transactional
+    @Override
+    public Long deleteStudyPost(Long studyId, Long studyPostId, Member member) {
+        Study study = studyService.findById(studyId);
+        studyService.isStudyInProgress(study);
+        studyService.isStudyMember(study, member);
+
+        StudyPost studyPost = findStudyPost(studyPostId);
+
+        isEqualStudyPostStudyAndStudy(study, studyPost);
+
+        // 파일 삭제
+        if (studyPost.getFiles() != null) {
+            List<String> fileUrls = studyPost.getFiles().stream().map(StudyPostFile::getFileUrl).toList();
+            s3Manager.deleteFiles(fileUrls);
+        }
+
+        studyPostRepository.delete(studyPost);
+
+        return studyPostId;
     }
 }

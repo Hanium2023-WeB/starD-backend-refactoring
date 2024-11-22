@@ -257,7 +257,7 @@ public class ToDoServiceImpl implements ToDoService {
      * @param toDoId  해당 투두 고유 id
      * @param member  로그인 회원
      */
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public Long deleteToDo(Long studyId, Long toDoId, Member member) {
         Study study = studyService.findById(studyId);
@@ -334,7 +334,7 @@ public class ToDoServiceImpl implements ToDoService {
      * @return MemberToDoDto 리스트
      *          toDoId, task 담당 업무, dueDate 마감일, studyId, toDoStatus 투두 상태
      */
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<ToDoResponseDto.MemberToDoDto> getMemberToDoListByStudy(Long studyId, Member member, int year, int month) {
         Study study = studyService.findById(studyId);

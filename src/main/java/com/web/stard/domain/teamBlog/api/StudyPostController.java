@@ -31,4 +31,14 @@ public class StudyPostController {
                                                                              @Valid @RequestPart(name = "requestDto") PostRequestDto.CreatePostDto requestDto) {
         return ResponseEntity.ok(studyPostService.createStudyPost(studyId, files, requestDto, member));
     }
+
+
+
+    @Operation(summary = "스터디 팀블로그 게시글 삭제")
+    @DeleteMapping("/{studyPostId}")
+    public ResponseEntity<Long> deleteStudyPost(@CurrentMember Member member,
+                                                @PathVariable(name = "studyId") Long studyId,
+                                                @PathVariable(name = "studyPostId") Long studyPostId) {
+        return ResponseEntity.ok(studyPostService.deleteStudyPost(studyId, studyPostId, member));
+    }
 }

@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface StudyPostService {
     StudyPostResponseDto.StudyPostDto createStudyPost(Long studyId, List<MultipartFile> files, PostRequestDto.CreatePostDto requestDto, Member member);
+
+    Long deleteStudyPost(Long studyId, Long studyPostId, Member member);
 }
