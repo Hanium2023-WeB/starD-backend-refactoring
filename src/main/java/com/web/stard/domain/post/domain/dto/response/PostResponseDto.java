@@ -25,6 +25,7 @@ public class PostResponseDto {
         private int hit;
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private PostType postType;
+        private String email;
         private String writer;
         private String profileImg;
         private LocalDateTime updatedAt;
@@ -52,6 +53,7 @@ public class PostResponseDto {
                     .category(category)
                     .hit(post.getHit())
                     .postType(type)
+                    .email(writer.getEmail())
                     .writer(writerName)
                     .profileImg(profileImage)
                     .updatedAt(post.getUpdatedAt())
