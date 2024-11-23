@@ -10,6 +10,7 @@ import com.web.stard.domain.reply.repository.ReplyRepository;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.domain.study.repository.StudyRepository;
+import com.web.stard.domain.teamBlog.repository.StudyPostRepository;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -28,14 +29,13 @@ public class ReplyServiceImpl implements ReplyService {
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
     private final StudyRepository studyRepository;
-//    private final StudyPostRepository studyPostRepository;
+    private final StudyPostRepository studyPostRepository;
 
-    // TODO: StudyPost 구현 후 관련 주석 해제
     // 게시글 존재 여부 확인
     private void validatePostExists(Long targetId, PostType postType) {
         boolean postExists = switch (postType) {
             case STUDY -> studyRepository.existsById(targetId);
-//            case STUDYPOST -> studyPostRepository.existsById(targetId);
+            case STUDYPOST -> studyPostRepository.existsById(targetId);
             default -> postRepository.existsById(targetId);
         };
 
