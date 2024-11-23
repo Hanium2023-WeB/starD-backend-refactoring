@@ -23,4 +23,9 @@ public class StudyPostFile {
 
     @Column(name = "file_url")
     private String fileUrl;  // 파일 경로
+
+
+    public void deleteStudyPost() {
+        this.studyPost = null;
+    }
 }

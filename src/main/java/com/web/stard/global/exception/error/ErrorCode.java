@@ -55,6 +55,8 @@ public enum ErrorCode {
     STUDY_SCHEDULE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 스터디 팀블로그 일정 요청입니다."),
     STUDY_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스터디 팀블로그 커뮤니티 게시글입니다."),
     STUDY_POST_BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 스터디 팀블로그 커뮤니티 요청입니다."),
+    STUDY_POST_MAX_FILES_ALLOWED(HttpStatus.BAD_REQUEST, "최대 허용 파일 수를 초과했습니다."),
+    STUDY_POST_FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "삭제할 파일이 존재하지 않습니다."),
 
 
     // Reply

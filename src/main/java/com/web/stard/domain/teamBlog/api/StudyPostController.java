@@ -32,6 +32,16 @@ public class StudyPostController {
         return ResponseEntity.ok(studyPostService.createStudyPost(studyId, files, requestDto, member));
     }
 
+    @Operation(summary = "스터디 팀블로그 게시글 수정", description = "파일은 최대 5개까지 업로드 가능합니다. \n\n" +
+            "삭제할 파일의 id를 넘겨주세요.")
+    @PutMapping(value = "/{studyPostId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<StudyPostResponseDto.StudyPostDto> updateStudyPost(@CurrentMember Member member,
+                                                                             @PathVariable(name = "studyId") Long studyId,
+                                                                             @PathVariable(name = "studyPostId") Long studyPostId,
+                                                                             @RequestPart(value = "file", required = false) @Size(max = 5, message = "파일은 최대 {max}개까지 업로드할 수 있습니다.") List<MultipartFile> files,
+                                                                             @Valid @RequestPart(name = "requestDto") PostRequestDto.UpdateStudyPostDto requestDto) {
+        return ResponseEntity.ok(studyPostService.updateStudyPost(studyId, studyPostId, files, requestDto, member));
+    }
 
 
     @Operation(summary = "스터디 팀블로그 게시글 삭제")

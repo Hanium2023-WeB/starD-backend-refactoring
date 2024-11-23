@@ -42,4 +42,10 @@ public class StudyPost {
 
     @Column(nullable = false)
     private int hit;    // 조회수
+
+
+    public void updateStudyPost(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }

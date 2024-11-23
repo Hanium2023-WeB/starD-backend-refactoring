@@ -37,7 +37,7 @@ public class StudyPostResponseDto {
         private List<FileDto> fileUrl;
 
         public static StudyPostDto from(StudyPost studyPost, List<StudyPostFile> studyPostFiles) {
-            List<FileDto> file = studyPostFiles.stream().map(FileDto::of).toList();
+            List<FileDto> file = (studyPostFiles != null) ? studyPostFiles.stream().map(FileDto::of).toList() : null;
 
             return StudyPostDto.builder()
                     .studyPostId(studyPost.getId())
