@@ -21,7 +21,7 @@ public class ToDoResponseDto {
             return AssigneeDto.builder()
                     .assigneeId(assignee.getId())
                     .nickname(assignee.getStudyMember().getMember().getNickname())
-                    .toDoStatus(assignee.isToDoStatus())
+                    .toDoStatus(assignee.getToDoStatus())
                     .build();
         }
     }
@@ -45,7 +45,7 @@ public class ToDoResponseDto {
                     .task(toDo.getTask())
                     .dueDate(toDo.getDueDate())
                     .studyId(toDo.getStudy().getId())
-                    .toDoStatus(toDo.isToDoStatus())
+                    .toDoStatus(toDo.getToDoStatus())
                     .assignees(assignees)
                     .build();
         }
@@ -66,7 +66,7 @@ public class ToDoResponseDto {
                     .task(assignee.getToDo().getTask())
                     .dueDate(assignee.getToDo().getDueDate())
                     .studyId(assignee.getToDo().getStudy().getId())
-                    .toDoStatus(assignee.isToDoStatus())
+                    .toDoStatus(assignee.getToDoStatus())
                     .build();
         }
     }

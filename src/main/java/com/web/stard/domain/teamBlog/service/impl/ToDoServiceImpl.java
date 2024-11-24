@@ -196,7 +196,7 @@ public class ToDoServiceImpl implements ToDoService {
                 assignees.add(assigneeEntity);
 
                 // 담당자가 새로 추가되었으므로 toDoStatus가 true일 시 false로 변경
-                if (toDo.isToDoStatus()) {
+                if (toDo.getToDoStatus()) {
                     toDo.updateToDoStatus(false);
                 }
             }
@@ -237,12 +237,12 @@ public class ToDoServiceImpl implements ToDoService {
             throw new CustomException(ErrorCode.STUDY_TODO_BAD_REQUEST);
         }
 
-        if (assignee.isToDoStatus() != status) {
+        if (assignee.getToDoStatus() != status) {
             assignee.updateToDoStatus(status);
         }
 
         // 투두 상태 변화 (모두 true일 시 true로 변경)
-        if (toDo.getAssignees().stream().noneMatch(assigneeEntity -> !assigneeEntity.isToDoStatus())) {
+        if (toDo.getAssignees().stream().noneMatch(assigneeEntity -> !assigneeEntity.getToDoStatus())) {
             toDo.updateToDoStatus(true);
         } else {
             toDo.updateToDoStatus(false);
