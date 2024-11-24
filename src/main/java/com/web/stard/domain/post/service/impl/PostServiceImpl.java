@@ -41,10 +41,11 @@ public class PostServiceImpl implements PostService {
     }
 
     // 작성자인지 확인
-    private void isPostAuthor(Member member, Post post) {
+    private Boolean isPostAuthor(Member member, Post post) {
         if (!member.getId().equals(post.getMember().getId())) {
             throw new CustomException(ErrorCode.INVALID_ACCESS);
         }
+        return true;
     }
 
     // 게시글 찾기
@@ -70,7 +71,7 @@ public class PostServiceImpl implements PostService {
         Member writer = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return PostResponseDto.PostDto.from(post, writer, 0);
+        return PostResponseDto.PostDto.from(post, writer, 0, true);
     }
 
     /**
@@ -88,7 +89,7 @@ public class PostServiceImpl implements PostService {
         Member writer = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return PostResponseDto.PostDto.from(post, writer, 0);
+        return PostResponseDto.PostDto.from(post, writer, 0, true);
     }
 
     /**
@@ -102,7 +103,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostResponseDto.PostDto updatePost(Long postId, PostRequestDto.CreatePostDto requestDto, Member member, PostType postType) {
         Post post = findPost(postId, postType);
-        isPostAuthor(member, post);
+        Boolean isAuthor = isPostAuthor(member, post);
 
         if (postType == PostType.NOTICE || postType == PostType.FAQ) {
             isAdmin(member);
@@ -111,7 +112,7 @@ public class PostServiceImpl implements PostService {
         post.updatePost(requestDto.getTitle(), requestDto.getContent());
         int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
 
-        return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
+        return PostResponseDto.PostDto.from(post, post.getMember(), starCount, isAuthor);
     }
 
     /**
@@ -127,12 +128,12 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponseDto.PostDto updateCommPost(Member member, Long commPostId, PostRequestDto.CreateCommPostDto requestDto) {
         Post post = findPost(commPostId, PostType.COMM);
-        isPostAuthor(member, post);
+        Boolean isAuthor = isPostAuthor(member, post);
 
         post.updateComm(requestDto.getTitle(), requestDto.getContent(), Category.find(requestDto.getCategory()));
         int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
 
-        return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
+        return PostResponseDto.PostDto.from(post, post.getMember(), starCount, isAuthor);
     }
 
     /**
@@ -169,7 +170,7 @@ public class PostServiceImpl implements PostService {
         List<PostResponseDto.PostDto> postDtos = posts.getContent().stream()
                 .map(post -> {
                     int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
-                    return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
+                    return PostResponseDto.PostDto.from(post, post.getMember(), starCount, null);
                 })
                 .toList();
 
@@ -205,14 +206,15 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostResponseDto.PostDto getPostDetail(Long postId, Member member, PostType postType) {
         Post post = findPost(postId, postType);
+        Boolean isAuthor = (member != null && post.getMember().getId().equals(member.getId()));
 
-        if (member == null || !member.getId().equals(post.getMember().getId())) {
+        if (member == null || !isAuthor) {
             post.incrementHitCount();
         }
 
         int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
 
-        return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
+        return PostResponseDto.PostDto.from(post, post.getMember(), starCount, isAuthor);
     }
 
     /**

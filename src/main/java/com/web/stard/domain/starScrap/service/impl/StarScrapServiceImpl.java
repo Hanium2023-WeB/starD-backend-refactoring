@@ -173,7 +173,7 @@ public class StarScrapServiceImpl implements StarScrapService {
         List<PostResponseDto.PostDto> postDtos = posts.getContent().stream()
                 .map(post -> {
                     int starCount = findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
-                    return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
+                    return PostResponseDto.PostDto.from(post, post.getMember(), starCount, null);
                 })
                 .toList();
 

@@ -16,14 +16,16 @@ public class ReplyResponseDto {
     public static class ReplyDto {
         private Long replyId;
         private String content;
+        private boolean isAuthor;
         private String writer;
         private String profileImg;
         private LocalDateTime updatedAt;
 
-        public static ReplyDto from(Reply reply, Member member) {
+        public static ReplyDto from(Reply reply, Member member, boolean isAuthor) {
             return ReplyDto.builder()
                     .replyId(reply.getId())
                     .content(reply.getContent())
+                    .isAuthor(isAuthor)
                     .writer(member.getNickname())
                     .profileImg(member.getProfile().getImgUrl())
                     .updatedAt(reply.getUpdatedAt())
@@ -39,11 +41,7 @@ public class ReplyResponseDto {
         private int totalPages;     // 전체 페이지 수
         private boolean isLast;     // 마지막 페이지 여부
 
-        public static ReplyListDto of(Page<Reply> replies) {
-            List<ReplyDto> replyDtos = replies.getContent().stream()
-                    .map(reply -> ReplyDto.from(reply, reply.getMember()))
-                    .toList();
-
+        public static ReplyListDto of(Page<Reply> replies, List<ReplyDto> replyDtos) {
             return ReplyListDto.builder()
                     .replies(replyDtos)
                     .currentPage(replies.getNumber() + 1)

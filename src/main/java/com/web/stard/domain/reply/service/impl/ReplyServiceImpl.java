@@ -21,6 +21,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ReplyServiceImpl implements ReplyService {
@@ -45,9 +47,9 @@ public class ReplyServiceImpl implements ReplyService {
         }
     }
 
-    // id, 작성자로 댓글 찾기
-    private Reply findReply(Long id, Member member) {
-        return replyRepository.findByIdAndMember(id, member)
+    // 댓글 찾기
+    private Reply findReply(Long id) {
+        return replyRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.REPLY_NOT_FOUND));
     }
 
@@ -64,6 +66,14 @@ public class ReplyServiceImpl implements ReplyService {
             case "qna" -> PostType.QNA;
             default -> throw new CustomException(ErrorCode.INVALID_POST_TYPE);
         };
+    }
+
+    // 작성자인지 확인
+    private boolean isReplyAuthor(Member member, Reply reply) {
+        if (!member.getId().equals(reply.getMember().getId())) {
+            throw new CustomException(ErrorCode.INVALID_ACCESS);
+        }
+        return true;
     }
 
     /**
@@ -83,7 +93,7 @@ public class ReplyServiceImpl implements ReplyService {
         Member writer = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return ReplyResponseDto.ReplyDto.from(reply, writer);
+        return ReplyResponseDto.ReplyDto.from(reply, writer, true);
     }
 
     /**
@@ -96,11 +106,12 @@ public class ReplyServiceImpl implements ReplyService {
     @Override
     @Transactional
     public ReplyResponseDto.ReplyDto updateReply(Long replyId, ReplyRequestDto.UpdateReplyDto requestDto, Member member) {
-        Reply reply = findReply(replyId, member);
+        Reply reply = findReply(replyId);
+        boolean isAuthor = isReplyAuthor(member, reply);
         validatePostExists(reply.getTargetId(), reply.getPostType());
 
         reply.updateReply(requestDto.getContent());
-        return ReplyResponseDto.ReplyDto.from(reply, reply.getMember());
+        return ReplyResponseDto.ReplyDto.from(reply, reply.getMember(), isAuthor);
     }
 
     /**
@@ -111,7 +122,8 @@ public class ReplyServiceImpl implements ReplyService {
     @Override
     @Transactional
     public Long deleteReply(Long replyId, Member member) {
-        Reply reply = findReply(replyId, member);
+        Reply reply = findReply(replyId);
+        isReplyAuthor(member, reply);
         validatePostExists(reply.getTargetId(), reply.getPostType());
 
         replyRepository.delete(reply);
@@ -134,6 +146,14 @@ public class ReplyServiceImpl implements ReplyService {
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         Page<Reply> replies = replyRepository.findByTargetId(targetId, pageable);
-        return ReplyResponseDto.ReplyListDto.of(replies);
+
+        List<ReplyResponseDto.ReplyDto> replyDtos = replies.getContent().stream()
+                .map(reply -> {
+                    boolean isAuthor = (member != null && reply.getMember().getId().equals(member.getId()));
+                    return ReplyResponseDto.ReplyDto.from(reply, reply.getMember(), isAuthor);
+                })
+                .toList();
+
+        return ReplyResponseDto.ReplyListDto.of(replies, replyDtos);
     }
 }
