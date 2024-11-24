@@ -35,9 +35,12 @@ public class StudyPostResponseDto {
         private String title;
         private String content;
         private List<FileDto> fileUrl;
+        private int hit;
+        private int scrapCount;
+        private Boolean isAuthor;
 
-        public static StudyPostDto from(StudyPost studyPost, List<StudyPostFile> studyPostFiles) {
-            List<FileDto> file = (studyPostFiles != null) ? studyPostFiles.stream().map(FileDto::of).toList() : null;
+        public static StudyPostDto from(StudyPost studyPost, int scrapCount, Boolean isAuthor) {
+            List<FileDto> file = (studyPost.getFiles() != null) ? studyPost.getFiles().stream().map(FileDto::of).toList() : null;
 
             return StudyPostDto.builder()
                     .studyPostId(studyPost.getId())
@@ -47,6 +50,9 @@ public class StudyPostResponseDto {
                     .title(studyPost.getTitle())
                     .content(studyPost.getContent())
                     .fileUrl(file)
+                    .hit(studyPost.getHit())
+                    .scrapCount(scrapCount)
+                    .isAuthor(isAuthor)
                     .build();
         }
     }

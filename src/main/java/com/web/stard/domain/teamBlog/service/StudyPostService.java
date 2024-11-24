@@ -13,4 +13,6 @@ public interface StudyPostService {
     StudyPostResponseDto.StudyPostDto updateStudyPost(Long studyId, Long studyPostId, List<MultipartFile> files, PostRequestDto.UpdateStudyPostDto requestDto, Member member);
 
     Long deleteStudyPost(Long studyId, Long studyPostId, Member member);
+
+    StudyPostResponseDto.StudyPostDto getStudyPostDetail(Long studyId, Long studyPostId, Member member);
 }

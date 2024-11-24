@@ -3,6 +3,11 @@ package com.web.stard.domain.teamBlog.service.impl;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.post.domain.dto.request.PostRequestDto;
 import com.web.stard.domain.post.domain.enums.PostType;
+import com.web.stard.domain.reply.domain.entity.Reply;
+import com.web.stard.domain.reply.repository.ReplyRepository;
+import com.web.stard.domain.starScrap.domain.enums.ActType;
+import com.web.stard.domain.starScrap.domain.enums.TableType;
+import com.web.stard.domain.starScrap.service.StarScrapService;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.domain.entity.StudyMember;
 import com.web.stard.domain.study.repository.StudyMemberRepository;
@@ -34,6 +39,8 @@ public class StudyPostServiceImpl implements StudyPostService {
     private final StudyMemberRepository studyMemberRepository;
     private final S3Manager s3Manager;
     private final StudyPostFileRepository studyPostFileRepository;
+    private final StarScrapService starScrapService;
+    private final ReplyRepository replyRepository;
 
 
     // id로 StudyPost 찾기
@@ -50,10 +57,11 @@ public class StudyPostServiceImpl implements StudyPostService {
     }
 
     // 작성자인지 확인
-    private void isPostAuthor(StudyMember studyMember, StudyPost studyPost) {
+    private Boolean isPostAuthor(StudyMember studyMember, StudyPost studyPost) {
         if (studyMember.getMember().getId() != studyPost.getStudyMember().getMember().getId()) {
             throw new CustomException(ErrorCode.INVALID_ACCESS);
         }
+        return true;
     }
 
 
@@ -66,7 +74,7 @@ public class StudyPostServiceImpl implements StudyPostService {
      * @param requestDto title 제목, content 내용
      *
      * @return StudyPostDto
-     *      studyPostId, studyId, writer 작성자, profileImg 프로필 이미지, title 제목, content 내용, files 파일경로들
+     *      studyPostId, studyId, writer 작성자, profileImg 프로필 이미지, title 제목, content 내용, files 파일경로들, isAuthor 작성자 여부
      */
     @Transactional
     @Override
@@ -90,12 +98,9 @@ public class StudyPostServiceImpl implements StudyPostService {
         studyPost = studyPostRepository.save(studyPost);
 
         // 다중 파일 저장
-        List<StudyPostFile> studyPostFiles = null;
-
         if (files != null && !files.isEmpty()) {
             List<String> keyNames = new ArrayList<>();
             List<String> fileUrls;
-            studyPostFiles = new ArrayList<>();
 
             for (MultipartFile file : files) {
                 UUID uuid = UUID.randomUUID();
@@ -114,13 +119,13 @@ public class StudyPostServiceImpl implements StudyPostService {
                         .fileUrl(fileUrls.get(i))
                         .build();
 
-                studyPostFiles.add(studyPostFile);
+                studyPost.addFile(studyPostFile);
             }
-
-            studyPostFileRepository.saveAll(studyPostFiles);
         }
 
-        return StudyPostResponseDto.StudyPostDto.from(studyPost, studyPostFiles);
+        studyPostRepository.save(studyPost);
+
+        return StudyPostResponseDto.StudyPostDto.from(studyPost, 0, true);
     }
 
     /**
@@ -133,7 +138,7 @@ public class StudyPostServiceImpl implements StudyPostService {
      * @param requestDto title 제목, content 내용, deleteFileId 삭제할 StudyPostFileId
      *
      * @return StudyPostDto
-     *      studyPostId, studyId, writer 작성자, profileImg 프로필 이미지, title 제목, content 내용, files 파일경로들
+     *      studyPostId, studyId, writer 작성자, profileImg 프로필 이미지, title 제목, content 내용, files 파일경로들, isAuthor 작성자 여부
      */
     @Transactional
     @Override
@@ -146,7 +151,7 @@ public class StudyPostServiceImpl implements StudyPostService {
         isEqualStudyPostStudyAndStudy(study, studyPost);
         StudyMember studyMember = studyMemberRepository.findByStudyAndMember(study, member)
                 .orElseThrow(() -> new CustomException(ErrorCode.STUDY_MEMBER_NOT_FOUND));
-        isPostAuthor(studyMember, studyPost);
+        Boolean isAuthor = isPostAuthor(studyMember, studyPost);
 
         // 파일 최대, 최소 개수 확인
         int originFileCount = (studyPost.getFiles() != null) ? studyPost.getFiles().size() : 0;
@@ -208,8 +213,9 @@ public class StudyPostServiceImpl implements StudyPostService {
         }
 
         studyPostRepository.save(studyPost);
+        int scrapCount = starScrapService.findStarScrapCount(studyPost.getId(), ActType.SCRAP, TableType.STUDYPOST);
 
-        return StudyPostResponseDto.StudyPostDto.from(studyPost, studyPost.getFiles());
+        return StudyPostResponseDto.StudyPostDto.from(studyPost, scrapCount, isAuthor);
     }
 
     /**
@@ -238,8 +244,45 @@ public class StudyPostServiceImpl implements StudyPostService {
             s3Manager.deleteFiles(fileUrls);
         }
 
+        // 스크랩 삭제
+        starScrapService.deletePostStarScraps(studyPostId, ActType.SCRAP, TableType.STUDYPOST);
+
+        // TODO 댓글 삭제
+
+
+
         studyPostRepository.delete(studyPost);
 
         return studyPostId;
+    }
+
+    /**
+     * 스터디 - 커뮤니티 게시글 상세조회
+     *
+     * @param studyId 해당 study 고유 id
+     * @param studyPostId  해당 게시글 고유 id
+     * @param member 로그인 회원
+     *
+     * @return StudyPostDto
+     *      studyPostId, studyId, writer 작성자, profileImg 프로필 이미지, title 제목, content 내용, files 파일경로들, isAuthor 작성자 여부
+     */
+    @Transactional
+    @Override
+    public StudyPostResponseDto.StudyPostDto getStudyPostDetail(Long studyId, Long studyPostId, Member member) {
+        Study study = studyService.findById(studyId);
+        studyService.isStudyMember(study, member);
+
+        StudyPost studyPost = findStudyPost(studyPostId);
+        isEqualStudyPostStudyAndStudy(study, studyPost);
+
+        Boolean isAuthor = (member != null && studyPost.getStudyMember().getMember().getId() == member.getId());
+
+        if (!isAuthor) {
+            studyPost.incrementHitCount();
+        }
+
+        int scrapCount = starScrapService.findStarScrapCount(studyPost.getId(), ActType.SCRAP, TableType.STUDYPOST);
+
+        return StudyPostResponseDto.StudyPostDto.from(studyPost, scrapCount, isAuthor);
     }
 }

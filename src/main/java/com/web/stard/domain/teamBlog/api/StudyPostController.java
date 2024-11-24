@@ -51,4 +51,12 @@ public class StudyPostController {
                                                 @PathVariable(name = "studyPostId") Long studyPostId) {
         return ResponseEntity.ok(studyPostService.deleteStudyPost(studyId, studyPostId, member));
     }
+
+    @Operation(summary = "스터디 팀블로그 게시글 상세조회")
+    @GetMapping("/{studyPostId}")
+    public ResponseEntity<StudyPostResponseDto.StudyPostDto> getStudyPostDetail(@CurrentMember Member member,
+                                                                                @PathVariable(name = "studyId") Long studyId,
+                                                                                @PathVariable(name = "studyPostId") Long studyPostId) {
+        return ResponseEntity.ok(studyPostService.getStudyPostDetail(studyId, studyPostId, member));
+    }
 }

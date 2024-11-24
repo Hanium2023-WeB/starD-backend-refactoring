@@ -6,6 +6,7 @@ import com.web.stard.domain.study.domain.entity.StudyMember;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -44,8 +45,19 @@ public class StudyPost {
     private int hit;    // 조회수
 
 
+    public void addFile(StudyPostFile studyPostFile) {
+        if (this.files == null) {
+            this.files = new ArrayList<>();
+        }
+        this.files.add(studyPostFile);
+    }
+
     public void updateStudyPost(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    public void incrementHitCount() {
+        this.hit++;
     }
 }
