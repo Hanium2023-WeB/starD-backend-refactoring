@@ -260,7 +260,7 @@ public class PostServiceImpl implements PostService {
 
         List<PostResponseDto.PostDto> postDtos = paginatePostList.getContent().stream()
                 .map(post -> {
-                    return PostResponseDto.PostDto.from(post, post.getMember(), 0, null, null);
+                    return PostResponseDto.PostDto.from(post, post.getMember(), null, null, null);
                 }).toList();
 
         return PostResponseDto.PostListDto.of(paginatePostList, postDtos);
@@ -286,7 +286,7 @@ public class PostServiceImpl implements PostService {
 
         List<PostResponseDto.PostDto> postDtos = paginatePostList.getContent().stream()
                 .map(post -> {
-                    return PostResponseDto.PostDto.from(post, post.getMember(), 0, null, null);
+                    return PostResponseDto.PostDto.from(post, post.getMember(), null, null, null);
                 }).toList();
 
         return PostResponseDto.PostListDto.of(paginatePostList, postDtos);
