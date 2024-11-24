@@ -10,7 +10,6 @@ import lombok.Getter;
 public enum PostType {
     COMM, QNA, NOTICE, FAQ, STUDY, REPLY, STUDYPOST;
 
-    // String을 PostType으로 변환
     public static PostType fromString(String type) {
         if (type == null || type.isBlank()) {
             throw new CustomException(ErrorCode.INVALID_POST_TYPE);

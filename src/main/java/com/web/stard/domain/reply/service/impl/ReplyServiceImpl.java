@@ -53,21 +53,6 @@ public class ReplyServiceImpl implements ReplyService {
                 .orElseThrow(() -> new CustomException(ErrorCode.REPLY_NOT_FOUND));
     }
 
-    // 타입 변환 (string to enum)
-    private PostType convertType(String type) {
-        if (type == null || type.isBlank()) {
-            throw new CustomException(ErrorCode.INVALID_POST_TYPE);
-        }
-
-        return switch (type.toLowerCase()) {
-            case "study" -> PostType.STUDY;
-            case "studypost" -> PostType.STUDYPOST;
-            case "comm" -> PostType.COMM;
-            case "qna" -> PostType.QNA;
-            default -> throw new CustomException(ErrorCode.INVALID_POST_TYPE);
-        };
-    }
-
     // 작성자인지 확인
     private boolean isReplyAuthor(Member member, Reply reply) {
         if (!member.getId().equals(reply.getMember().getId())) {
@@ -86,7 +71,7 @@ public class ReplyServiceImpl implements ReplyService {
     @Override
     @Transactional
     public ReplyResponseDto.ReplyDto createReply(Long targetId, ReplyRequestDto.CreateReplyDto requestDto, Member member) {
-        PostType postType = convertType(requestDto.getType());
+        PostType postType = PostType.fromString(requestDto.getType());
         validatePostExists(targetId, postType);
 
         Reply reply = replyRepository.save(requestDto.toEntity(member, targetId, postType));
@@ -140,7 +125,7 @@ public class ReplyServiceImpl implements ReplyService {
     @Override
     @Transactional(readOnly = true)
     public ReplyResponseDto.ReplyListDto getReplyList(Long targetId, String type, int page, Member member) {
-        validatePostExists(targetId, convertType(type));
+        validatePostExists(targetId, PostType.fromString(type));
 
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC, "createdAt"));   // 최신 순
         Pageable pageable = PageRequest.of(page-1, 10, sort);

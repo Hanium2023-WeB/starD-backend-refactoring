@@ -5,7 +5,7 @@ import com.web.stard.domain.post.domain.entity.Post;
 import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.post.repository.PostRepository;
 import com.web.stard.domain.reply.domain.entity.Reply;
-import com.web.stard.domain.reply.domain.enums.ReportReason;
+import com.web.stard.domain.report.domain.enums.ReportReason;
 import com.web.stard.domain.reply.repository.ReplyRepository;
 import com.web.stard.domain.report.domain.dto.response.ReportResponseDto;
 import com.web.stard.domain.report.domain.dto.resquest.ReportRequestDto;
@@ -20,6 +20,7 @@ import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,38 +31,6 @@ public class ReportServiceImpl implements ReportService {
     private final StudyPostRepository studyPostRepository;
     private final ReplyRepository replyRepository;
     private final PostRepository postRepository;
-
-    // 타입 변환 (string to enum)
-    private PostType convertType(String type) {
-        if (type == null || type.isBlank()) {
-            throw new CustomException(ErrorCode.INVALID_POST_TYPE);
-        }
-
-        return switch (type.toLowerCase()) {
-            case "study" -> PostType.STUDY;
-            case "studypost" -> PostType.STUDYPOST;
-            case "comm" -> PostType.COMM;
-            case "qna" -> PostType.QNA;
-            case "reply" -> PostType.REPLY;
-            default -> throw new CustomException(ErrorCode.INVALID_POST_TYPE);
-        };
-    }
-
-    // 신고 사유 변환 (string to enum)
-    private ReportReason convertReportReason(String reportReason) {
-        if (reportReason == null || reportReason.isBlank()) {
-            throw new CustomException(ErrorCode.INVALID_REPORT_REASON);
-        }
-
-        return switch (reportReason) {
-            case "욕설/비방" -> ReportReason.ABUSE;
-            case "광고" -> ReportReason.PROMOTION;
-            case "음란물" -> ReportReason.ADULT;
-            case "도배성 글" -> ReportReason.SPAM;
-            case "기타(사용자 입력)" -> ReportReason.CUSTOM;
-            default -> throw new CustomException(ErrorCode.INVALID_POST_TYPE);
-        };
-    }
 
     // 게시글 조회, 작성자 여부 확인
     private boolean isAuthor(PostType postType, Long postId, Member member) {
@@ -95,9 +64,10 @@ public class ReportServiceImpl implements ReportService {
      * @return ReportDto reportId 신고 id, createdAt 생성일시
      */
     @Override
+    @Transactional
     public ReportResponseDto.ReportDto createReport(ReportRequestDto.ReportDto requestDto, Member member) {
-        PostType postType = convertType(requestDto.getPostType());
-        ReportReason reportReason = convertReportReason(requestDto.getReportReason());
+        PostType postType = PostType.fromString(requestDto.getPostType());
+        ReportReason reportReason = ReportReason.fromString(requestDto.getReportReason());
 
         if (isAuthor(postType, requestDto.getTargetId(), member)) {
             throw new CustomException(ErrorCode.REPORT_NOT_ALLOWED_FOR_AUTHOR);
