@@ -52,8 +52,17 @@ public enum ErrorCode {
     STUDY_APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스터디 신청자입니다."),
     STUDY_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스터디 참여자입니다."),
 
+    // Study Post
+    STUDY_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 팀블로그 게시글입니다."),
+
     // Reply
-    REPLY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다.")
+    REPLY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."),
+
+    // Report
+    REPORT_NOT_ALLOWED_FOR_AUTHOR(HttpStatus.FORBIDDEN, "내가 작성한 글은 신고할 수 없습니다."),
+    INVALID_REPORT_REASON(HttpStatus.BAD_REQUEST, "유효하지 않은 신고 사유입니다."),
+    CUSTOM_REASON_REQUIRED(HttpStatus.BAD_REQUEST, "기타 신고 사유는 필수입니다."),
+    REPORT_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 신고된 게시글입니다.")
     ;
 
     private final HttpStatus httpStatus;    // HttpStatus

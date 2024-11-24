@@ -10,6 +10,7 @@ import com.web.stard.domain.reply.repository.ReplyRepository;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.domain.study.repository.StudyRepository;
+import com.web.stard.domain.teamBlog.repository.StudyPostRepository;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ReplyServiceImpl implements ReplyService {
@@ -28,14 +31,13 @@ public class ReplyServiceImpl implements ReplyService {
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
     private final StudyRepository studyRepository;
-//    private final StudyPostRepository studyPostRepository;
+    private final StudyPostRepository studyPostRepository;
 
-    // TODO: StudyPost 구현 후 관련 주석 해제
     // 게시글 존재 여부 확인
     private void validatePostExists(Long targetId, PostType postType) {
         boolean postExists = switch (postType) {
             case STUDY -> studyRepository.existsById(targetId);
-//            case STUDYPOST -> studyPostRepository.existsById(targetId);
+            case STUDYPOST -> studyPostRepository.existsById(targetId);
             default -> postRepository.existsById(targetId);
         };
 
@@ -45,25 +47,18 @@ public class ReplyServiceImpl implements ReplyService {
         }
     }
 
-    // id, 작성자로 댓글 찾기
-    private Reply findReply(Long id, Member member) {
-        return replyRepository.findByIdAndMember(id, member)
+    // 댓글 찾기
+    private Reply findReply(Long id) {
+        return replyRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.REPLY_NOT_FOUND));
     }
 
-    // 타입 변환 (string to enum)
-    private PostType convertType(String type) {
-        if (type == null || type.isBlank()) {
-            throw new CustomException(ErrorCode.INVALID_POST_TYPE);
+    // 작성자인지 확인
+    private boolean isReplyAuthor(Member member, Reply reply) {
+        if (!member.getId().equals(reply.getMember().getId())) {
+            throw new CustomException(ErrorCode.INVALID_ACCESS);
         }
-
-        return switch (type.toLowerCase()) {
-            case "study" -> PostType.STUDY;
-            case "studypost" -> PostType.STUDYPOST;
-            case "comm" -> PostType.COMM;
-            case "qna" -> PostType.QNA;
-            default -> throw new CustomException(ErrorCode.INVALID_POST_TYPE);
-        };
+        return true;
     }
 
     /**
@@ -76,14 +71,14 @@ public class ReplyServiceImpl implements ReplyService {
     @Override
     @Transactional
     public ReplyResponseDto.ReplyDto createReply(Long targetId, ReplyRequestDto.CreateReplyDto requestDto, Member member) {
-        PostType postType = convertType(requestDto.getType());
+        PostType postType = PostType.fromString(requestDto.getType());
         validatePostExists(targetId, postType);
 
         Reply reply = replyRepository.save(requestDto.toEntity(member, targetId, postType));
         Member writer = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return ReplyResponseDto.ReplyDto.from(reply, writer);
+        return ReplyResponseDto.ReplyDto.from(reply, writer, true);
     }
 
     /**
@@ -96,11 +91,12 @@ public class ReplyServiceImpl implements ReplyService {
     @Override
     @Transactional
     public ReplyResponseDto.ReplyDto updateReply(Long replyId, ReplyRequestDto.UpdateReplyDto requestDto, Member member) {
-        Reply reply = findReply(replyId, member);
+        Reply reply = findReply(replyId);
+        boolean isAuthor = isReplyAuthor(member, reply);
         validatePostExists(reply.getTargetId(), reply.getPostType());
 
         reply.updateReply(requestDto.getContent());
-        return ReplyResponseDto.ReplyDto.from(reply, reply.getMember());
+        return ReplyResponseDto.ReplyDto.from(reply, reply.getMember(), isAuthor);
     }
 
     /**
@@ -111,7 +107,8 @@ public class ReplyServiceImpl implements ReplyService {
     @Override
     @Transactional
     public Long deleteReply(Long replyId, Member member) {
-        Reply reply = findReply(replyId, member);
+        Reply reply = findReply(replyId);
+        isReplyAuthor(member, reply);
         validatePostExists(reply.getTargetId(), reply.getPostType());
 
         replyRepository.delete(reply);
@@ -128,12 +125,20 @@ public class ReplyServiceImpl implements ReplyService {
     @Override
     @Transactional(readOnly = true)
     public ReplyResponseDto.ReplyListDto getReplyList(Long targetId, String type, int page, Member member) {
-        validatePostExists(targetId, convertType(type));
+        validatePostExists(targetId, PostType.fromString(type));
 
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC, "createdAt"));   // 최신 순
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         Page<Reply> replies = replyRepository.findByTargetId(targetId, pageable);
-        return ReplyResponseDto.ReplyListDto.of(replies);
+
+        List<ReplyResponseDto.ReplyDto> replyDtos = replies.getContent().stream()
+                .map(reply -> {
+                    boolean isAuthor = (member != null && reply.getMember().getId().equals(member.getId()));
+                    return ReplyResponseDto.ReplyDto.from(reply, reply.getMember(), isAuthor);
+                })
+                .toList();
+
+        return ReplyResponseDto.ReplyListDto.of(replies, replyDtos);
     }
 }
