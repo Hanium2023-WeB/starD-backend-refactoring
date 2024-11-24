@@ -32,8 +32,10 @@ public class PostResponseDto {
         private LocalDateTime updatedAt;
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private int starCount;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private Boolean existsStar;
 
-        public static PostDto from(Post post, Member writer, int starCount, Boolean isAuthor) {
+        public static PostDto from(Post post, Member writer, int starCount, Boolean isAuthor, Boolean existsStar) {
             String writerName = (writer.getRole() == Role.ADMIN) ? "관리자" : writer.getNickname();
             String profileImage = (writer.getRole() == Role.ADMIN) ? null : writer.getProfile().getImgUrl();
 

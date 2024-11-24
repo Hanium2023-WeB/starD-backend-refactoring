@@ -8,10 +8,7 @@ import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,45 +16,21 @@ public class StarScrapController {
 
     private final StarScrapService starScrapService;
 
-    @Operation(summary = "게시글 공감 등록")
-    @PostMapping("/stars/{postId}")
-    public ResponseEntity<Long> addPostStar(@CurrentMember Member member,
-                                            @PathVariable(name = "postId") Long postId) {
-        return ResponseEntity.ok(starScrapService.addStarScrap(member, postId, ActType.STAR, TableType.POST));
+    @Operation(summary = "공감 혹은 스크랩 등록", description = "공감 및 스크랩 추가할 게시글 id를 targetId에 전달해 주세요.\n\n" +
+            "게시글 type을 전달해 주세요. [study / studypost / post]")
+    @PostMapping("/stars-and-scraps/{targetId}")
+    public ResponseEntity<Long> addStarScrap(@CurrentMember Member member,
+                                             @PathVariable(name = "targetId") Long targetId,
+                                             @RequestParam(name = "tableType") String tableType) {
+        return ResponseEntity.ok(starScrapService.addStarScrap(member, targetId, tableType));
     }
 
-    @Operation(summary = "스터디 스크랩 등록")
-    @PostMapping("/scraps/studies/{studyId}")
-    public ResponseEntity<Long> addStudyScrap(@CurrentMember Member member,
-                                              @PathVariable(name = "studyId") Long studyId) {
-        return ResponseEntity.ok(starScrapService.addStarScrap(member, studyId, ActType.SCRAP, TableType.STUDY));
-    }
-
-    @Operation(summary = "스터디 게시글 스크랩 등록")
-    @PostMapping("/scraps/study-posts/{studyPostId}")
-    public ResponseEntity<Long> addStudyPostScrap(@CurrentMember Member member,
-                                                  @PathVariable(name = "studyPostId") Long studyPostId) {
-        return ResponseEntity.ok(starScrapService.addStarScrap(member, studyPostId, ActType.SCRAP, TableType.STUDYPOST));
-    }
-
-    @Operation(summary = "게시글 공감 삭제")
-    @DeleteMapping("/stars/{postId}")
-    public ResponseEntity<Boolean> deletePostStar(@CurrentMember Member member,
-                                                  @PathVariable(name = "postId") Long postId) {
-        return ResponseEntity.ok(starScrapService.deleteStarScrap(member, postId, ActType.STAR, TableType.POST));
-    }
-
-    @Operation(summary = "스터디 스크랩 삭제")
-    @DeleteMapping("/scraps/studies/{studyId}")
-    public ResponseEntity<Boolean> deleteStudyScrap(@CurrentMember Member member,
-                                                    @PathVariable(name = "studyId") Long studyId) {
-        return ResponseEntity.ok(starScrapService.deleteStarScrap(member, studyId, ActType.SCRAP, TableType.STUDY));
-    }
-
-    @Operation(summary = "스터디 게시글 스크랩 삭제")
-    @DeleteMapping("/scraps/study-posts/{studyPostId}")
-    public ResponseEntity<Boolean> deleteStudyPostScrap(@CurrentMember Member member,
-                                                        @PathVariable(name = "studyPostId") Long studyPostId) {
-        return ResponseEntity.ok(starScrapService.deleteStarScrap(member, studyPostId, ActType.SCRAP, TableType.STUDYPOST));
+    @Operation(summary = "공감 혹은 스크랩 삭제", description = "공감 및 스크랩 삭제할 게시글 id를 targetId에 전달해 주세요.\n\n" +
+            "게시글 type을 전달해 주세요. [study / studypost / post]")
+    @DeleteMapping("/stars-and-scraps/{targetId}")
+    public ResponseEntity<Boolean> deleteStarScrap(@CurrentMember Member member,
+                                                   @PathVariable(name = "targetId") Long targetId,
+                                                   @RequestParam(name = "tableType") String tableType) {
+        return ResponseEntity.ok(starScrapService.deleteStarScrap(member, targetId, tableType));
     }
 }

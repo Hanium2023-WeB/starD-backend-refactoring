@@ -43,7 +43,7 @@ public class NoticeController {
     @Operation(summary = "공지사항 목록 조회")
     @GetMapping
     public ResponseEntity<PostResponseDto.PostListDto> getNoticeList(@RequestParam(name = "page", defaultValue = "1", required = false) int page) {
-        return ResponseEntity.ok(postService.getPostList(page, PostType.NOTICE));
+        return ResponseEntity.ok(postService.getPostList(page, PostType.NOTICE, null));
     }
 
     @Operation(summary = "공지사항 상세 조회")
@@ -56,6 +56,6 @@ public class NoticeController {
     @GetMapping("/search")
     public ResponseEntity<PostResponseDto.PostListDto> searchNotice(@RequestParam(name = "keyword") String keyword,
                                                                     @RequestParam(name = "page", defaultValue = "1", required = false) int page) {
-        return ResponseEntity.ok(postService.searchPost(keyword, page, PostType.NOTICE));
+        return ResponseEntity.ok(postService.searchPost(keyword, page, PostType.NOTICE, null));
     }
 }

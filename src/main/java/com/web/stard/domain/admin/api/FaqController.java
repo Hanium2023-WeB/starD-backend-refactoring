@@ -48,7 +48,7 @@ public class FaqController {
     @GetMapping("/faqs/search")
     public ResponseEntity<PostResponseDto.PostListDto> searchFaq(@RequestParam(name = "keyword") String keyword,
                                                                  @RequestParam(name = "page", defaultValue = "1", required = false) int page) {
-        return ResponseEntity.ok(postService.searchPost(keyword, page, PostType.FAQ));
+        return ResponseEntity.ok(postService.searchPost(keyword, page, PostType.FAQ, null));
     }
 
     @Operation(summary = "faq, qna 순 목록 조회", description = "faq, qna 순서로 목록을 조회합니다.")

@@ -50,7 +50,7 @@ public class QnaController {
     @GetMapping("/search")
     public ResponseEntity<PostResponseDto.PostListDto> searchQna(@RequestParam(name = "keyword") String keyword,
                                                                  @RequestParam(name = "page", defaultValue = "1", required = false) int page) {
-        return ResponseEntity.ok(postService.searchPost(keyword, page, PostType.QNA));
+        return ResponseEntity.ok(postService.searchPost(keyword, page, PostType.QNA, null));
     }
 
 }

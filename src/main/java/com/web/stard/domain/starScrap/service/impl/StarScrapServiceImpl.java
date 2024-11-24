@@ -13,6 +13,8 @@ import com.web.stard.domain.member.domain.enums.Role;
 import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.repository.StudyRepository;
+import com.web.stard.domain.teamBlog.domain.entity.StudyPost;
+import com.web.stard.domain.teamBlog.repository.StudyPostRepository;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +32,12 @@ public class StarScrapServiceImpl implements StarScrapService {
     private final StarScrapRepository starScrapRepository;
     private final PostRepository postRepository;
     private final StudyRepository studyRepository;
+    private final StudyPostRepository studyPostRepository;
 
 
     // 해당 게시글의 공감 혹은 스크랩 여부 확인
-    private StarScrap existsStarScrap(Member member, Long targetId, ActType actType, TableType tableType) {
+    @Override
+    public StarScrap existsStarScrap(Member member, Long targetId, ActType actType, TableType tableType) {
         Optional<StarScrap> starScrap = starScrapRepository.findByMemberAndActTypeAndTableTypeAndTargetId(member, actType, tableType, targetId);
 
         if (starScrap.isPresent()) {
@@ -55,7 +59,12 @@ public class StarScrapServiceImpl implements StarScrapService {
         return study;
     }
 
-    // TODO 존재하는 STUDYPOST인지 확인
+    // 존재하는 STUDYPOST인지 확인
+    private StudyPost existsStudyPost(Long targetId) {
+        StudyPost studyPost = studyPostRepository.findById(targetId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_POST_NOT_FOUND));
+        return studyPost;
+    }
 
 
 
@@ -64,17 +73,19 @@ public class StarScrapServiceImpl implements StarScrapService {
      *
      * @param member 로그인 회원
      * @param targetId 해당 게시글 고유 id
-     * @param actType STAR, SCRAP
-     * @param tableType POST,  STUDY, STUDYPOST
+     * @param type POST,  STUDY, STUDYPOST
      *
      * @return starScrap id
      */
     @Override
-    public Long addStarScrap(Member member, Long targetId, ActType actType, TableType tableType) {
+    public Long addStarScrap(Member member, Long targetId, String type) {
         // 관리자는 해당 기능 수행 불가능
         if (member.getRole() == Role.ADMIN) {
             throw new CustomException(ErrorCode.PERMISSION_DENIED);
         }
+
+        ActType actType = ActType.fromString(type);
+        TableType tableType = TableType.fromString(type);
 
         // 중복 요청 시
         if (existsStarScrap(member, targetId, actType, tableType) != null) {
@@ -91,7 +102,7 @@ public class StarScrapServiceImpl implements StarScrapService {
         } else if (tableType == TableType.STUDY) {
             existsStudyRecruitPost(targetId);
         } else { // STUDYPOST
-            // TODO
+            existsStudyPost(targetId);
         }
 
         StarScrap starScrap = StarScrap.builder()
@@ -111,17 +122,19 @@ public class StarScrapServiceImpl implements StarScrapService {
      *
      * @param member 로그인 회원
      * @param targetId 해당 게시글 고유 id
-     * @param actType STAR, SCRAP
-     * @param tableType POST,  STUDY, STUDYPOST
+     * @param type POST,  STUDY, STUDYPOST
      *
      * @return boolean 삭제 성공 시 true, 삭제 실패 시 false
      */
     @Override
-    public boolean deleteStarScrap(Member member, Long targetId, ActType actType, TableType tableType) {
+    public boolean deleteStarScrap(Member member, Long targetId, String type) {
         // 관리자는 해당 기능 수행 불가능
         if (member.getRole() == Role.ADMIN) {
             throw new CustomException(ErrorCode.PERMISSION_DENIED);
         }
+
+        ActType actType = ActType.fromString(type);
+        TableType tableType = TableType.fromString(type);
 
         // 중복 요청 확인 (StarScrap 존재 여부 확인)
         StarScrap starScrap = existsStarScrap(member, targetId, actType, tableType);
@@ -173,7 +186,8 @@ public class StarScrapServiceImpl implements StarScrapService {
         List<PostResponseDto.PostDto> postDtos = posts.getContent().stream()
                 .map(post -> {
                     int starCount = findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
-                    return PostResponseDto.PostDto.from(post, post.getMember(), starCount, null);
+                    Boolean existsStar = (existsStarScrap(member, post.getId(), ActType.STAR, TableType.POST) != null);
+                    return PostResponseDto.PostDto.from(post, post.getMember(), starCount, null, existsStar);
                 })
                 .toList();
 
