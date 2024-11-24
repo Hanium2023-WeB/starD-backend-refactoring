@@ -17,19 +17,19 @@ public interface PostService {
 
     Long deletePost(Long postId, Member member, PostType postType);
 
-    PostResponseDto.PostListDto getPostList(int page, PostType postType);
+    PostResponseDto.PostListDto getPostList(int page, PostType postType, Member member);
 
     PostResponseDto.PostDto getPostDetail(Long postId, Member member, PostType postType);
 
-    PostResponseDto.PostListDto searchPost(String keyword, int page, PostType postType);
+    PostResponseDto.PostListDto searchPost(String keyword, int page, PostType postType, Member member);
 
     PostResponseDto.PostListDto getAllFaqsAndQnas(int page);
 
     PostResponseDto.PostListDto searchFaqsAndQnas(String keyword, int page);
 
-    PostResponseDto.PostListDto getCommPostListByCategory(String category, int page);
+    PostResponseDto.PostListDto getCommPostListByCategory(String category, int page, Member member);
 
-    PostResponseDto.PostListDto searchCommPostWithCategory(String keyword, String category, int page);
+    PostResponseDto.PostListDto searchCommPostWithCategory(String keyword, String category, int page, Member member);
 
     PostResponseDto.PostListDto getCommPostListByMember(Member member, int page);
 }
