@@ -50,29 +50,33 @@ public class CommunityController {
 
     @Operation(summary = "커뮤니티 게시글 목록 조회")
     @GetMapping
-    public ResponseEntity<PostResponseDto.PostListDto> getCommPostList(@RequestParam(value = "page", defaultValue = "1", required = false) int page) {
-        return ResponseEntity.ok(postService.getPostList(page, PostType.COMM));
+    public ResponseEntity<PostResponseDto.PostListDto> getCommPostList(@CurrentMember Member member,
+                                                                       @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(postService.getPostList(page, PostType.COMM, member));
     }
 
     @Operation(summary = "커뮤니티 게시글 목록 조회 (+ 카테고리)")
     @GetMapping("/category")
-    public ResponseEntity<PostResponseDto.PostListDto> getCommPostListByCategory(@RequestParam(name = "category") String category,
+    public ResponseEntity<PostResponseDto.PostListDto> getCommPostListByCategory(@CurrentMember Member member,
+                                                                                 @RequestParam(name = "category") String category,
                                                                                  @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
-        return ResponseEntity.ok(postService.getCommPostListByCategory(category, page));
+        return ResponseEntity.ok(postService.getCommPostListByCategory(category, page, member));
     }
 
     @Operation(summary = "커뮤니티 게시글 검색 (카테고리 - 전체)", description = "전체 카테고리 중 키워드로 검색합니다.")
     @GetMapping("/search")
-    public ResponseEntity<PostResponseDto.PostListDto> searchCommPost(@RequestParam(name = "keyword") String keyword,
+    public ResponseEntity<PostResponseDto.PostListDto> searchCommPost(@CurrentMember Member member,
+                                                                      @RequestParam(name = "keyword") String keyword,
                                                                       @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
-        return ResponseEntity.ok(postService.searchPost(keyword, page, PostType.COMM));
+        return ResponseEntity.ok(postService.searchPost(keyword, page, PostType.COMM, member));
     }
 
     @Operation(summary = "커뮤니티 게시글 검색 (+ 카테고리)", description = "키워드와 카테고리로 검색합니다.")
     @GetMapping("/search/category")
-    public ResponseEntity<PostResponseDto.PostListDto> searchCommPostWithCategory(@RequestParam(name = "keyword") String keyword,
+    public ResponseEntity<PostResponseDto.PostListDto> searchCommPostWithCategory(@CurrentMember Member member,
+                                                                                  @RequestParam(name = "keyword") String keyword,
                                                                                   @RequestParam(name = "category") String category,
                                                                                   @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
-        return ResponseEntity.ok(postService.searchCommPostWithCategory(keyword, category, page));
+        return ResponseEntity.ok(postService.searchCommPostWithCategory(keyword, category, page, member));
     }
 }

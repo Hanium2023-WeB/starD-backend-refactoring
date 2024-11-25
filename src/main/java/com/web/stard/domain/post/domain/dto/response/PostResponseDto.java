@@ -25,13 +25,17 @@ public class PostResponseDto {
         private int hit;
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private PostType postType;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private Boolean isAuthor;
         private String writer;
         private String profileImg;
         private LocalDateTime updatedAt;
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        private int starCount;
+        private Integer starCount;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private Boolean existsStar;
 
-        public static PostDto from(Post post, Member writer, int starCount) {
+        public static PostDto from(Post post, Member writer, Integer starCount, Boolean isAuthor, Boolean existsStar) {
             String writerName = (writer.getRole() == Role.ADMIN) ? "관리자" : writer.getNickname();
             String profileImage = (writer.getRole() == Role.ADMIN) ? null : writer.getProfile().getImgUrl();
 
@@ -52,6 +56,7 @@ public class PostResponseDto {
                     .category(category)
                     .hit(post.getHit())
                     .postType(type)
+                    .isAuthor(isAuthor)
                     .writer(writerName)
                     .profileImg(profileImage)
                     .updatedAt(post.getUpdatedAt())

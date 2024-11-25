@@ -10,10 +10,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/qnas")
 public class QnaController {
@@ -51,7 +50,7 @@ public class QnaController {
     @GetMapping("/search")
     public ResponseEntity<PostResponseDto.PostListDto> searchQna(@RequestParam(name = "keyword") String keyword,
                                                                  @RequestParam(name = "page", defaultValue = "1", required = false) int page) {
-        return ResponseEntity.ok(postService.searchPost(keyword, page, PostType.QNA));
+        return ResponseEntity.ok(postService.searchPost(keyword, page, PostType.QNA, null));
     }
 
 }

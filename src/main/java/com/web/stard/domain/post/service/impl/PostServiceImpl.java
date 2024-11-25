@@ -41,10 +41,11 @@ public class PostServiceImpl implements PostService {
     }
 
     // 작성자인지 확인
-    private void isPostAuthor(Member member, Post post) {
+    private Boolean isPostAuthor(Member member, Post post) {
         if (!member.getId().equals(post.getMember().getId())) {
             throw new CustomException(ErrorCode.INVALID_ACCESS);
         }
+        return true;
     }
 
     // 게시글 찾기
@@ -70,7 +71,7 @@ public class PostServiceImpl implements PostService {
         Member writer = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return PostResponseDto.PostDto.from(post, writer, 0);
+        return PostResponseDto.PostDto.from(post, writer, 0, true, false);
     }
 
     /**
@@ -88,7 +89,7 @@ public class PostServiceImpl implements PostService {
         Member writer = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return PostResponseDto.PostDto.from(post, writer, 0);
+        return PostResponseDto.PostDto.from(post, writer, 0, true, false);
     }
 
     /**
@@ -102,7 +103,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostResponseDto.PostDto updatePost(Long postId, PostRequestDto.CreatePostDto requestDto, Member member, PostType postType) {
         Post post = findPost(postId, postType);
-        isPostAuthor(member, post);
+        Boolean isAuthor = isPostAuthor(member, post);
 
         if (postType == PostType.NOTICE || postType == PostType.FAQ) {
             isAdmin(member);
@@ -111,7 +112,7 @@ public class PostServiceImpl implements PostService {
         post.updatePost(requestDto.getTitle(), requestDto.getContent());
         int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
 
-        return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
+        return PostResponseDto.PostDto.from(post, post.getMember(), starCount, isAuthor, false);
     }
 
     /**
@@ -127,12 +128,12 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponseDto.PostDto updateCommPost(Member member, Long commPostId, PostRequestDto.CreateCommPostDto requestDto) {
         Post post = findPost(commPostId, PostType.COMM);
-        isPostAuthor(member, post);
+        Boolean isAuthor = isPostAuthor(member, post);
 
         post.updateComm(requestDto.getTitle(), requestDto.getContent(), Category.find(requestDto.getCategory()));
         int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
 
-        return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
+        return PostResponseDto.PostDto.from(post, post.getMember(), starCount, isAuthor, false);
     }
 
     /**
@@ -165,11 +166,15 @@ public class PostServiceImpl implements PostService {
     }
 
     // 목록 조회 - 공감 수 추가 메서드
-    private List<PostResponseDto.PostDto> findAllStarCount(Page<Post> posts) {
+    private List<PostResponseDto.PostDto> findAllStarCount(Page<Post> posts, Member member) {
         List<PostResponseDto.PostDto> postDtos = posts.getContent().stream()
                 .map(post -> {
                     int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
-                    return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
+                    Boolean existsStar = null;
+                    if (member != null) {
+                        existsStar = (starScrapService.existsStarScrap(member, post.getId(), ActType.STAR, TableType.POST) != null);
+                    }
+                    return PostResponseDto.PostDto.from(post, post.getMember(), starCount, null, existsStar);
                 })
                 .toList();
 
@@ -184,13 +189,13 @@ public class PostServiceImpl implements PostService {
      */
     @Override
     @Transactional(readOnly = true)
-    public PostResponseDto.PostListDto getPostList(int page, PostType postType) {
+    public PostResponseDto.PostListDto getPostList(int page, PostType postType, Member member) {
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         Page<Post> posts = postRepository.findByPostType(postType, pageable);
 
-        List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts);
+        List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts, member);
 
         return PostResponseDto.PostListDto.of(posts, postDtos);
     }
@@ -205,14 +210,16 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostResponseDto.PostDto getPostDetail(Long postId, Member member, PostType postType) {
         Post post = findPost(postId, postType);
+        Boolean isAuthor = (member != null && post.getMember().getId().equals(member.getId()));
 
-        if (member == null || !member.getId().equals(post.getMember().getId())) {
+        if (member == null || !isAuthor) {
             post.incrementHitCount();
         }
 
         int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
+        Boolean existsStar = (starScrapService.existsStarScrap(member, post.getId(), ActType.STAR, TableType.POST) != null);
 
-        return PostResponseDto.PostDto.from(post, post.getMember(), starCount);
+        return PostResponseDto.PostDto.from(post, post.getMember(), starCount, isAuthor, existsStar);
     }
 
     /**
@@ -224,14 +231,14 @@ public class PostServiceImpl implements PostService {
      */
     @Override
     @Transactional(readOnly = true)
-    public PostResponseDto.PostListDto searchPost(String keyword, int page, PostType postType) {
+    public PostResponseDto.PostListDto searchPost(String keyword, int page, PostType postType, Member member) {
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         Page<Post> posts = postRepository.findByPostTypeAndTitleContainingOrContentContaining(
                                 postType, keyword, keyword, pageable);
 
-        List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts);
+        List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts, member);
 
         return PostResponseDto.PostListDto.of(posts, postDtos);
     }
@@ -251,7 +258,10 @@ public class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(page - 1, 10);
         Page<Post> paginatePostList = paginateList(posts, pageable);
 
-        List<PostResponseDto.PostDto> postDtos = findAllStarCount(paginatePostList);
+        List<PostResponseDto.PostDto> postDtos = paginatePostList.getContent().stream()
+                .map(post -> {
+                    return PostResponseDto.PostDto.from(post, post.getMember(), null, null, null);
+                }).toList();
 
         return PostResponseDto.PostListDto.of(paginatePostList, postDtos);
     }
@@ -274,7 +284,10 @@ public class PostServiceImpl implements PostService {
 
         Page<Post> paginatePostList = paginateList(posts, pageable);
 
-        List<PostResponseDto.PostDto> postDtos = findAllStarCount(paginatePostList);
+        List<PostResponseDto.PostDto> postDtos = paginatePostList.getContent().stream()
+                .map(post -> {
+                    return PostResponseDto.PostDto.from(post, post.getMember(), null, null, null);
+                }).toList();
 
         return PostResponseDto.PostListDto.of(paginatePostList, postDtos);
     }
@@ -302,13 +315,13 @@ public class PostServiceImpl implements PostService {
      */
     @Transactional(readOnly = true)
     @Override
-    public PostResponseDto.PostListDto getCommPostListByCategory(String category, int page) {
+    public PostResponseDto.PostListDto getCommPostListByCategory(String category, int page, Member member) {
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         Page<Post> posts = postRepository.findByPostTypeAndCategory(PostType.COMM, Category.find(category), pageable);
 
-        List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts);
+        List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts, member);
 
         return PostResponseDto.PostListDto.of(posts, postDtos);
     }
@@ -324,13 +337,13 @@ public class PostServiceImpl implements PostService {
      */
     @Transactional(readOnly = true)
     @Override
-    public PostResponseDto.PostListDto searchCommPostWithCategory(String keyword, String category, int page) {
+    public PostResponseDto.PostListDto searchCommPostWithCategory(String keyword, String category, int page, Member member) {
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         Page<Post> posts = postRepository.searchCommPostWithCategory(PostType.COMM, keyword, Category.find(category), pageable);
 
-        List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts);
+        List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts, member);
 
         return PostResponseDto.PostListDto.of(posts, postDtos);
     }
@@ -351,7 +364,7 @@ public class PostServiceImpl implements PostService {
 
         Page<Post> posts = postRepository.findByMemberAndPostType(member, PostType.COMM, pageable);
 
-        List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts);
+        List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts, member);
 
         return PostResponseDto.PostListDto.of(posts, postDtos);
     }
