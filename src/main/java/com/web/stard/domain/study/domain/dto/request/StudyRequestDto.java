@@ -4,6 +4,7 @@ import com.web.stard.domain.member.domain.enums.InterestField;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.domain.entity.StudyApplicant;
 import com.web.stard.domain.study.domain.enums.ActivityType;
+import com.web.stard.domain.study.domain.enums.RecruitmentType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
@@ -89,6 +90,38 @@ public class StudyRequestDto {
                     .introduction(introduce)
                     .build();
         }
+    }
+
+    public record StudySearchFilter(
+
+            @Schema(description = "현재 페이지 번호 (1부터 시작)", defaultValue = "1")
+            int page,
+
+            @Schema(description = "페이지에 보여줄 데이터 건 수", defaultValue = "9")
+            int size,
+
+            @Schema(description = "검색 키워드", defaultValue = "검색 키워드")
+            String keyword,
+
+            @Schema(description = "검색 태그 키워드", defaultValue = "취준,IT")
+            String tags,
+
+            @Schema(description = "모집 상태", defaultValue = "RECRUITING")
+            RecruitmentType recruitmentType,
+
+            @Schema(description = "진행 방식", defaultValue = "ONLINE")
+            ActivityType activityType,
+
+            @Schema(description = "활동 시")
+            String city,
+
+            @Schema(description = "활동 구")
+            String district,
+
+            @Schema(description = "스터디 분야", defaultValue = "OTHERS")
+            InterestField field
+
+    ) {
     }
 
 }

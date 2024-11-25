@@ -5,6 +5,7 @@ import com.web.stard.domain.starScrap.domain.enums.ActType;
 import com.web.stard.domain.starScrap.domain.enums.TableType;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
+import com.web.stard.domain.study.domain.dto.request.StudyRequestDto;
 import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.domain.entity.StudyApplicant;
@@ -17,6 +18,8 @@ import com.web.stard.domain.study.domain.entity.Tag;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +36,7 @@ public class StudyServiceImpl implements StudyService {
     private final TagRepository tagRepository;
     private final StudyApplicantRepository studyApplicantRepository;
     private final StudyMemberRepository studyMemberRepository;
+    private final CustomStudyRepository studyCustomRepository;
 
     // 진행 중인 스터디인지 확인
     @Override
@@ -44,7 +48,7 @@ public class StudyServiceImpl implements StudyService {
 
     @Override
     public void isStudyMember(Study study, Member member) {
-        if(!studyMemberRepository.existsByStudyAndMember(study, member)) {
+        if (!studyMemberRepository.existsByStudyAndMember(study, member)) {
             throw new CustomException(ErrorCode.STUDY_MEMBER_NOT_FOUND);
         }
     }
@@ -188,6 +192,19 @@ public class StudyServiceImpl implements StudyService {
         validateAuthor(member, study.getMember());
 
         return studyApplicantRepository.findByStudy(study);
+    }
+
+    /**
+     * 검색 필터로 스터디 검색
+     *
+     * @param filter   검색 필터 정보
+     * @param pageable 페이징 정보
+     * @return
+     */
+    @Override
+    @Transactional
+    public Page<StudyResponseDto.StudyInfo> searchStudies(StudyRequestDto.StudySearchFilter filter, Pageable pageable) {
+        return studyCustomRepository.searchStudiesWithFilter(filter, pageable);
     }
 
     /**

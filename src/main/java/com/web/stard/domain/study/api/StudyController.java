@@ -9,6 +9,8 @@ import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,5 +79,14 @@ public class StudyController {
                                                                                    @PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok().body(studyService.getApplicants(member, studyId).stream()
                 .map(StudyResponseDto.StudyApplicantInfo::toDto).toList());
+    }
+
+    @Operation(summary = "스터디 검색")
+    @PostMapping("/search")
+    public ResponseEntity<StudyResponseDto.StudyInfoListDto> searchStudies(
+            @Valid @RequestBody StudyRequestDto.StudySearchFilter filter
+    ) {
+        Pageable pageable = PageRequest.of(filter.page() - 1, filter.size());
+        return ResponseEntity.ok().body(StudyResponseDto.StudyInfoListDto.of(studyService.searchStudies(filter, pageable)));
     }
 }

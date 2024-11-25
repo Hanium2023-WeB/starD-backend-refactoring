@@ -2,6 +2,7 @@ package com.web.stard.domain.study.domain.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.web.stard.domain.member.domain.entity.Member;
+import com.web.stard.domain.member.domain.enums.InterestField;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.domain.entity.StudyApplicant;
 import com.web.stard.domain.study.domain.enums.ActivityType;
@@ -11,6 +12,7 @@ import com.web.stard.domain.study.domain.enums.RecruitmentType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
@@ -18,6 +20,76 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class StudyResponseDto {
+
+    @Getter
+    @NoArgsConstructor
+    public static class StudyInfo {
+
+        @Schema(description = "스터디 게시글 아이디")
+        private Long studyId;
+
+        @Schema(description = "스터디 게시글 작성자 닉네임")
+        private String nickname;
+
+        @Schema(description = "스터디 게시글 작성자 프로필 url")
+        private String imgUrl;
+
+        @Schema(description = "스터디 게시글 제목")
+        private String title;
+
+        @Schema(description = "스터디 게시글 조회수")
+        private Long hit;
+
+        @Schema(description = "스터디 게시글 태그")
+        private String tagText;
+
+        @Schema(description = "스터디 활동 타입")
+        private ActivityType activityType;
+
+        @Schema(description = "스터디 모집 상황")
+        private RecruitmentType recruitmentType;
+
+        @Schema(description = "스터디 활동 시작일")
+        private LocalDate activityStart;
+
+        @Schema(description = "스터디 활동 마감일")
+        private LocalDate activityDeadline;
+
+        @Schema(description = "스터디 모집 마감일")
+        private LocalDate recruitmentDeadline;
+
+        @Schema(description = "스터디 활동 시")
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private String city;
+
+        @Schema(description = "스터디 활동 구")
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private String district;
+
+        private int scrapCount;
+
+        @Schema(description = "스터디 분야")
+        private InterestField field;
+
+    }
+
+    @Getter
+    @Builder
+    public static class StudyRecruitListDto {
+        private List<StudyResponseDto.DetailInfo> studyRecruitPosts;
+        private int currentPage;    // 현재 페이지
+        private int totalPages;     // 전체 페이지 수
+        private boolean isLast;     // 마지막 페이지 여부
+
+        public static StudyRecruitListDto of(Page<Study> studyPosts, List<StudyResponseDto.DetailInfo> detailInfos) {
+            return StudyRecruitListDto.builder()
+                    .studyRecruitPosts(detailInfos)
+                    .currentPage(studyPosts.getNumber() + 1)
+                    .totalPages(studyPosts.getTotalPages())
+                    .isLast(studyPosts.isLast())
+                    .build();
+        }
+    }
 
     @Builder
     @Getter
@@ -117,18 +189,18 @@ public class StudyResponseDto {
 
     @Getter
     @Builder
-    public static class StudyRecruitListDto {
-        private List<StudyResponseDto.DetailInfo> studyRecruitPosts;
+    public static class StudyInfoListDto {
+        private List<StudyResponseDto.StudyInfo> studyInfos;
         private int currentPage;    // 현재 페이지
         private int totalPages;     // 전체 페이지 수
         private boolean isLast;     // 마지막 페이지 여부
 
-        public static StudyRecruitListDto of(Page<Study> studyPosts, List<StudyResponseDto.DetailInfo> detailInfos) {
-            return StudyRecruitListDto.builder()
-                    .studyRecruitPosts(detailInfos)
-                    .currentPage(studyPosts.getNumber() + 1)
-                    .totalPages(studyPosts.getTotalPages())
-                    .isLast(studyPosts.isLast())
+        public static StudyInfoListDto of(Page<StudyResponseDto.StudyInfo> infos) {
+            return StudyInfoListDto.builder()
+                    .studyInfos(infos.getContent())
+                    .currentPage(infos.getNumber() + 1)
+                    .totalPages(infos.getTotalPages())
+                    .isLast(infos.isLast())
                     .build();
         }
     }
