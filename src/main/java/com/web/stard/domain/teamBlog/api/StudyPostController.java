@@ -67,4 +67,14 @@ public class StudyPostController {
                                                                                   @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
         return ResponseEntity.ok(studyPostService.getStudyPostList(studyId, member, page));
     }
+
+    @Operation(summary = "스터디 팀블로그 게시글 키워드 검색")
+    @GetMapping("/search")
+    public ResponseEntity<StudyPostResponseDto.StudyPostListDto> searchStudyPost(@CurrentMember Member member,
+                                                                                 @PathVariable(name = "studyId") Long studyId,
+                                                                                 @RequestParam(name = "keyword") String keyword,
+                                                                                 @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(studyPostService.searchStudyPost(studyId, keyword, member, page));
+    }
+
 }

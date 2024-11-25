@@ -17,4 +17,6 @@ public interface StudyPostService {
     StudyPostResponseDto.StudyPostDto getStudyPostDetail(Long studyId, Long studyPostId, Member member);
 
     StudyPostResponseDto.StudyPostListDto getStudyPostList(Long studyId, Member member, int page);
+
+    StudyPostResponseDto.StudyPostListDto searchStudyPost(Long studyId, String keyword, Member member, int page);
 }
