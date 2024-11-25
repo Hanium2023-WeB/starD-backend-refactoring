@@ -22,6 +22,10 @@ import com.web.stard.global.config.aws.S3Manager;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -125,7 +129,7 @@ public class StudyPostServiceImpl implements StudyPostService {
 
         studyPostRepository.save(studyPost);
 
-        return StudyPostResponseDto.StudyPostDto.from(studyPost, 0, true);
+        return StudyPostResponseDto.StudyPostDto.from(studyPost, 0, true, false);
     }
 
     /**
@@ -214,8 +218,9 @@ public class StudyPostServiceImpl implements StudyPostService {
 
         studyPostRepository.save(studyPost);
         int scrapCount = starScrapService.findStarScrapCount(studyPost.getId(), ActType.SCRAP, TableType.STUDYPOST);
+        boolean existsScrap = (starScrapService.existsStarScrap(member, studyPost.getId(), ActType.SCRAP, TableType.STUDYPOST) != null);
 
-        return StudyPostResponseDto.StudyPostDto.from(studyPost, scrapCount, isAuthor);
+        return StudyPostResponseDto.StudyPostDto.from(studyPost, scrapCount, isAuthor, existsScrap);
     }
 
     /**
@@ -282,7 +287,41 @@ public class StudyPostServiceImpl implements StudyPostService {
         }
 
         int scrapCount = starScrapService.findStarScrapCount(studyPost.getId(), ActType.SCRAP, TableType.STUDYPOST);
+        boolean existsScrap = (starScrapService.existsStarScrap(member, studyPost.getId(), ActType.SCRAP, TableType.STUDYPOST) != null);
 
-        return StudyPostResponseDto.StudyPostDto.from(studyPost, scrapCount, isAuthor);
+        return StudyPostResponseDto.StudyPostDto.from(studyPost, scrapCount, isAuthor, existsScrap);
+    }
+
+    /**
+     * 스터디 - 커뮤니티 게시글 전체 조회
+     *
+     * @param studyId 해당 study 고유 id
+     * @param member 로그인 회원
+     * @param page 조회할 페이지 번호
+     *
+     * @return StudyPostListDto
+     *      studyId, StudyPostItem, currentPage 현재 페이지, totalPages 전체 페이지 수, isLast 마지막 페이지 여부
+     *      StudyPostItem : studyPostId, writer 작성자, profileImg 프로필 이미지, title 제목, hit 조회수, scrapCount 스크랩 개수, totalFiles 파일 수
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public StudyPostResponseDto.StudyPostListDto getStudyPostList(Long studyId, Member member, int page) {
+        Study study = studyService.findById(studyId);
+        studyService.isStudyMember(study, member);
+
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<StudyPost> studyPosts = studyPostRepository.findByStudy(study, pageable);
+
+        List<StudyPostResponseDto.StudyPostItem> studyPostItems =
+                studyPosts.getContent().stream().map(studyPost -> {
+                    int scrapCount = starScrapService.findStarScrapCount(studyPost.getId(), ActType.SCRAP, TableType.STUDYPOST);
+                    boolean existsScrap = (starScrapService.existsStarScrap(member, studyPost.getId(), ActType.SCRAP, TableType.STUDYPOST) != null);
+
+                    return StudyPostResponseDto.StudyPostItem.of(studyPost, scrapCount, existsScrap);
+                }).toList();
+
+        return StudyPostResponseDto.StudyPostListDto.of(studyId, studyPosts, studyPostItems);
     }
 }

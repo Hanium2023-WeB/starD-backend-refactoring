@@ -59,4 +59,12 @@ public class StudyPostController {
                                                                                 @PathVariable(name = "studyPostId") Long studyPostId) {
         return ResponseEntity.ok(studyPostService.getStudyPostDetail(studyId, studyPostId, member));
     }
+
+    @Operation(summary = "스터디 팀블로그 게시글 목록 조회")
+    @GetMapping
+    public ResponseEntity<StudyPostResponseDto.StudyPostListDto> getStudyPostList(@CurrentMember Member member,
+                                                                                  @PathVariable(name = "studyId") Long studyId,
+                                                                                  @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(studyPostService.getStudyPostList(studyId, member, page));
+    }
 }
