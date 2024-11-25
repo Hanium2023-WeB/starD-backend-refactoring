@@ -37,9 +37,9 @@ public class StudyPostResponseDto {
         private List<FileDto> fileUrl;
         private int hit;
         private int scrapCount;
-        private Boolean isAuthor;
+        private boolean isAuthor;
 
-        public static StudyPostDto from(StudyPost studyPost, int scrapCount, Boolean isAuthor) {
+        public static StudyPostDto from(StudyPost studyPost, int scrapCount, boolean isAuthor) {
             List<FileDto> file = (studyPost.getFiles() != null) ? studyPost.getFiles().stream().map(FileDto::of).toList() : null;
 
             return StudyPostDto.builder()

@@ -57,7 +57,7 @@ public class StudyPostServiceImpl implements StudyPostService {
     }
 
     // 작성자인지 확인
-    private Boolean isPostAuthor(StudyMember studyMember, StudyPost studyPost) {
+    private boolean isPostAuthor(StudyMember studyMember, StudyPost studyPost) {
         if (studyMember.getMember().getId() != studyPost.getStudyMember().getMember().getId()) {
             throw new CustomException(ErrorCode.INVALID_ACCESS);
         }
@@ -151,7 +151,7 @@ public class StudyPostServiceImpl implements StudyPostService {
         isEqualStudyPostStudyAndStudy(study, studyPost);
         StudyMember studyMember = studyMemberRepository.findByStudyAndMember(study, member)
                 .orElseThrow(() -> new CustomException(ErrorCode.STUDY_MEMBER_NOT_FOUND));
-        Boolean isAuthor = isPostAuthor(studyMember, studyPost);
+        boolean isAuthor = isPostAuthor(studyMember, studyPost);
 
         // 파일 최대, 최소 개수 확인
         int originFileCount = (studyPost.getFiles() != null) ? studyPost.getFiles().size() : 0;
@@ -275,7 +275,7 @@ public class StudyPostServiceImpl implements StudyPostService {
         StudyPost studyPost = findStudyPost(studyPostId);
         isEqualStudyPostStudyAndStudy(study, studyPost);
 
-        Boolean isAuthor = (member != null && studyPost.getStudyMember().getMember().getId() == member.getId());
+        boolean isAuthor = (studyPost.getStudyMember().getMember().getId() == member.getId());
 
         if (!isAuthor) {
             studyPost.incrementHitCount();
