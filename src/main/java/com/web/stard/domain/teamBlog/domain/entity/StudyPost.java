@@ -3,6 +3,7 @@ package com.web.stard.domain.teamBlog.domain.entity;
 import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.domain.entity.StudyMember;
+import com.web.stard.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
-public class StudyPost {
+public class StudyPost extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "study_post_id", nullable = false)

@@ -9,9 +9,11 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -113,5 +115,25 @@ public class S3Manager {
     // studyPost 디렉토리
     public String generateStudyPostKeyName(UUID uuid) {
         return amazonConfig.getStudyPostPath() + '/' + uuid.toString();
+    }
+
+    // 단일 파일 다운로드
+    public InputStream downloadFile(String fileUrl) {
+        try {
+            // 파일 URL에서 버킷 이름과 키를 추출
+            URL url = new URL(fileUrl);
+            String bucket = url.getHost().split("\\.")[0];
+            String key = url.getPath().substring(1);
+
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .build();
+
+            return s3Client.getObject(getObjectRequest);
+        } catch (IOException e) {
+            log.error("error at S3Manager downloadFile: {}", e.getMessage(), e);
+            throw new CustomException(ErrorCode.DOWNLOAD_FAILED);
+        }
     }
 }
