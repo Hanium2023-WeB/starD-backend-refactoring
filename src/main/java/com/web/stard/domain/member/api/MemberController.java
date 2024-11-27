@@ -9,8 +9,10 @@ import com.web.stard.domain.member.domain.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.domain.dto.response.MemberResponseDto;
 import com.web.stard.domain.teamBlog.domain.dto.response.ScheduleResponseDto;
 import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
+import com.web.stard.domain.teamBlog.domain.dto.response.StudyPostResponseDto;
 import com.web.stard.domain.teamBlog.domain.dto.response.ToDoResponseDto;
 import com.web.stard.domain.teamBlog.service.ScheduleService;
+import com.web.stard.domain.teamBlog.service.StudyPostService;
 import com.web.stard.domain.teamBlog.service.ToDoService;
 import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +35,7 @@ public class MemberController {
     private final PostService postService;
     private final ToDoService toDoService;
     private final ScheduleService scheduleService;
+    private final StudyPostService studyPostService;
 
     @Operation(summary = "개인정보 반환")
     @GetMapping("/edit")
@@ -134,5 +137,13 @@ public class MemberController {
                                                                                         @RequestParam(name = "year") int year,
                                                                                         @RequestParam(name = "month") int month) {
         return ResponseEntity.ok(scheduleService.getAllScheduleListByStudy(studyId, member, year, month));
+    }
+
+    @Operation(summary = "사용자가 작성한 스터디 별 팀블로그 커뮤니티 게시글 조회")
+    @GetMapping("/study-posts/{studyId}")
+    public ResponseEntity<StudyPostResponseDto.StudyPostListDto> getStudyPostListByStudy(@CurrentMember Member member,
+                                                                                         @PathVariable(name = "studyId") Long studyId,
+                                                                                         @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(studyPostService.getMemberStudyPostListByStudy(studyId, member, page));
     }
 }

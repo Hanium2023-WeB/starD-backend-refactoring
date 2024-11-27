@@ -312,7 +312,7 @@ public class StudyPostServiceImpl implements StudyPostService {
      *
      * @return StudyPostListDto
      *      studyId, StudyPostItem, currentPage 현재 페이지, totalPages 전체 페이지 수, isLast 마지막 페이지 여부
-     *      StudyPostItem : studyPostId, writer 작성자, profileImg 프로필 이미지, title 제목, hit 조회수, scrapCount 스크랩 개수, totalFiles 파일 수
+     *      StudyPostItem : studyPostId, writer 작성자, profileImg 프로필 이미지, title 제목, hit 조회수, scrapCount 스크랩 개수, totalFiles 파일 수, existsScrap 스크랩 여부
      */
     @Transactional(readOnly = true)
     @Override
@@ -340,7 +340,7 @@ public class StudyPostServiceImpl implements StudyPostService {
      *
      * @return StudyPostListDto
      *      studyId, StudyPostItem, currentPage 현재 페이지, totalPages 전체 페이지 수, isLast 마지막 페이지 여부
-     *      StudyPostItem : studyPostId, writer 작성자, profileImg 프로필 이미지, title 제목, hit 조회수, scrapCount 스크랩 개수, totalFiles 파일 수
+     *      StudyPostItem : studyPostId, writer 작성자, profileImg 프로필 이미지, title 제목, hit 조회수, scrapCount 스크랩 개수, totalFiles 파일 수, existsScrap 스크랩 여부
      */
     @Transactional(readOnly = true)
     @Override
@@ -352,6 +352,32 @@ public class StudyPostServiceImpl implements StudyPostService {
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         Page<StudyPost> studyPosts = studyPostRepository.findByStudyAndTitleContainingOrContentContaining(study, keyword, keyword, pageable);
+
+        List<StudyPostResponseDto.StudyPostItem> studyPostItems = findAllScrap(studyPosts, member);
+
+        return StudyPostResponseDto.StudyPostListDto.of(studyId, studyPosts, studyPostItems);
+    }
+
+    /**
+     * 사용자 - 스터디 팀블로그 커뮤니티 작성한 게시글 스터디별 조회
+     *
+     * @param studyId 해당 study 고유 id
+     * @param member 로그인 회원
+     * @param page 조회할 페이지 번호
+     *
+     * @return StudyPostListDto
+     *      studyId, StudyPostItem, currentPage 현재 페이지, totalPages 전체 페이지 수, isLast 마지막 페이지 여부
+     *      StudyPostItem : studyPostId, writer 작성자, profileImg 프로필 이미지, title 제목, hit 조회수, scrapCount 스크랩 개수, totalFiles 파일 수, existsScrap 스크랩 여부
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public StudyPostResponseDto.StudyPostListDto getMemberStudyPostListByStudy(Long studyId, Member member, int page) {
+        Study study = studyService.findById(studyId);
+
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<StudyPost> studyPosts = studyPostRepository.findByStudyMember_MemberAndStudy(member, study, pageable);
 
         List<StudyPostResponseDto.StudyPostItem> studyPostItems = findAllScrap(studyPosts, member);
 
