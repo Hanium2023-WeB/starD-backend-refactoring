@@ -77,4 +77,11 @@ public class StudyPostController {
         return ResponseEntity.ok(studyPostService.searchStudyPost(studyId, keyword, member, page));
     }
 
+    @Operation(summary = "스터디 팀블로그 게시글 파일 다운로드")
+    @GetMapping("/download/{studyPostFileId}")
+    public ResponseEntity<byte[]> downloadFile(@CurrentMember Member member,
+                                               @PathVariable(name = "studyId") Long studyId,
+                                               @PathVariable(name = "studyPostFileId") Long studyPostFileId) {
+        return studyPostService.downloadFile(studyId, studyPostFileId, member);
+    }
 }

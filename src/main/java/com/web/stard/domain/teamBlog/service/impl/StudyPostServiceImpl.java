@@ -26,10 +26,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -382,5 +387,38 @@ public class StudyPostServiceImpl implements StudyPostService {
         List<StudyPostResponseDto.StudyPostItem> studyPostItems = findAllScrap(studyPosts, member);
 
         return StudyPostResponseDto.StudyPostListDto.of(studyId, studyPosts, studyPostItems);
+    }
+
+    /**
+     * 파일 다운로드
+     *
+     * @param studyId 해당 study 고유 id
+     * @param studyPostFileId 해당 studyPost 파일 고유 id
+     * @param member 로그인 회원
+     *
+     */
+    @Override
+    public ResponseEntity<byte[]> downloadFile(Long studyId, Long studyPostFileId, Member member) {
+        Study study = studyService.findById(studyId);
+        studyService.isStudyMember(study, member);
+
+        StudyPostFile studyPostFile = studyPostFileRepository.findById(studyPostFileId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_POST_FILE_NOT_FOUND));
+
+        try (InputStream inputStream = s3Manager.downloadFile(studyPostFile.getFileUrl())) {
+            byte[] bytes = inputStream.readAllBytes();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+            // 파일 이름 인코딩
+            String encodedFileName = URLEncoder.encode(studyPostFile.getFileName(), StandardCharsets.UTF_8.toString())
+                    .replaceAll("\\+", "%20");
+
+            headers.setContentDisposition(ContentDisposition.attachment().filename(encodedFileName).build());
+
+            return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
+        } catch (IOException e) {
+            throw new CustomException(ErrorCode.DOWNLOAD_FAILED);
+        }
     }
 }

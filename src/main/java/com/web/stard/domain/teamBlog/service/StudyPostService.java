@@ -3,6 +3,7 @@ package com.web.stard.domain.teamBlog.service;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.post.domain.dto.request.PostRequestDto;
 import com.web.stard.domain.teamBlog.domain.dto.response.StudyPostResponseDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -21,4 +22,6 @@ public interface StudyPostService {
     StudyPostResponseDto.StudyPostListDto searchStudyPost(Long studyId, String keyword, Member member, int page);
 
     StudyPostResponseDto.StudyPostListDto getMemberStudyPostListByStudy(Long studyId, Member member, int page);
+
+    ResponseEntity<byte[]> downloadFile(Long studyId, Long studyPostFileId, Member member);
 }
