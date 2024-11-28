@@ -58,6 +58,8 @@ public enum ErrorCode {
     STUDY_POST_BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 스터디 팀블로그 커뮤니티 요청입니다."),
     STUDY_POST_MAX_FILES_ALLOWED(HttpStatus.BAD_REQUEST, "최대 허용 파일 수를 초과했습니다."),
     STUDY_POST_FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "파일이 존재하지 않습니다."),
+    STUDY_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "완료된 스터디가 아니므로 작업을 수행할 수 없습니다."),
+    STUDY_EVALUATION_BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 스터디 팀블로그 평가 요청입니다."),
 
 
     // Reply
