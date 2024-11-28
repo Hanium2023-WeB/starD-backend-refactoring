@@ -175,6 +175,14 @@ public class Study extends BaseEntity {
     }
 
     public void updateRecruitmentType(RecruitmentType recruitmentType) {
-        this.recruitmentType = recruitmentType;
+        if (!this.recruitmentType.equals(recruitmentType)) {
+            this.recruitmentType = recruitmentType;
+        }
+    }
+
+    public void updateProcessType(ProgressType progressType) {
+        if (!this.progressType.equals(progressType)) {
+            this.progressType = progressType;
+        }
     }
 }

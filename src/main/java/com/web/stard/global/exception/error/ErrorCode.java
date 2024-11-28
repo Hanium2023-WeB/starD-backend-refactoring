@@ -49,6 +49,8 @@ public enum ErrorCode {
     STUDY_DUPLICATE_APPLICATION(HttpStatus.BAD_REQUEST,"중복 신청은 불가능합니다."),
     STUDY_APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스터디 신청자입니다."),
     STUDY_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스터디 참여자입니다."),
+    STUDY_MINIMUM_MEMBERS_REQUIRED(HttpStatus.BAD_REQUEST, "스터디 참여자는 최소 3명 이상이어야 합니다."),
+    STUDY_MEMBER_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "스터디 모집 인원을 초과했습니다."),
 
     // Study - TeamBlog
     STUDY_NOT_IN_PROGRESS(HttpStatus.BAD_REQUEST, "진행 중인 스터디가 아니므로 작업을 수행할 수 없습니다."),
