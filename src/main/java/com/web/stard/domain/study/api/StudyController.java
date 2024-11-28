@@ -67,7 +67,7 @@ public class StudyController {
 
     @Operation(summary = "스터디 신청자 선택")
     @PostMapping("/{studyId}/applications/{applicationId}/assignment")
-    public ResponseEntity<?> selectApplicant(@CurrentMember Member member, @PathVariable(name = "studyId") Long studyId,
+    public ResponseEntity<?> selectApplicant(@CurrentMember Member member, @PathVariable("studyId") Long studyId,
                                              @PathVariable(name = "applicationId") Long applicationId) {
         studyService.selectApplicant(member, studyId, applicationId);
         return ResponseEntity.ok().build();
@@ -88,5 +88,11 @@ public class StudyController {
     ) {
         Pageable pageable = PageRequest.of(filter.page() - 1, filter.size());
         return ResponseEntity.ok().body(StudyResponseDto.StudyInfoListDto.of(studyService.searchStudies(filter, pageable)));
+    }
+
+    @Operation(summary = "스터디 팀블로그 개설")
+    @PostMapping("/{studyId}/open")
+    public ResponseEntity<Long> openStudy(@CurrentMember Member member, @PathVariable("studyId") Long studyId) {
+        return ResponseEntity.ok().body(studyService.openStudy(member, studyId));
     }
 }
