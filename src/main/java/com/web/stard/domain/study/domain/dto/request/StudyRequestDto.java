@@ -30,8 +30,7 @@ public class StudyRequestDto {
             Integer capacity,
 
             @NotNull(message = "스터디 활동 방식을 선택하세요.")
-            @Schema(description = "활동 방식",
-                    allowableValues = {"ONLINE", "OFFLINE", "ONLINE_OFFLINE"})
+            @Schema(description = "활동 방식")
             ActivityType activityType,
 
             @Schema(description = "스터디 활동 시 (활동 방식이 온라인이라면 작성 X)")

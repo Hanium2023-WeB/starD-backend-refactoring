@@ -7,14 +7,12 @@ import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.domain.study.domain.dto.request.StudyRequestDto;
 import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
-import com.web.stard.domain.study.domain.entity.Study;
-import com.web.stard.domain.study.domain.entity.StudyApplicant;
-import com.web.stard.domain.study.domain.entity.StudyTag;
+import com.web.stard.domain.study.domain.entity.*;
 import com.web.stard.domain.study.domain.enums.ApplicationStatus;
 import com.web.stard.domain.study.domain.enums.ProgressType;
+import com.web.stard.domain.study.domain.enums.RecruitmentType;
 import com.web.stard.domain.study.repository.*;
 import com.web.stard.domain.study.service.StudyService;
-import com.web.stard.domain.study.domain.entity.Tag;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -205,6 +203,47 @@ public class StudyServiceImpl implements StudyService {
     @Transactional
     public Page<StudyResponseDto.StudyInfo> searchStudies(StudyRequestDto.StudySearchFilter filter, Pageable pageable) {
         return studyCustomRepository.searchStudiesWithFilter(filter, pageable);
+    }
+
+    /**
+     * 스터디 팀블로그 오픈
+     *
+     * @param member  회원 정보
+     * @param studyId 스터디 id
+     */
+    @Override
+    @Transactional
+    public Long openStudy(Member member, Long studyId) {
+        Study study = findById(studyId);
+        validateAuthor(member, study.getMember());
+
+        List<StudyApplicant> applicants =
+                studyApplicantRepository.findByStudyAndStatus(study, ApplicationStatus.ACCEPTED);
+
+        if (applicants.size() < 2) {
+            throw new CustomException(ErrorCode.STUDY_MINIMUM_MEMBERS_REQUIRED);
+        }
+
+        if (applicants.size() > study.getCapacity() - 1) {
+            throw new CustomException(ErrorCode.STUDY_MEMBER_LIMIT_EXCEEDED);
+        }
+
+        List<StudyMember> members = new ArrayList<>();
+        members.add(StudyMember.builder()
+                .study(study)
+                .member(member).build());
+
+        applicants.forEach(applicant -> {
+            StudyMember studyMember = StudyMember.builder()
+                    .member(applicant.getMember())
+                    .study(study).build();
+            members.add(studyMember);
+        });
+
+        studyMemberRepository.saveAll(members);
+        study.updateRecruitmentType(RecruitmentType.COMPLETED);
+        study.updateProcessType(ProgressType.IN_PROGRESS);
+        return study.getId();
     }
 
     /**
