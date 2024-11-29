@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,5 +26,12 @@ public class ReportController {
     public ResponseEntity<ReportResponseDto.ReportDto> createReport(@Valid @RequestBody ReportRequestDto.ReportDto requestDto,
                                                                     @CurrentMember Member member) {
         return ResponseEntity.ok(reportService.createReport(requestDto, member));
+    }
+
+    @Operation(summary = "신고 목록 조회")
+    @GetMapping
+    public ResponseEntity<ReportResponseDto.ReportListDto> getReportList(@RequestParam(name = "page", defaultValue = "1", required = false) int page,
+                                                                         @CurrentMember Member member) {
+        return ResponseEntity.ok(reportService.getReportList(page, member));
     }
 }
