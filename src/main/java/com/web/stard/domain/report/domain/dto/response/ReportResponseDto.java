@@ -51,4 +51,18 @@ public class ReportResponseDto {
                     .build();
         }
     }
+
+    @Getter
+    @Builder
+    public static class ReportReasonDto {
+        private String reason;
+        private Long count;
+    }
+
+    @Getter
+    @Builder
+    public static class ReportReasonListDto {
+        private List<ReportReasonDto> reportReasons;
+        private List<String> customReasons;
+    }
 }

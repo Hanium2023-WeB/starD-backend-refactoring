@@ -14,4 +14,6 @@ public interface ReportRepository extends JpaRepository<Report,Long> {
     @Query(value = "SELECT r.target_id AS targetId, COUNT(r.report_id) AS reportCount, r.post_type AS postType " +
             "FROM report r GROUP BY r.target_id, r.post_type", nativeQuery = true)
     List<Object[]> findReportsWithCountAndPostTypeNative();
+
+    List<Report> findByTargetId(Long targetId);
 }

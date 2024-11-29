@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/reports")
@@ -33,5 +35,11 @@ public class ReportController {
     public ResponseEntity<ReportResponseDto.ReportListDto> getReportList(@RequestParam(name = "page", defaultValue = "1", required = false) int page,
                                                                          @CurrentMember Member member) {
         return ResponseEntity.ok(reportService.getReportList(page, member));
+    }
+
+    @Operation(summary = "신고 사유 조회", description = "일반 사유는 reportReasons로, 기타 사유(사용자 입력)는 customReasons로 반환됩니다.")
+    @GetMapping("/{targetId}")
+    public ResponseEntity<ReportResponseDto.ReportReasonListDto> getReportReasonList(@PathVariable(name = "targetId") Long targetId, @CurrentMember Member member) {
+        return ResponseEntity.ok(reportService.getReportReasonList(targetId, member));
     }
 }

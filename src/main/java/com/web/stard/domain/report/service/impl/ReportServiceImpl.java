@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -156,6 +157,41 @@ public class ReportServiceImpl implements ReportService {
         Page<ReportResponseDto.ReportDetailDto> pagedReportDtosPage = new PageImpl<>(pagedReportDtos, pageable, reportDtos.size());
 
         return ReportResponseDto.ReportListDto.of(pagedReportDtosPage);
+    }
+
+    /**
+     * 신고 사유 조회
+     * @param targetId 조회할 게시글/댓글 id
+     * @return ReportReasonListDto reportReasons 일반 신고 사유 목록, customReasons 커스텀 사유 목록
+     */
+    @Override
+    public ReportResponseDto.ReportReasonListDto getReportReasonList(Long targetId, Member member) {
+        isAdmin(member);
+
+        List<Report> reports = reportRepository.findByTargetId(targetId);
+
+        // 신고 사유별로 그룹화, 해당 사유의 개수 포함
+        Map<ReportReason, Long> reasonCounts = reports.stream()
+                .collect(Collectors.groupingBy(Report::getReportReason, Collectors.counting()));
+
+        List<ReportResponseDto.ReportReasonDto> reportReasons = reasonCounts.entrySet().stream()
+                .filter(entry -> entry.getKey() != ReportReason.CUSTOM)
+                .map(entry -> ReportResponseDto.ReportReasonDto.builder()
+                        .reason(entry.getKey().getDescription())
+                        .count(entry.getValue())
+                        .build())
+                .collect(Collectors.toList());
+
+        // CUSTOM 사유
+        List<String> customReasons = reports.stream()
+                .filter(report -> report.getReportReason() == ReportReason.CUSTOM)
+                .map(Report::getCustomReason)
+                .collect(Collectors.toList());
+
+        return ReportResponseDto.ReportReasonListDto.builder()
+                .reportReasons(reportReasons)  // 일반 신고 사유 목록
+                .customReasons(customReasons)  // 모든 customReason 목록
+                .build();
     }
 
 }
