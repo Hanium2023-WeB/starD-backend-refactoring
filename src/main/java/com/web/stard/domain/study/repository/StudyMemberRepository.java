@@ -16,4 +16,6 @@ public interface StudyMemberRepository extends JpaRepository<StudyMember, Long> 
     List<StudyMember> findByMember(Member member);
 
     boolean existsByStudyAndMember(Study study, Member member);
+
+    List<StudyMember> findByStudy(Study study);
 }

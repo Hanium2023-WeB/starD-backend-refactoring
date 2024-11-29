@@ -7,6 +7,7 @@ import com.web.stard.domain.study.domain.enums.ProgressType;
 import com.web.stard.domain.study.repository.StudyMemberRepository;
 import com.web.stard.domain.study.service.StudyService;
 import com.web.stard.domain.teamBlog.domain.dto.request.EvaluationRequestDto;
+import com.web.stard.domain.teamBlog.domain.dto.response.EvaluationResponseDto;
 import com.web.stard.domain.teamBlog.domain.entity.Evaluation;
 import com.web.stard.domain.teamBlog.repository.EvaluationRepository;
 import com.web.stard.domain.teamBlog.service.EvaluationService;
@@ -16,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -28,9 +29,18 @@ public class EvaluationServiceImpl implements EvaluationService {
 
 
     // 완료된 스터디인지 확인
-    public void isStudyCompleted(Study study) {
+    private void isStudyCompleted(Study study) {
         if (study.getProgressType() != ProgressType.COMPLETED) {
             throw new CustomException(ErrorCode.STUDY_NOT_COMPLETED);
+        }
+    }
+
+    private Evaluation findEvaluation(StudyMember studyMember, StudyMember target) {
+        Optional<Evaluation> evaluation = evaluationRepository.findByStudyMemberAndTarget(studyMember, target);
+        if (evaluation.isPresent()) {
+            return evaluation.get();
+        } else {
+            return null;
         }
     }
 
@@ -55,6 +65,10 @@ public class EvaluationServiceImpl implements EvaluationService {
 
         if (studyMember.getMember().getId() == target.getMember().getId()) { // 자기자신 평가 X
             throw new CustomException(ErrorCode.STUDY_EVALUATION_BAD_REQUEST);
+        }
+
+        if (findEvaluation(studyMember, target) != null) { // 이미 존재하면
+            throw new CustomException(ErrorCode.DUPLICATE_STUDY_EVALUATION_REQUEST);
         }
 
         Evaluation evaluation = Evaluation.builder()
@@ -97,5 +111,41 @@ public class EvaluationServiceImpl implements EvaluationService {
         evaluation.updateStarReason(requestDto.getStarReason());
 
         return evaluation.getId();
+    }
+
+    /**
+     * 스터디 - 팀원 평가 리스트
+     *
+     * @param studyId 해당 study 고유 id
+     * @param member 로그인 회원
+     *
+     * @return UserGivenEvaluationDto 리스트 :
+     *      studyId, target 대상 회원 닉네임, evaluationStatus 평가 부여 여부, starRating 별점, starReason 별점 사유
+     */
+    @Transactional
+    @Override
+    public List<EvaluationResponseDto.UserGivenEvaluationDto> getMembersWithEvaluations(Long studyId, Member member) {
+        Study study = studyService.findById(studyId);
+        isStudyCompleted(study);
+
+        // 스터디원 가져오기
+        List<StudyMember> studyMembers = studyMemberRepository.findByStudy(study);
+
+        StudyMember user = studyMemberRepository.findByStudyAndMember(study, member)
+                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_MEMBER_NOT_FOUND));
+
+        List<EvaluationResponseDto.UserGivenEvaluationDto> evaluationDtos =
+                studyMembers.stream().map(target -> {
+                    if (target.getMember().getId() != member.getId()) { // 자기자신 제외
+                        Evaluation evaluation = findEvaluation(user, target);
+                        return EvaluationResponseDto.UserGivenEvaluationDto.of(target, evaluation);
+                    } else {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
+
+        return evaluationDtos;
     }
 }
