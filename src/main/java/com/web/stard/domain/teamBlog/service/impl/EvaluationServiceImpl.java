@@ -119,12 +119,12 @@ public class EvaluationServiceImpl implements EvaluationService {
      * @param studyId 해당 study 고유 id
      * @param member 로그인 회원
      *
-     * @return UserGivenEvaluationDto 리스트 :
-     *      studyId, target 대상 회원 닉네임, evaluationStatus 평가 부여 여부, starRating 별점, starReason 별점 사유
+     * @return EvaluationDto 리스트 :
+     *      studyId, nickname 상대방 회원 닉네임, evaluationStatus 평가 부여 여부, starRating 별점, starReason 별점 사유
      */
     @Transactional
     @Override
-    public List<EvaluationResponseDto.UserGivenEvaluationDto> getMembersWithEvaluations(Long studyId, Member member) {
+    public List<EvaluationResponseDto.EvaluationDto> getStudyMembersWithEvaluations(Long studyId, Member member, String status) {
         Study study = studyService.findById(studyId);
         isStudyCompleted(study);
 
@@ -134,11 +134,16 @@ public class EvaluationServiceImpl implements EvaluationService {
         StudyMember user = studyMemberRepository.findByStudyAndMember(study, member)
                 .orElseThrow(() -> new CustomException(ErrorCode.STUDY_MEMBER_NOT_FOUND));
 
-        List<EvaluationResponseDto.UserGivenEvaluationDto> evaluationDtos =
-                studyMembers.stream().map(target -> {
-                    if (target.getMember().getId() != member.getId()) { // 자기자신 제외
-                        Evaluation evaluation = findEvaluation(user, target);
-                        return EvaluationResponseDto.UserGivenEvaluationDto.of(target, evaluation);
+        List<EvaluationResponseDto.EvaluationDto> evaluationDtos =
+                studyMembers.stream().map(studyMember -> {
+                    if (studyMember.getMember().getId() != member.getId()) { // 자기자신 제외
+                        Evaluation evaluation;
+                        if (status.equals("given")) {
+                            evaluation = findEvaluation(user, studyMember);
+                        } else { // "received"
+                            evaluation = findEvaluation(studyMember, user);
+                        }
+                        return EvaluationResponseDto.EvaluationDto.of(studyMember, evaluation);
                     } else {
                         return null;
                     }

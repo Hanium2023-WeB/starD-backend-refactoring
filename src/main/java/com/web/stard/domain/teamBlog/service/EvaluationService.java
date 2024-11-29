@@ -11,5 +11,5 @@ public interface EvaluationService {
 
     Long updateReason(Long studyId, Long evaluationId, Member member, EvaluationRequestDto.UpdateDto requestDto);
 
-    List<EvaluationResponseDto.UserGivenEvaluationDto> getMembersWithEvaluations(Long studyId, Member member);
+    List<EvaluationResponseDto.EvaluationDto> getStudyMembersWithEvaluations(Long studyId, Member member, String status);
 }

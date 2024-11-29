@@ -37,12 +37,21 @@ public class EvaluationController {
         return ResponseEntity.ok(evaluationService.updateReason(studyId, evaluationId, member, requestDto));
     }
 
-    @Operation(summary = "사용자의 스터디원 평가 전체 리스트")
-    @GetMapping
-    public ResponseEntity<List<EvaluationResponseDto.UserGivenEvaluationDto>> getMembersWithEvaluations (
+    @Operation(summary = "사용자의 스터디원 평가 전체 리스트", description = "사용자가 평가할 수 있거나 평가한 스터디원 전체 리스트입니다.")
+    @GetMapping("/given")
+    public ResponseEntity<List<EvaluationResponseDto.EvaluationDto>> getStudyMembersWithEvaluations (
             @CurrentMember Member member,
             @PathVariable(name = "studyId") Long studyId
     ) {
-        return ResponseEntity.ok(evaluationService.getMembersWithEvaluations(studyId, member));
+        return ResponseEntity.ok(evaluationService.getStudyMembersWithEvaluations(studyId, member, "given"));
+    }
+
+    @Operation(summary = "사용자가 받은 스터디원 평가 전체 리스트", description = "다른 사용자로부터 받거나 받을 리스트입니다.")
+    @GetMapping("/received")
+    public ResponseEntity<List<EvaluationResponseDto.EvaluationDto>> getMemberReceivedEvaluations (
+            @CurrentMember Member member,
+            @PathVariable(name = "studyId") Long studyId
+    ) {
+        return ResponseEntity.ok(evaluationService.getStudyMembersWithEvaluations(studyId, member, "received"));
     }
 }
