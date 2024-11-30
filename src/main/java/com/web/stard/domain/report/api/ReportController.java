@@ -11,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/reports")
@@ -42,4 +40,19 @@ public class ReportController {
     public ResponseEntity<ReportResponseDto.ReportReasonListDto> getReportReasonList(@PathVariable(name = "targetId") Long targetId, @CurrentMember Member member) {
         return ResponseEntity.ok(reportService.getReportReasonList(targetId, member));
     }
+
+    @Operation(summary = "신고 승인")
+    @PostMapping("/{targetId}/approve")
+    public ResponseEntity<ReportResponseDto.ReportProcessDto> approveReport(@PathVariable(name = "targetId") Long targetId,
+                                                                            @RequestParam(name = "postType") String postType, @CurrentMember Member member) {
+        return ResponseEntity.ok(reportService.approveReport(targetId, postType, member));
+    }
+
+    @Operation(summary = "신고 반려")
+    @PostMapping("/{targetId}/reject")
+    public ResponseEntity<ReportResponseDto.ReportProcessDto> rejectReport(@PathVariable(name = "targetId") Long targetId,
+                                                                           @RequestParam(name = "postType") String postType, @CurrentMember Member member) {
+        return ResponseEntity.ok(reportService.rejectReport(targetId, postType, member));
+    }
+
 }

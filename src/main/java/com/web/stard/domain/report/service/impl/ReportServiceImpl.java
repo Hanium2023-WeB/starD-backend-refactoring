@@ -81,6 +81,20 @@ public class ReportServiceImpl implements ReportService {
         };
     }
 
+    // 글 존재 여부 확인 및 객체 반환
+    private Object getValidatedTargetEntity(Long targetId, PostType postType) {
+        return switch (postType) {
+            case STUDY -> studyRepository.findById(targetId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
+            case STUDYPOST -> studyPostRepository.findById(targetId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.STUDY_POST_NOT_FOUND));
+            case REPLY -> replyRepository.findById(targetId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.REPLY_NOT_FOUND));
+            default -> postRepository.findById(targetId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        };
+    }
+
     /**
      * 신고
      * @param requestDto targetId 신고 대상 id, postType 신고 대상 글 타입, reportReason 신고 사유, customReason 기타 신고 사유
@@ -129,6 +143,7 @@ public class ReportServiceImpl implements ReportService {
      * @return ReportListDto reports 신고 리스트, currentPage 현재 페이지, totalPages 전체 페이지 수, isLast 마지막 페이지 여부
      */
     @Override
+    @Transactional(readOnly = true)
     public ReportResponseDto.ReportListDto getReportList(int page, Member member) {
         isAdmin(member);
 
@@ -161,10 +176,11 @@ public class ReportServiceImpl implements ReportService {
 
     /**
      * 신고 사유 조회
-     * @param targetId 조회할 게시글/댓글 id
+     * @param targetId 조회할 글 id
      * @return ReportReasonListDto reportReasons 일반 신고 사유 목록, customReasons 커스텀 사유 목록
      */
     @Override
+    @Transactional(readOnly = true)
     public ReportResponseDto.ReportReasonListDto getReportReasonList(Long targetId, Member member) {
         isAdmin(member);
 
@@ -191,6 +207,73 @@ public class ReportServiceImpl implements ReportService {
         return ReportResponseDto.ReportReasonListDto.builder()
                 .reportReasons(reportReasons)  // 일반 신고 사유 목록
                 .customReasons(customReasons)  // 모든 customReason 목록
+                .build();
+    }
+
+    /**
+     * 신고 승인
+     *
+     * @param targetId 신고 승인할 글 id
+     * @param postType 글 타입
+     * @return ReportProcessDto targetId 신고 승인된 글 id, message 처리 결과
+     */
+    @Override
+    @Transactional
+    public ReportResponseDto.ReportProcessDto approveReport(Long targetId, String postType, Member member) {
+        isAdmin(member);
+
+        PostType type = PostType.fromString(postType);
+        Object targetEntity = getValidatedTargetEntity(targetId, type);
+
+        // 신고 수 증가 및 해당 글 삭제
+        if (targetEntity instanceof Study study) {
+            study.getMember().increaseReportCount();
+            replyRepository.deleteAllByTargetIdAndPostType(targetId, type);
+            studyRepository.delete(study);
+        } else if (targetEntity instanceof StudyPost studyPost) {
+            studyPost.getStudyMember().getMember().increaseReportCount();
+            replyRepository.deleteAllByTargetIdAndPostType(targetId, type);
+            studyPostRepository.delete(studyPost);
+        } else if (targetEntity instanceof Reply reply) {
+            reply.getMember().increaseReportCount();
+            replyRepository.delete(reply);
+        } else if (targetEntity instanceof Post post) {
+            post.getMember().increaseReportCount();
+            replyRepository.deleteAllByTargetIdAndPostType(targetId, type);
+            postRepository.delete(post);
+        } else {
+            throw new CustomException(ErrorCode.REPORT_PROCESS_ERROR);
+        }
+
+        // 신고 내역 삭제
+        reportRepository.deleteByTargetIdAndPostType(targetId, PostType.fromString(postType));
+
+        return ReportResponseDto.ReportProcessDto.builder()
+                .targetId(targetId)
+                .message("신고가 승인되었습니다.")
+                .build();
+    }
+
+    /**
+     * 신고 반려
+     *
+     * @param targetId 신고 반려할 글 id
+     * @param postType 글 타입
+     * @return ReportProcessDto targetId 신고 승인된 글 id, message 처리 결과
+     */
+    @Override
+    @Transactional
+    public ReportResponseDto.ReportProcessDto rejectReport(Long targetId, String postType, Member member) {
+        isAdmin(member);
+
+        PostType type = PostType.fromString(postType);
+        getValidatedTargetEntity(targetId, type);
+
+        reportRepository.deleteByTargetIdAndPostType(targetId, PostType.fromString(postType));
+
+        return ReportResponseDto.ReportProcessDto.builder()
+                .targetId(targetId)
+                .message("신고가 반려되었습니다.")
                 .build();
     }
 

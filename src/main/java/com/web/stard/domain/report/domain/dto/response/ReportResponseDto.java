@@ -65,4 +65,11 @@ public class ReportResponseDto {
         private List<ReportReasonDto> reportReasons;
         private List<String> customReasons;
     }
+
+    @Getter
+    @Builder
+    public static class ReportProcessDto {
+        private Long targetId;
+        private String message;
+    }
 }

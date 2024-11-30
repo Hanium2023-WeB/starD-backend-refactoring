@@ -16,4 +16,6 @@ public interface ReportRepository extends JpaRepository<Report,Long> {
     List<Object[]> findReportsWithCountAndPostTypeNative();
 
     List<Report> findByTargetId(Long targetId);
+
+    void deleteByTargetIdAndPostType(Long targetId, PostType postType);
 }
