@@ -30,4 +30,13 @@ public class Profile {
     public void deleteImageUrl() {
         this.imgUrl = null;
     }
+
+    public void updateCredibility(double starRating, int evaluatorCount) {
+        /* starRating = 평가에 반영할 평점
+           evaluatorCount = 기존 평가 인원수
+           (기존 평점 * 인원 + 매긴 점수) / (인원 + 1)
+           인원 + 1인 이유 : 기본 값 5점 */
+        double total = this.credibility * evaluatorCount + starRating;
+        this.credibility = total / (evaluatorCount + 1);
+    }
 }
