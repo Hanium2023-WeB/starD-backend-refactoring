@@ -157,7 +157,7 @@ public class PostServiceImpl implements PostService {
 
         // 댓글 삭제
         if (post.getPostType() == PostType.COMM || post.getPostType() == PostType.QNA) {
-            List<Reply> replies = replyRepository.findAllByTargetId(postId);
+            List<Reply> replies = replyRepository.findAllByTargetIdAndPostType(postId, postType);
             replyRepository.deleteAll(replies);
         }
 

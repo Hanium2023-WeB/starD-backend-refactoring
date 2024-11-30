@@ -130,7 +130,7 @@ public class ReplyServiceImpl implements ReplyService {
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC, "createdAt"));   // 최신 순
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
-        Page<Reply> replies = replyRepository.findByTargetId(targetId, pageable);
+        Page<Reply> replies = replyRepository.findByTargetIdAndPostType(targetId, PostType.fromString(type), pageable);
 
         List<ReplyResponseDto.ReplyDto> replyDtos = replies.getContent().stream()
                 .map(reply -> {
