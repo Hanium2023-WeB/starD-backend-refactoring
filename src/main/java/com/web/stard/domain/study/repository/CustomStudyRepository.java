@@ -40,7 +40,7 @@ public class CustomStudyRepository {
                 .join(qMember.profile, QProfile.profile)
                 .orderBy(qStudy.id.desc())
                 .where(recruitmentTypeEq(filter.recruitmentType())
-                        , keywordEq(filter.keyword())
+                        , keywordContains(filter.keyword())
                         , activityTypeEq(filter.activityType())
                         , tagsEq(filter.tags())
                         , fieldEq(filter.field())
@@ -59,9 +59,9 @@ public class CustomStudyRepository {
                 null : qStudy.recruitmentType.eq(recruitmentType);
     }
 
-    private BooleanExpression keywordEq(String keyword) {
+    private BooleanExpression keywordContains(String keyword) {
         return keyword != null ?
-                qStudy.title.eq(keyword).or(qStudy.content.eq(keyword)) : null;
+                qStudy.title.contains(keyword).or(qStudy.content.contains(keyword)) : null;
     }
 
     private BooleanExpression tagsEq(String tagText) {

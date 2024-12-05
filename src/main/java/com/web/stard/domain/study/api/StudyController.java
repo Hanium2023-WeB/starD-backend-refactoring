@@ -1,12 +1,18 @@
 package com.web.stard.domain.study.api;
 
 import com.web.stard.domain.member.domain.entity.Member;
+import com.web.stard.domain.member.domain.enums.InterestField;
 import com.web.stard.domain.study.domain.dto.request.StudyRequestDto;
 import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.entity.Study;
+import com.web.stard.domain.study.domain.enums.ActivityType;
+import com.web.stard.domain.study.domain.enums.RecruitmentType;
 import com.web.stard.domain.study.service.StudyService;
 import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -82,15 +88,51 @@ public class StudyController {
     }
 
     @Operation(summary = "스터디 검색")
-    @PostMapping("/search")
+    @GetMapping("/search")
     public ResponseEntity<StudyResponseDto.StudyInfoListDto> searchStudies(
-            @Valid @RequestBody StudyRequestDto.StudySearchFilter filter
-    ) {
-        Pageable pageable = PageRequest.of(filter.page() - 1, filter.size());
+            @RequestParam(defaultValue = "1", name = "page") int page,
+            @RequestParam(defaultValue = "9", name = "size") int size,
+            @RequestParam(required = false, name = "keyword") String keyword, @RequestParam(required = false, name = "tags") String tags,
+            @RequestParam(required = false, name = "recruitmentType") RecruitmentType recruitmentType,
+            @RequestParam(required = false, name = "activityType") ActivityType activityType,
+            @RequestParam(required = false, name = "city") String city, @RequestParam(required = false, name ="district" ) String district,
+            @RequestParam(required = false, name = "field") InterestField field) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        StudyRequestDto.StudySearchFilter filter = StudyRequestDto.StudySearchFilter.of(page, size, keyword, tags,
+                recruitmentType, activityType, city, district, field);
         return ResponseEntity.ok().body(StudyResponseDto.StudyInfoListDto.of(studyService.searchStudies(filter, pageable)));
     }
 
     @Operation(summary = "스터디 팀블로그 개설")
+    @ApiResponse(
+            responseCode = "400",
+            description = "BAD_REQUEST",
+            content = @Content(
+                    mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(
+                                    name = "스터디 참여자 최소 3명 이상",
+                                    value = """
+                                            {
+                                              "status": 400,
+                                              "message": "스터디 참여자는 최소 3명 이상이어야 합니다.",
+                                              "errorCode": "STUDY_MINIMUM_MEMBERS_REQUIRED"
+                                            }
+                                            """
+                            ),
+                            @ExampleObject(
+                                    name = "스터디 모집 인원 초과",
+                                    value = """
+                                            {
+                                              "status": 400,
+                                              "message": "스터디 모집 인원을 초과했습니다.",
+                                              "errorCode": "STUDY_MEMBER_LIMIT_EXCEEDED"
+                                            }
+                                            """
+                            )
+                    }
+            )
+    )
     @PostMapping("/{studyId}/open")
     public ResponseEntity<Long> openStudy(@CurrentMember Member member, @PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok().body(studyService.openStudy(member, studyId));
