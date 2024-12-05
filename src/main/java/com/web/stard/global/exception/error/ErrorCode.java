@@ -63,6 +63,8 @@ public enum ErrorCode {
     STUDY_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "완료된 스터디가 아니므로 작업을 수행할 수 없습니다."),
     STUDY_EVALUATION_BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 스터디 팀블로그 평가 요청입니다."),
     DUPLICATE_STUDY_EVALUATION_REQUEST(HttpStatus.CONFLICT, "이미 평가에 참여한 회원입니다."),
+    GEOCODING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "위도, 경도 변환에 실패했습니다."),
+    REVERSE_GEOCODING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "주소 변환에 실패했습니다."),
 
 
     // Reply
