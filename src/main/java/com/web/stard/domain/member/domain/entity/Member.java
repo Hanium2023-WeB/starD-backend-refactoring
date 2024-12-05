@@ -46,7 +46,7 @@ public class Member extends BaseEntity implements UserDetails {
 
     @ColumnDefault("0")
     @Column(name = "report_count")
-    private double reportCount; // 누적 신고 수
+    private int reportCount; // 누적 신고 수
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_id")

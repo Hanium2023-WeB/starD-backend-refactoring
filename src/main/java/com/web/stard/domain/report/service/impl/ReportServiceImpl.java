@@ -2,6 +2,7 @@ package com.web.stard.domain.report.service.impl;
 
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.domain.enums.Role;
+import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.domain.post.domain.entity.Post;
 import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.post.repository.PostRepository;
@@ -37,6 +38,7 @@ public class ReportServiceImpl implements ReportService {
     private final StudyPostRepository studyPostRepository;
     private final ReplyRepository replyRepository;
     private final PostRepository postRepository;
+    private final MemberRepository memberRepository;
 
     // 관리자인지 확인
     private void isAdmin(Member member) {
@@ -275,6 +277,32 @@ public class ReportServiceImpl implements ReportService {
                 .targetId(targetId)
                 .message("신고가 반려되었습니다.")
                 .build();
+    }
+
+    /**
+     * 누적 신고 수가 1 이상인 회원 목록 조회
+     * @param page 조회할 페이지 번호
+     * @return ReportMemberListDto members 회원 리스트, currentPage 현재 페이지, totalPages 전체 페이지 수, isLast 마지막 페이지 여부
+     */
+    @Override
+    public ReportResponseDto.ReportMemberListDto getReportedMemberList(int page, Member member) {
+        isAdmin(member);
+
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<Member> reportedMembers = memberRepository.findByReportCountGreaterThanEqual(1, pageable);
+
+        Page<ReportResponseDto.ReportMember> reportMemberDto = reportedMembers.map(m ->
+                ReportResponseDto.ReportMember.builder()
+                        .memberId(m.getId())
+                        .nickname(m.getNickname())
+                        .reportCount(m.getReportCount())
+                        .profileImg(m.getProfile().getImgUrl())
+                        .build()
+        );
+
+        return ReportResponseDto.ReportMemberListDto.of(reportMemberDto);
     }
 
 }

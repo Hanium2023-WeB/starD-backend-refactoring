@@ -55,4 +55,10 @@ public class ReportController {
         return ResponseEntity.ok(reportService.rejectReport(targetId, postType, member));
     }
 
+    @Operation(summary = "회원 목록 조회", description = "누적 신고 횟수가 1 이상인 회원 목록을 조회합니다.")
+    @GetMapping("/members")
+    public ResponseEntity<ReportResponseDto.ReportMemberListDto> getReportedMemberList(@RequestParam(name = "page", defaultValue = "1", required = false) int page,
+                                                                                       @CurrentMember Member member) {
+        return ResponseEntity.ok(reportService.getReportedMemberList(page, member));
+    }
 }
