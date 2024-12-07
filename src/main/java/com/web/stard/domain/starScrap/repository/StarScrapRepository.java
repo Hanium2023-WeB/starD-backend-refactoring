@@ -24,4 +24,6 @@ public interface StarScrapRepository extends JpaRepository<StarScrap, Long> {
 
     @Query("SELECT st FROM Study st JOIN StarScrap ss ON st.id = ss.targetId WHERE ss.member = :member AND ss.actType = 'SCRAP'")
     Page<Study> findStudyRecruitPostsByMember(Member member, Pageable pageable);
+
+    void deleteByActTypeAndTableTypeAndTargetId(ActType actType, TableType tableType, Long id);
 }

@@ -14,14 +14,20 @@ import com.web.stard.domain.report.domain.dto.resquest.ReportRequestDto;
 import com.web.stard.domain.report.domain.entity.Report;
 import com.web.stard.domain.report.repository.ReportRepository;
 import com.web.stard.domain.report.service.ReportService;
+import com.web.stard.domain.starScrap.domain.enums.ActType;
+import com.web.stard.domain.starScrap.domain.enums.TableType;
+import com.web.stard.domain.starScrap.repository.StarScrapRepository;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.repository.StudyRepository;
 import com.web.stard.domain.teamBlog.domain.entity.StudyPost;
+import com.web.stard.domain.teamBlog.domain.entity.StudyPostFile;
 import com.web.stard.domain.teamBlog.repository.StudyPostRepository;
+import com.web.stard.global.config.aws.S3Manager;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +45,8 @@ public class ReportServiceImpl implements ReportService {
     private final ReplyRepository replyRepository;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final StarScrapRepository starScrapRepository;
+    private final S3Manager s3Manager;
 
     // 관리자인지 확인
     private void isAdmin(Member member) {
@@ -228,20 +236,27 @@ public class ReportServiceImpl implements ReportService {
         Object targetEntity = getValidatedTargetEntity(targetId, type);
 
         // 신고 수 증가 및 해당 글 삭제
-        if (targetEntity instanceof Study study) {
+        if (targetEntity instanceof Study study) {  // 스터디 - 댓글, 스타 삭제
             study.getMember().increaseReportCount();
             replyRepository.deleteAllByTargetIdAndPostType(targetId, type);
+            starScrapRepository.deleteByActTypeAndTableTypeAndTargetId(ActType.STAR, TableType.STUDY, study.getId());
             studyRepository.delete(study);
-        } else if (targetEntity instanceof StudyPost studyPost) {
+        } else if (targetEntity instanceof StudyPost studyPost) {   // studyPost - 댓글, 파일, 스크랩 삭제
             studyPost.getStudyMember().getMember().increaseReportCount();
             replyRepository.deleteAllByTargetIdAndPostType(targetId, type);
+            if (studyPost.getFiles() != null) {
+                List<String> fileUrls = studyPost.getFiles().stream().map(StudyPostFile::getFileUrl).toList();
+                s3Manager.deleteFiles(fileUrls);
+            }
+            starScrapRepository.deleteByActTypeAndTableTypeAndTargetId(ActType.SCRAP, TableType.STUDYPOST, studyPost.getId());
             studyPostRepository.delete(studyPost);
-        } else if (targetEntity instanceof Reply reply) {
+        } else if (targetEntity instanceof Reply reply) {   // 댓글
             reply.getMember().increaseReportCount();
             replyRepository.delete(reply);
-        } else if (targetEntity instanceof Post post) {
+        } else if (targetEntity instanceof Post post) {     // 게시글 - 댓글, 스타 삭제
             post.getMember().increaseReportCount();
             replyRepository.deleteAllByTargetIdAndPostType(targetId, type);
+            starScrapRepository.deleteByActTypeAndTableTypeAndTargetId(ActType.STAR, TableType.POST, post.getId());
             postRepository.delete(post);
         } else {
             throw new CustomException(ErrorCode.REPORT_PROCESS_ERROR);
