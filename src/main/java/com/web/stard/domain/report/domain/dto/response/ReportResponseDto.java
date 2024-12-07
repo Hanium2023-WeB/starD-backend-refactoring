@@ -99,4 +99,11 @@ public class ReportResponseDto {
                     .build();
         }
     }
+
+    @Getter
+    @Builder
+    public static class ForceDeleteDto {
+        private Long deletedMemberId;
+        private String message;
+    }
 }

@@ -2,7 +2,9 @@ package com.web.stard.domain.report.service.impl;
 
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.domain.enums.Role;
+import com.web.stard.domain.member.repository.InterestRepository;
 import com.web.stard.domain.member.repository.MemberRepository;
+import com.web.stard.domain.member.repository.ProfileRepository;
 import com.web.stard.domain.post.domain.entity.Post;
 import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.post.repository.PostRepository;
@@ -18,6 +20,8 @@ import com.web.stard.domain.starScrap.domain.enums.ActType;
 import com.web.stard.domain.starScrap.domain.enums.TableType;
 import com.web.stard.domain.starScrap.repository.StarScrapRepository;
 import com.web.stard.domain.study.domain.entity.Study;
+import com.web.stard.domain.study.repository.StudyApplicantRepository;
+import com.web.stard.domain.study.repository.StudyMemberRepository;
 import com.web.stard.domain.study.repository.StudyRepository;
 import com.web.stard.domain.teamBlog.domain.entity.StudyPost;
 import com.web.stard.domain.teamBlog.domain.entity.StudyPostFile;
@@ -27,7 +31,6 @@ import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +50,10 @@ public class ReportServiceImpl implements ReportService {
     private final MemberRepository memberRepository;
     private final StarScrapRepository starScrapRepository;
     private final S3Manager s3Manager;
+    private final InterestRepository interestRepository;
+    private final ProfileRepository profileRepository;
+    private final StudyMemberRepository studyMemberRepository;
+    private final StudyApplicantRepository studyApplicantRepository;
 
     // 관리자인지 확인
     private void isAdmin(Member member) {
@@ -300,6 +307,7 @@ public class ReportServiceImpl implements ReportService {
      * @return ReportMemberListDto members 회원 리스트, currentPage 현재 페이지, totalPages 전체 페이지 수, isLast 마지막 페이지 여부
      */
     @Override
+    @Transactional(readOnly = true)
     public ReportResponseDto.ReportMemberListDto getReportedMemberList(int page, Member member) {
         isAdmin(member);
 
@@ -320,4 +328,77 @@ public class ReportServiceImpl implements ReportService {
         return ReportResponseDto.ReportMemberListDto.of(reportMemberDto);
     }
 
+    /**
+     * 회원 강제 탈퇴
+     *
+     * @param memberId 강제 탈퇴할 회원 id
+     * @return Long 강제 탈퇴한 회원 id
+     */
+    @Override
+    @Transactional
+    public ReportResponseDto.ForceDeleteDto forceDeleteMember(Long memberId, Member member) {
+        isAdmin(member);
+
+        Member deleteMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        deleteAllRelatedEntities(deleteMember);
+        memberRepository.delete(deleteMember);
+
+        return ReportResponseDto.ForceDeleteDto.builder()
+                .deletedMemberId(deleteMember.getId())
+                .message("탈퇴 처리되었습니다.")
+                .build();
+    }
+
+    // 특정 회원과 관련된 모든 엔티티 삭제
+    private void deleteAllRelatedEntities(Member member) {
+        Member unknownMember = memberRepository.findByNickname("알수없음")   // 알수없는 사용자
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        // 스타, 스크랩 삭제
+        starScrapRepository.deleteAllByMember(member);
+
+        // 게시글 삭제
+        List<Post> posts = postRepository.findByMember(member);
+        List<Long> postIds = posts.stream()
+                .map(Post::getId)
+                .toList();
+        replyRepository.deleteAllByTargetIdIn(postIds);
+        postRepository.deleteAllByMember(member);
+
+        // studyPost 삭제
+        List<StudyPost> studyPosts = studyPostRepository.findByStudyMember_Member(member);
+        for (StudyPost studyPost : studyPosts) {
+            if (studyPost.getFiles() != null && !studyPost.getFiles().isEmpty()) {
+                List<String> fileUrls = studyPost.getFiles()
+                        .stream()
+                        .map(StudyPostFile::getFileUrl)
+                        .toList();
+                s3Manager.deleteFiles(fileUrls); // S3 파일 삭제
+            }
+        }
+        studyPostRepository.deleteAllByStudyMember_Member(member);
+
+        // 스터디 삭제 - 알수없음 사용자로 변경
+        List<Study> studies = studyRepository.findByMember(member);
+        studies.forEach(study -> study.updateMemberToDeleted(unknownMember));
+        studyMemberRepository.deleteByMember(member);
+        studyApplicantRepository.deleteByMember(member);
+
+        // 댓글 삭제
+        replyRepository.deleteAllByMember(member);
+
+        // 관심사 삭제
+        interestRepository.deleteAllByMember(member);
+
+        // 신고 내역 삭제
+        reportRepository.deleteAllByMember(member);
+
+        // 프로필 삭제
+        if (member.getProfile().getImgUrl() != null) {
+            s3Manager.deleteFile(member.getProfile().getImgUrl());  // S3에서 파일 삭제
+        }
+        profileRepository.deleteById(member.getProfile().getId());
+    }
 }

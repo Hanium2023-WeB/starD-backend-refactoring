@@ -26,4 +26,6 @@ public interface StarScrapRepository extends JpaRepository<StarScrap, Long> {
     Page<Study> findStudyRecruitPostsByMember(Member member, Pageable pageable);
 
     void deleteByActTypeAndTableTypeAndTargetId(ActType actType, TableType tableType, Long id);
+
+    void deleteAllByMember(Member member);
 }

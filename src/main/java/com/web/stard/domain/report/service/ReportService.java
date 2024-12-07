@@ -16,4 +16,6 @@ public interface ReportService {
     ReportResponseDto.ReportProcessDto rejectReport(Long targetId, String postType, Member member);
 
     ReportResponseDto.ReportMemberListDto getReportedMemberList(int page, Member member);
+
+    ReportResponseDto.ForceDeleteDto forceDeleteMember(Long memberId, Member member);
 }

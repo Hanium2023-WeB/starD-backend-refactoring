@@ -20,4 +20,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Member findByIdWithProfile(@Param("memberId") Long memberId);
 
     Page<Member> findByReportCountGreaterThanEqual(int reportCount, Pageable pageable);
+
+    Optional<Member> findByNickname(String nickname);
 }

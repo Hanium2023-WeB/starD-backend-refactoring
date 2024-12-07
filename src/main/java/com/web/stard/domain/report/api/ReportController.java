@@ -55,10 +55,17 @@ public class ReportController {
         return ResponseEntity.ok(reportService.rejectReport(targetId, postType, member));
     }
 
-    @Operation(summary = "회원 목록 조회", description = "누적 신고 횟수가 1 이상인 회원 목록을 조회합니다.")
+    @Operation(summary = "회원 목록 조회", description = "누적 신고 수가 1 이상인 회원 목록을 조회합니다.")
     @GetMapping("/members")
     public ResponseEntity<ReportResponseDto.ReportMemberListDto> getReportedMemberList(@RequestParam(name = "page", defaultValue = "1", required = false) int page,
                                                                                        @CurrentMember Member member) {
         return ResponseEntity.ok(reportService.getReportedMemberList(page, member));
     }
+
+    @Operation(summary = "회원 강제 탈퇴", description = "누적 신고 수가 1 이상인 회원에 대해 수동으로 탈퇴 처리 가능합니다. 누적 신고 수가 5 이상이면 자동으로 탈퇴됩니다.")
+    @PostMapping("/members/{memberId}")
+    public ResponseEntity<ReportResponseDto.ForceDeleteDto> forceDeleteMember(@PathVariable(name = "memberId") Long memberId, @CurrentMember Member member) {
+        return ResponseEntity.ok(reportService.forceDeleteMember(memberId, member));
+    }
+
 }
