@@ -18,4 +18,6 @@ public interface ReportService {
     ReportResponseDto.ReportMemberListDto getReportedMemberList(int page, Member member);
 
     ReportResponseDto.ForceDeleteDto forceDeleteMember(Long memberId, Member member);
+
+    void deleteAllRelatedEntities(Member member);
 }

@@ -1,6 +1,8 @@
 package com.web.stard.domain.member.repository;
 
 import com.web.stard.domain.member.domain.entity.Member;
+
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -20,6 +22,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Member findByIdWithProfile(@Param("memberId") Long memberId);
 
     Page<Member> findByReportCountGreaterThanEqual(int reportCount, Pageable pageable);
+
+    List<Member> findByReportCountGreaterThanEqual(int reportCount);
 
     Optional<Member> findByNickname(String nickname);
 }

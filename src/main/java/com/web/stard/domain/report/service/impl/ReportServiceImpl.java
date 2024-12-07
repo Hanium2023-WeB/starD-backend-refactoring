@@ -352,7 +352,8 @@ public class ReportServiceImpl implements ReportService {
     }
 
     // 특정 회원과 관련된 모든 엔티티 삭제
-    private void deleteAllRelatedEntities(Member member) {
+    @Override
+    public void deleteAllRelatedEntities(Member member) {
         Member unknownMember = memberRepository.findByNickname("알수없음")   // 알수없는 사용자
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
