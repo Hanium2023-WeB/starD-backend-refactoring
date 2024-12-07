@@ -63,6 +63,14 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(ErrorCode.NICKNAME_CONFLICT);
         }
 
+        if (requestDto.getEmail().equals("unknown@stard.com")) {
+            throw new CustomException(ErrorCode.INVALID_EMAIL);
+        }
+
+        if (requestDto.getNickname().equals("알수없음")) {
+            throw new CustomException(ErrorCode.INVALID_NICKNAME);
+        }
+
         String fileUrl = null;
 
         // UUID 생성 및 키 이름 생성

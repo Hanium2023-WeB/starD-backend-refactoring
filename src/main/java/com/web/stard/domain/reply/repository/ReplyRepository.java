@@ -1,5 +1,6 @@
 package com.web.stard.domain.reply.repository;
 
+import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.reply.domain.entity.Reply;
 import org.springframework.data.domain.Page;
@@ -16,4 +17,8 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     List<Reply> findAllByTargetIdAndPostType(Long postId, PostType postType);
 
     void deleteAllByTargetIdAndPostType(Long targetId, PostType type);
+
+    void deleteAllByMember(Member member);
+
+    void deleteAllByTargetIdIn(List<Long> postIds);
 }

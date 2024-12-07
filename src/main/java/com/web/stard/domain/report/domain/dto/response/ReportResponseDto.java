@@ -72,4 +72,38 @@ public class ReportResponseDto {
         private Long targetId;
         private String message;
     }
+
+    @Getter
+    @Builder
+    public static class ReportMember {
+        private Long memberId;
+        private String nickname;
+        private Integer reportCount;
+        private String profileImg;
+    }
+
+    @Getter
+    @Builder
+    public static class ReportMemberListDto {
+        private List<ReportMember> members;
+        private int currentPage;
+        private int totalPages;
+        private boolean isLast;
+
+        public static ReportMemberListDto of(Page<ReportResponseDto.ReportMember> members) {
+            return ReportMemberListDto.builder()
+                    .members(members.getContent())
+                    .currentPage(members.getNumber() + 1)
+                    .totalPages(members.getTotalPages())
+                    .isLast(members.isLast())
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    public static class ForceDeleteDto {
+        private Long deletedMemberId;
+        private String message;
+    }
 }

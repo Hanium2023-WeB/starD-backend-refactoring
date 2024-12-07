@@ -2,6 +2,9 @@ package com.web.stard.domain.report.service.impl;
 
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.domain.enums.Role;
+import com.web.stard.domain.member.repository.InterestRepository;
+import com.web.stard.domain.member.repository.MemberRepository;
+import com.web.stard.domain.member.repository.ProfileRepository;
 import com.web.stard.domain.post.domain.entity.Post;
 import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.post.repository.PostRepository;
@@ -13,10 +16,17 @@ import com.web.stard.domain.report.domain.dto.resquest.ReportRequestDto;
 import com.web.stard.domain.report.domain.entity.Report;
 import com.web.stard.domain.report.repository.ReportRepository;
 import com.web.stard.domain.report.service.ReportService;
+import com.web.stard.domain.starScrap.domain.enums.ActType;
+import com.web.stard.domain.starScrap.domain.enums.TableType;
+import com.web.stard.domain.starScrap.repository.StarScrapRepository;
 import com.web.stard.domain.study.domain.entity.Study;
+import com.web.stard.domain.study.repository.StudyApplicantRepository;
+import com.web.stard.domain.study.repository.StudyMemberRepository;
 import com.web.stard.domain.study.repository.StudyRepository;
 import com.web.stard.domain.teamBlog.domain.entity.StudyPost;
+import com.web.stard.domain.teamBlog.domain.entity.StudyPostFile;
 import com.web.stard.domain.teamBlog.repository.StudyPostRepository;
+import com.web.stard.global.config.aws.S3Manager;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +47,13 @@ public class ReportServiceImpl implements ReportService {
     private final StudyPostRepository studyPostRepository;
     private final ReplyRepository replyRepository;
     private final PostRepository postRepository;
+    private final MemberRepository memberRepository;
+    private final StarScrapRepository starScrapRepository;
+    private final S3Manager s3Manager;
+    private final InterestRepository interestRepository;
+    private final ProfileRepository profileRepository;
+    private final StudyMemberRepository studyMemberRepository;
+    private final StudyApplicantRepository studyApplicantRepository;
 
     // 관리자인지 확인
     private void isAdmin(Member member) {
@@ -226,20 +243,27 @@ public class ReportServiceImpl implements ReportService {
         Object targetEntity = getValidatedTargetEntity(targetId, type);
 
         // 신고 수 증가 및 해당 글 삭제
-        if (targetEntity instanceof Study study) {
+        if (targetEntity instanceof Study study) {  // 스터디 - 댓글, 스타 삭제
             study.getMember().increaseReportCount();
             replyRepository.deleteAllByTargetIdAndPostType(targetId, type);
+            starScrapRepository.deleteByActTypeAndTableTypeAndTargetId(ActType.STAR, TableType.STUDY, study.getId());
             studyRepository.delete(study);
-        } else if (targetEntity instanceof StudyPost studyPost) {
+        } else if (targetEntity instanceof StudyPost studyPost) {   // studyPost - 댓글, 파일, 스크랩 삭제
             studyPost.getStudyMember().getMember().increaseReportCount();
             replyRepository.deleteAllByTargetIdAndPostType(targetId, type);
+            if (studyPost.getFiles() != null) {
+                List<String> fileUrls = studyPost.getFiles().stream().map(StudyPostFile::getFileUrl).toList();
+                s3Manager.deleteFiles(fileUrls);
+            }
+            starScrapRepository.deleteByActTypeAndTableTypeAndTargetId(ActType.SCRAP, TableType.STUDYPOST, studyPost.getId());
             studyPostRepository.delete(studyPost);
-        } else if (targetEntity instanceof Reply reply) {
+        } else if (targetEntity instanceof Reply reply) {   // 댓글
             reply.getMember().increaseReportCount();
             replyRepository.delete(reply);
-        } else if (targetEntity instanceof Post post) {
+        } else if (targetEntity instanceof Post post) {     // 게시글 - 댓글, 스타 삭제
             post.getMember().increaseReportCount();
             replyRepository.deleteAllByTargetIdAndPostType(targetId, type);
+            starScrapRepository.deleteByActTypeAndTableTypeAndTargetId(ActType.STAR, TableType.POST, post.getId());
             postRepository.delete(post);
         } else {
             throw new CustomException(ErrorCode.REPORT_PROCESS_ERROR);
@@ -277,4 +301,105 @@ public class ReportServiceImpl implements ReportService {
                 .build();
     }
 
+    /**
+     * 누적 신고 수가 1 이상인 회원 목록 조회
+     * @param page 조회할 페이지 번호
+     * @return ReportMemberListDto members 회원 리스트, currentPage 현재 페이지, totalPages 전체 페이지 수, isLast 마지막 페이지 여부
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public ReportResponseDto.ReportMemberListDto getReportedMemberList(int page, Member member) {
+        isAdmin(member);
+
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<Member> reportedMembers = memberRepository.findByReportCountGreaterThanEqual(1, pageable);
+
+        Page<ReportResponseDto.ReportMember> reportMemberDto = reportedMembers.map(m ->
+                ReportResponseDto.ReportMember.builder()
+                        .memberId(m.getId())
+                        .nickname(m.getNickname())
+                        .reportCount(m.getReportCount())
+                        .profileImg(m.getProfile().getImgUrl())
+                        .build()
+        );
+
+        return ReportResponseDto.ReportMemberListDto.of(reportMemberDto);
+    }
+
+    /**
+     * 회원 강제 탈퇴
+     *
+     * @param memberId 강제 탈퇴할 회원 id
+     * @return Long 강제 탈퇴한 회원 id
+     */
+    @Override
+    @Transactional
+    public ReportResponseDto.ForceDeleteDto forceDeleteMember(Long memberId, Member member) {
+        isAdmin(member);
+
+        Member deleteMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        deleteAllRelatedEntities(deleteMember);
+        memberRepository.delete(deleteMember);
+
+        return ReportResponseDto.ForceDeleteDto.builder()
+                .deletedMemberId(deleteMember.getId())
+                .message("탈퇴 처리되었습니다.")
+                .build();
+    }
+
+    // 특정 회원과 관련된 모든 엔티티 삭제
+    @Override
+    public void deleteAllRelatedEntities(Member member) {
+        Member unknownMember = memberRepository.findByNickname("알수없음")   // 알수없는 사용자
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        // 스타, 스크랩 삭제
+        starScrapRepository.deleteAllByMember(member);
+
+        // 게시글 삭제
+        List<Post> posts = postRepository.findByMember(member);
+        List<Long> postIds = posts.stream()
+                .map(Post::getId)
+                .toList();
+        replyRepository.deleteAllByTargetIdIn(postIds);
+        postRepository.deleteAllByMember(member);
+
+        // studyPost 삭제
+        List<StudyPost> studyPosts = studyPostRepository.findByStudyMember_Member(member);
+        for (StudyPost studyPost : studyPosts) {
+            if (studyPost.getFiles() != null && !studyPost.getFiles().isEmpty()) {
+                List<String> fileUrls = studyPost.getFiles()
+                        .stream()
+                        .map(StudyPostFile::getFileUrl)
+                        .toList();
+                s3Manager.deleteFiles(fileUrls); // S3 파일 삭제
+            }
+        }
+        studyPostRepository.deleteAllByStudyMember_Member(member);
+
+        // 스터디 삭제 - 알수없음 사용자로 변경
+        List<Study> studies = studyRepository.findByMember(member);
+        studies.forEach(study -> study.updateMemberToDeleted(unknownMember));
+        studyMemberRepository.deleteByMember(member);
+        studyApplicantRepository.deleteByMember(member);
+
+        // 댓글 삭제
+        replyRepository.deleteAllByMember(member);
+
+        // 관심사 삭제
+        interestRepository.deleteAllByMember(member);
+
+        // 신고 내역 삭제
+        reportRepository.deleteAllByMember(member);
+
+        // 프로필 삭제
+        if (member.getProfile().getImgUrl() != null) {
+            s3Manager.deleteFile(member.getProfile().getImgUrl());  // S3에서 파일 삭제
+        }
+        profileRepository.deleteById(member.getProfile().getId());
+    }
 }
