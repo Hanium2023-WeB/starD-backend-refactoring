@@ -96,11 +96,12 @@ public class StudyController {
             @RequestParam(required = false, name = "recruitmentType") RecruitmentType recruitmentType,
             @RequestParam(required = false, name = "activityType") ActivityType activityType,
             @RequestParam(required = false, name = "city") String city, @RequestParam(required = false, name ="district" ) String district,
-            @RequestParam(required = false, name = "field") InterestField field) {
+            @RequestParam(required = false, name = "field") InterestField field,
+            @CurrentMember Member member) {
         Pageable pageable = PageRequest.of(page - 1, size);
         StudyRequestDto.StudySearchFilter filter = StudyRequestDto.StudySearchFilter.of(page, size, keyword, tags,
                 recruitmentType, activityType, city, district, field);
-        return ResponseEntity.ok().body(StudyResponseDto.StudyInfoListDto.of(studyService.searchStudies(filter, pageable)));
+        return ResponseEntity.ok().body(StudyResponseDto.StudyInfoListDto.of(studyService.searchStudies(member, filter, pageable)));
     }
 
     @Operation(summary = "스터디 팀블로그 개설")
