@@ -18,4 +18,6 @@ public interface ReportRepository extends JpaRepository<Report,Long> {
     List<Report> findByTargetId(Long targetId);
 
     void deleteByTargetIdAndPostType(Long targetId, PostType postType);
+
+    void deleteAllByMember(Member member);
 }
