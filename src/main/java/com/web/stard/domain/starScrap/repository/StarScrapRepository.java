@@ -10,11 +10,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface StarScrapRepository extends JpaRepository<StarScrap, Long> {
+
+    @Query("SELECT study FROM Study study JOIN StarScrap scrap ON study.id = scrap.targetId WHERE scrap.member.id = :memberId AND scrap.actType = 'SCRAP' AND scrap.tableType = 'STUDY'")
+    List<Study> findStudiesByMember(@Param("memberId") Long memberId);
+
     Optional<StarScrap> findByMemberAndActTypeAndTableTypeAndTargetId(Member member, ActType actType, TableType tableType, Long targetId);
 
     List<StarScrap> findAllByActTypeAndTableTypeAndTargetId(ActType actType, TableType tableType, Long targetId);

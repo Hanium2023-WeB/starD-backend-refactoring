@@ -1,5 +1,6 @@
 package com.web.stard.domain.study.service.impl;
 
+import com.web.stard.domain.starScrap.repository.StarScrapRepository;
 import com.web.stard.domain.starScrap.service.StarScrapService;
 import com.web.stard.domain.starScrap.domain.enums.ActType;
 import com.web.stard.domain.starScrap.domain.enums.TableType;
@@ -29,6 +30,7 @@ public class StudyServiceImpl implements StudyService {
 
     private final StarScrapService starScrapService;
     private final StudyRepository studyRepository;
+    private final StarScrapRepository starScrapRepository;
     private final MemberRepository memberRepository;
     private final StudyTagRepository studyTagRepository;
     private final TagRepository tagRepository;
@@ -201,8 +203,27 @@ public class StudyServiceImpl implements StudyService {
      */
     @Override
     @Transactional
-    public Page<StudyResponseDto.StudyInfo> searchStudies(StudyRequestDto.StudySearchFilter filter, Pageable pageable) {
-        return studyCustomRepository.searchStudiesWithFilter(filter, pageable);
+    public Page<StudyResponseDto.StudyInfo> searchStudies(Member member,
+                                                          StudyRequestDto.StudySearchFilter filter, Pageable pageable) {
+
+        Page<StudyResponseDto.StudyInfo> studyInfos = studyCustomRepository.searchStudiesWithFilter(filter, pageable);
+        studyInfos.forEach(studyInfo -> {
+            int scrapCount = starScrapRepository.findAllByActTypeAndTableTypeAndTargetId(ActType.SCRAP, TableType.STUDY, studyInfo.getStudyId()).size();
+            studyInfo.updateScarpCount(scrapCount);
+        });
+
+        if (!Objects.isNull(member)) {
+            List<Long> scraps = starScrapRepository.findStudiesByMember(member.getId()).stream().map(Study::getId).toList();
+            studyInfos.forEach(studyInfo -> {
+                if (scraps.contains(studyInfo.getStudyId())) {
+                    studyInfo.updateScarpStatus(true);
+                } else {
+                    studyInfo.updateScarpStatus(false);
+                }
+            });
+        }
+
+        return studyInfos;
     }
 
     /**
