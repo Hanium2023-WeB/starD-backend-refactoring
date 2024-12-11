@@ -13,6 +13,8 @@ public enum ErrorCode {
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "이메일이나 비밀번호 불일치"),
     EMAIL_CONFLICT(HttpStatus.CONFLICT, "중복된 이메일입니다."),
     NICKNAME_CONFLICT(HttpStatus.CONFLICT, "중복된 닉네임입니다."),
+    INVALID_EMAIL(HttpStatus.BAD_REQUEST, "사용 불가능한 이메일입니다."),
+    INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "사용 불가능한 닉네임입니다."),
     MISMATCH_TOKEN(HttpStatus.BAD_REQUEST, "토큰 불일치"),
 
     //Jwt

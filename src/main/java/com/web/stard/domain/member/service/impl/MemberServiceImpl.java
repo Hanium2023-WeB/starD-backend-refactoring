@@ -12,6 +12,7 @@ import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.global.config.aws.S3Manager;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,7 @@ public class MemberServiceImpl implements MemberService {
     private final InterestRepository interestRepository;
     private final PasswordEncoder passwordEncoder;
     private final S3Manager s3Manager;
+    private final UnknownMemberService unknownMemberService;
 
     /**
      * 현재 비밀번호 확인
@@ -191,6 +193,13 @@ public class MemberServiceImpl implements MemberService {
             s3Manager.deleteFile(profile.getImgUrl());
             profile.deleteImageUrl();
         }
+    }
+
+
+    // 애플리케이션 실행 후 호출됨
+    @PostConstruct
+    public void initUnknownMember() {
+        unknownMemberService.createUnknownMemberIfNotExist();
     }
 
 }

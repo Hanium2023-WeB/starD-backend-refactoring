@@ -121,6 +121,12 @@ public class StudyRequestDto {
             InterestField field
 
     ) {
+        public static StudySearchFilter of(int page, int size, String keyword, String tags,
+                                       RecruitmentType recruitmentType, ActivityType activityType,
+                                       String city, String district, InterestField field) {
+            return new StudySearchFilter(page, size, keyword, tags, recruitmentType, activityType, city, district, field);
+        }
+
     }
 
 }

@@ -185,4 +185,8 @@ public class Study extends BaseEntity {
             this.progressType = progressType;
         }
     }
+
+    public void updateMemberToDeleted(Member member) {
+        this.member = member;
+    }
 }

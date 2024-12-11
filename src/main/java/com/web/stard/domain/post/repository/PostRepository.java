@@ -44,4 +44,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             @Param("faq") PostType faq, @Param("qna") PostType qna);
 
     Page<Post> findByMemberAndPostType(Member member, PostType postType, Pageable pageable);
+
+    List<Post> findByMember(Member member);
+
+    void deleteAllByMember(Member member);
 }

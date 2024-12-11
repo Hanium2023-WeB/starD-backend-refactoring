@@ -58,9 +58,6 @@ dependencies {
 	// Email
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-	// Elastic Search
-	// implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
-
 	//Querydsl
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
