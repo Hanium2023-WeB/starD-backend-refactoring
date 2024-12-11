@@ -52,7 +52,7 @@ public class LocationServiceImpl implements LocationService {
                 .map(this::geocoder)
                 .toList();
 
-        return Location.calculate(locations);
+        return calculate(locations);
     }
 
     /**
@@ -103,5 +103,82 @@ public class LocationServiceImpl implements LocationService {
         } catch (Exception e) {
             throw new CustomException(ErrorCode.GEOCODING_FAILED);
         }
+    }
+
+    /**
+     * 위도, 경도 -> 주소 변환
+     *
+     * @param location 위도, 경도
+     * @return Location 위도, 경도, 장소명
+     */
+    private Location reverseGeocoder (Location location) {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("X-NCP-APIGW-API-KEY-ID", clientId);
+            headers.add("X-NCP-APIGW-API-KEY", clientSecret);
+
+            String coords = String.valueOf(location.getLatitude())+","+String.valueOf(location.getLongitude());
+
+            UriComponentsBuilder builder = UriComponentsBuilder.fromUriString("https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc")
+                    .queryParam("coords", coords)
+                    .queryParam("orders", "roadaddr")
+                    .queryParam("output", "json");
+
+            RequestEntity<Void> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(builder.toUriString()));
+
+            ResponseEntity<String> response = restTemplate.exchange(requestEntity, String.class);
+
+            if (response.getStatusCode() == HttpStatus.OK) { // 200
+                String jsonResponse = response.getBody();
+
+                // JSON 파싱 - Jackson ObjectMapper
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                JsonNode jsonNode = objectMapper.readTree(jsonResponse);
+                JsonNode resultNode = jsonNode.path("results").get(0);
+
+                String area1 = resultNode.path("region").path("area1").path("name").asText();
+                String area2 = resultNode.path("region").path("area2").path("name").asText();
+                String roadName1 = resultNode.path("land").path("name").asText();
+                String roadName2 = resultNode.path("land").path("number1").asText();
+                String roadName3 = resultNode.path("land").path("number2").asText();
+
+                String address = area1 + " " + area2;
+                address += " " + roadName1;
+                if (!roadName2.isBlank()) {
+                    address += " " + roadName2;
+
+                    if (!roadName3.isBlank()) {
+                        address += "-" + roadName3;
+                    }
+                }
+
+                location.updateAddress(address);
+
+                return location;
+            } else {
+                throw new CustomException(ErrorCode.REVERSE_GEOCODING_FAILED);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new CustomException(ErrorCode.REVERSE_GEOCODING_FAILED);
+        }
+    }
+
+    // 중간지점 계산
+    private Location calculate(List<Location> locations) {
+        double totalWeightedLat = 0;
+        double totalWeightedLon = 0;
+
+        for (Location loc : locations) {
+            totalWeightedLat += loc.getLatitude();
+            totalWeightedLon += loc.getLongitude();
+
+            System.out.println("x : " + loc.getLatitude() + ", y : " + loc.getLongitude());
+        }
+
+        return new Location(totalWeightedLat / locations.size(), totalWeightedLon / locations.size());
     }
 }
