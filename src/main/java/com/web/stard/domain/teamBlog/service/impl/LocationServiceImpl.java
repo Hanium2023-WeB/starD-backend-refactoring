@@ -16,9 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +36,7 @@ public class LocationServiceImpl implements LocationService {
      * @param studyId 해당 study 고유 id
      * @param places 장소 리스트
      *
-     * @return Item latitude 추천 위치 위도, longitude 추천 위치 경도
+     * @return Location latitude 추천 위치 위도, longitude 추천 위치 경도
      */
     @Override
     public Location recommendation(Long studyId, List<String> places) {
@@ -49,7 +47,7 @@ public class LocationServiceImpl implements LocationService {
 
         locations = places.stream()
                 .distinct() // 중복 주소 제거
-                .map(this::geocoder)
+                .map(this::geocoder) // 위도, 경도 변환
                 .toList();
 
         return calculate(locations);
@@ -169,16 +167,68 @@ public class LocationServiceImpl implements LocationService {
 
     // 중간지점 계산
     private Location calculate(List<Location> locations) {
+        List<Location> borderLocations = grahamScan(locations);
+
         double totalWeightedLat = 0;
         double totalWeightedLon = 0;
 
-        for (Location loc : locations) {
+        for (Location loc : borderLocations) {
             totalWeightedLat += loc.getLatitude();
             totalWeightedLon += loc.getLongitude();
-
-            System.out.println("x : " + loc.getLatitude() + ", y : " + loc.getLongitude());
         }
 
-        return new Location(totalWeightedLat / locations.size(), totalWeightedLon / locations.size());
+        return new Location(totalWeightedLat / borderLocations.size(), totalWeightedLon / borderLocations.size());
+    }
+
+    // 바깥쪽에 위치한 점들 가져오기 (그라함 스캔 알고리즘)
+    private List<Location> grahamScan(List<Location> locationList) {
+        // 가변리스트로 복사
+        List<Location> locations = new ArrayList<>(locationList);
+
+        // 기준점 (가장 좌측 하단 -> 좌표(위도, 경도) 최솟값)
+        Location standard = Collections.min(locations, Comparator.comparingDouble(Location::getLatitude)
+                .thenComparing(Location::getLongitude));
+
+        // 좌표 정렬
+        locations.sort((loc1, loc2) -> {
+            double angle1 = Math.atan2(loc1.getLatitude() - standard.getLatitude(), loc1.getLongitude() - standard.getLongitude());
+            double angle2 = Math.atan2(loc2.getLatitude() - standard.getLatitude(), loc2.getLongitude() - standard.getLongitude());
+            return Double.compare(angle1, angle2);
+        });
+
+        // 스택으로 convex hull
+        Stack<Location> hull = new Stack<>();
+
+        for (Location loc : locations) {
+            while (hull.size() >= 2) {
+                // -2번, -1번, 새로 넣으려는 점 ccw 체크
+                Location loc1 = hull.pop(); // 스택 가장 위 요소 제거 (-1번)
+                Location loc2 = hull.peek(); // 스택 가장 위 요소 선택 (-1번 제거 후 제일 위 요소 : -2번)
+
+                if (ccw(loc2, loc1, loc) > 0) { // 반시계 방향일 경우
+                    hull.push(loc1); // -1번 점 다시 삽입 후 반복문 종료
+                    break;
+                }
+                // 시계 방향일 경우 -1번은 그대로 제거하고 -2번, -3번, 새로 넣으려는 점 다시 ccw 비교
+            }
+            hull.push(loc);
+        }
+
+        return hull.stream().toList();
+    }
+
+    // ccw
+    private int ccw (Location a, Location b, Location c) {
+        // ca * ab
+        double ccwResult = (b.getLongitude() - a.getLongitude()) * (c.getLatitude() - a.getLatitude()) -
+                (c.getLongitude() - a.getLongitude()) * (b.getLatitude() - a.getLatitude());
+
+        if (ccwResult > 0) {
+            return 1; // 반시계 방향
+        } else if (ccwResult < 0) {
+            return -1; // 시계 방향
+        } else {
+            return 0; // 직선
+        }
     }
 }
