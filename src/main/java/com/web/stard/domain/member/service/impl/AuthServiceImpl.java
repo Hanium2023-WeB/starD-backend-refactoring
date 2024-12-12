@@ -14,8 +14,11 @@ import com.web.stard.global.config.security.JwtTokenProvider;
 import com.web.stard.global.dto.TokenInfo;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
+import com.web.stard.global.utils.CookieUtils;
 import com.web.stard.global.utils.EmailUtils;
 import com.web.stard.global.utils.RedisUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -39,6 +42,7 @@ public class AuthServiceImpl implements AuthService {
     private final S3Manager s3Manager;
     private final RedisUtils redisUtils;
     private final EmailUtils emailUtils;
+    private final CookieUtils cookieUtils;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
 
@@ -160,12 +164,13 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     @Transactional
-    public TokenInfo signIn(MemberRequestDto.SignInDto request) {
+    public TokenInfo signIn(MemberRequestDto.SignInDto request, HttpServletResponse response) {
         try {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.email(), request.password());
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
             TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
             redisUtils.setData(request.email(), tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExpirationTime());
+            cookieUtils.generateRefreshTokenCookie(response, tokenInfo);
             return tokenInfo;
         } catch (BadCredentialsException e) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
@@ -212,6 +217,23 @@ public class AuthServiceImpl implements AuthService {
         } catch (Exception e) {
             throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
+    }
+
+    @Override
+    public TokenInfo reissue(HttpServletRequest request) {
+        String refreshToken = cookieUtils.getCookie(request);
+        jwtTokenProvider.validateToken(refreshToken);
+
+        String username = jwtTokenProvider.parseClaims(refreshToken).getSubject();
+        if (redisUtils.getData(username) != null) {
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
+        }
+
+        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
+        TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
+
+
+        return tokenInfo;
     }
 
 }
