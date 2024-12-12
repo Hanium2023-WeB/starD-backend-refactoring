@@ -2,6 +2,7 @@ package com.web.stard.domain.teamBlog.domain.dto.response;
 
 import com.web.stard.domain.teamBlog.domain.entity.Assignee;
 import com.web.stard.domain.teamBlog.domain.entity.ToDo;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,8 +14,13 @@ public class ToDoResponseDto {
     @Getter
     @Builder
     public static class AssigneeDto {
+        @Schema(description = "담당자 고유 id")
         private Long assigneeId;
+
+        @Schema(description = "담당자 닉네임")
         private String nickname;
+
+        @Schema(description = "담당자 - 투두 완료 상태")
         private boolean toDoStatus;
 
         public static AssigneeDto from (Assignee assignee) {
@@ -29,11 +35,22 @@ public class ToDoResponseDto {
     @Getter
     @Builder
     public static class ToDoDto {
+        @Schema(description = "투두 고유 id")
         private Long toDoId;
+
+        @Schema(description = "담당 업무")
         private String task;
+
+        @Schema(description = "마감일")
         private LocalDate dueDate;
+
+        @Schema(description = "해당 스터디 id")
         private Long studyId;
+
+        @Schema(description = "투두 완료 상태 (모든 담당자 완료 시 true)")
         private boolean toDoStatus;
+
+        @Schema(description = "담당자 리스트")
         private List<AssigneeDto> assignees;
 
         public static ToDoDto from (ToDo toDo, List<Assignee> assigneeList) {
@@ -54,10 +71,19 @@ public class ToDoResponseDto {
     @Getter
     @Builder
     public static class MemberToDoDto {
+        @Schema(description = "투두 고유 id")
         private Long toDoId;
+
+        @Schema(description = "담당 업무")
         private String task;
+
+        @Schema(description = "마감일")
         private LocalDate dueDate;
+
+        @Schema(description = "해당 스터디 id")
         private Long studyId;
+
+        @Schema(description = "회원 - 투두 완료 상태")
         private boolean toDoStatus;
 
         public static MemberToDoDto of (Assignee assignee) {
