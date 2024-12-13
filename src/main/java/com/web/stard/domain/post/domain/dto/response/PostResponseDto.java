@@ -5,6 +5,7 @@ import com.web.stard.domain.post.domain.entity.Post;
 import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.domain.enums.Role;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
@@ -17,21 +18,47 @@ public class PostResponseDto {
     @Getter
     @Builder
     public static class PostDto {
+        @Schema(description = "게시글 아이디")
         private Long postId;
+
+        @Schema(description = "게시글 제목")
         private String title;
+
+        @Schema(description = "게시글 내용")
         private String content;
+
+        @Schema(description = "커뮤니티 글 카테고리")
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private String category;
+
+        @Schema(description = "조회수")
         private int hit;
+
+        @Schema(description = "게시글 타입")
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private PostType postType;
+
+        @Schema(description = "작성자 여부")
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private Boolean isAuthor;
+
+        @Schema(description = "회원 닉네임")
         private String writer;
+
+        @Schema(description = "회원 프로필 url")
         private String profileImg;
+
+        @Schema(description = "게시글 생성 일시")
+        private LocalDateTime createdAt;
+
+        @Schema(description = "게시글 수정 일시")
         private LocalDateTime updatedAt;
+
+        @Schema(description = "공감수")
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private Integer starCount;
+
+        @Schema(description = "공감(스타) 존재 여부")
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private Boolean existsStar;
 
@@ -59,6 +86,7 @@ public class PostResponseDto {
                     .isAuthor(isAuthor)
                     .writer(writerName)
                     .profileImg(profileImage)
+                    .createdAt(post.getCreatedAt())
                     .updatedAt(post.getUpdatedAt())
                     .starCount(starCount)
                     .build();
