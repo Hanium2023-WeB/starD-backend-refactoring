@@ -48,7 +48,10 @@ public class PostResponseDto {
         @Schema(description = "작성자 프로필 이미지")
         private String profileImg;
 
-        @Schema(description = "게시글 작성(수정) 시각")
+        @Schema(description = "게시글 생성 일시")
+        private LocalDateTime createdAt;
+
+        @Schema(description = "게시글 수정 일시")
         private LocalDateTime updatedAt;
 
         @Schema(description = "공감 수")
@@ -83,6 +86,7 @@ public class PostResponseDto {
                     .isAuthor(isAuthor)
                     .writer(writerName)
                     .profileImg(profileImage)
+                    .createdAt(post.getCreatedAt())
                     .updatedAt(post.getUpdatedAt())
                     .starCount(starCount)
                     .existsStar(existsStar)
