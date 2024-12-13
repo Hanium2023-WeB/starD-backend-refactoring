@@ -2,6 +2,7 @@ package com.web.stard.domain.reply.domain.dto.response;
 
 import com.web.stard.domain.reply.domain.entity.Reply;
 import com.web.stard.domain.member.domain.entity.Member;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
@@ -14,11 +15,25 @@ public class ReplyResponseDto {
     @Getter
     @Builder
     public static class ReplyDto {
+        @Schema(description = "댓글 아이디")
         private Long replyId;
+
+        @Schema(description = "댓글 내용")
         private String content;
+
+        @Schema(description = "작성자 여부")
         private boolean isAuthor;
+
+        @Schema(description = "작성자 닉네임")
         private String writer;
+
+        @Schema(description = "작성자 프로필 url")
         private String profileImg;
+
+        @Schema(description = "댓글 작성 일시")
+        private LocalDateTime createdAt;
+
+        @Schema(description = "댓글 수정 일시")
         private LocalDateTime updatedAt;
 
         public static ReplyDto from(Reply reply, Member member, boolean isAuthor) {
@@ -28,6 +43,7 @@ public class ReplyResponseDto {
                     .isAuthor(isAuthor)
                     .writer(member.getNickname())
                     .profileImg(member.getProfile().getImgUrl())
+                    .createdAt(reply.getCreatedAt())
                     .updatedAt(reply.getUpdatedAt())
                     .build();
         }
