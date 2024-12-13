@@ -24,10 +24,10 @@ public class ReplyResponseDto {
         @Schema(description = "작성자 여부")
         private boolean isAuthor;
 
-        @Schema(description = "회원 닉네임")
+        @Schema(description = "작성자 닉네임")
         private String writer;
 
-        @Schema(description = "회원 프로필 url")
+        @Schema(description = "작성자 프로필 url")
         private String profileImg;
 
         @Schema(description = "댓글 작성 일시")
