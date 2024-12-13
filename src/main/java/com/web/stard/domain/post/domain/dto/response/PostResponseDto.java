@@ -18,16 +18,16 @@ public class PostResponseDto {
     @Getter
     @Builder
     public static class PostDto {
-        @Schema(description = "게시글 아이디")
+        @Schema(description = "해당 게시글 고유 id")
         private Long postId;
 
-        @Schema(description = "게시글 제목")
+        @Schema(description = "제목")
         private String title;
 
-        @Schema(description = "게시글 내용")
+        @Schema(description = "내용")
         private String content;
 
-        @Schema(description = "커뮤니티 글 카테고리")
+        @Schema(description = "카테고리")
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private String category;
 
@@ -38,14 +38,14 @@ public class PostResponseDto {
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private PostType postType;
 
-        @Schema(description = "작성자 여부")
+        @Schema(description = "회원 - 게시글 작성자 여부")
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private Boolean isAuthor;
 
-        @Schema(description = "회원 닉네임")
+        @Schema(description = "작성자 닉네임")
         private String writer;
 
-        @Schema(description = "회원 프로필 url")
+        @Schema(description = "작성자 프로필 이미지")
         private String profileImg;
 
         @Schema(description = "게시글 생성 일시")
@@ -54,11 +54,11 @@ public class PostResponseDto {
         @Schema(description = "게시글 수정 일시")
         private LocalDateTime updatedAt;
 
-        @Schema(description = "공감수")
+        @Schema(description = "공감 수")
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private Integer starCount;
 
-        @Schema(description = "공감(스타) 존재 여부")
+        @Schema(description = "회원 - 공감 등록 여부")
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private Boolean existsStar;
 
@@ -89,6 +89,7 @@ public class PostResponseDto {
                     .createdAt(post.getCreatedAt())
                     .updatedAt(post.getUpdatedAt())
                     .starCount(starCount)
+                    .existsStar(existsStar)
                     .build();
         }
     }
@@ -97,9 +98,15 @@ public class PostResponseDto {
     @Builder
     public static class PostListDto {
         private List<PostDto> posts;
-        private int currentPage;    // 현재 페이지
-        private int totalPages;     // 전체 페이지 수
-        private boolean isLast;     // 마지막 페이지 여부
+
+        @Schema(description = "현재 페이지")
+        private int currentPage;
+
+        @Schema(description = "전체 페이지 수")
+        private int totalPages;
+
+        @Schema(description = "마지막 페이지 여부")
+        private boolean isLast;
 
         public static PostListDto of(Page<Post> posts, List<PostDto> postDtos) {
             return PostListDto.builder()

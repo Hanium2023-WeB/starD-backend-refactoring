@@ -1,8 +1,8 @@
 package com.web.stard.domain.study.repository;
 
-import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.web.stard.domain.member.domain.entity.QMember;
 import com.web.stard.domain.member.domain.entity.QProfile;
@@ -14,6 +14,7 @@ import com.web.stard.domain.study.domain.enums.ActivityType;
 import com.web.stard.domain.study.domain.enums.RecruitmentType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
@@ -29,7 +30,7 @@ public class CustomStudyRepository {
 
     public Page<StudyResponseDto.StudyInfo> searchStudiesWithFilter(StudyRequestDto.StudySearchFilter filter,
                                                                     Pageable pageable) {
-        QueryResults<StudyResponseDto.StudyInfo> results = queryFactory.select(Projections.fields(StudyResponseDto.StudyInfo.class,
+        List<StudyResponseDto.StudyInfo> content = queryFactory.select(Projections.fields(StudyResponseDto.StudyInfo.class,
                         qStudy.title, qStudy.hit, qStudy.activityType, qStudy.recruitmentType,
                         qStudy.tagText, qStudy.activityStart, qStudy.activityDeadline,
                         qStudy.recruitmentDeadline, qStudy.city, qStudy.district,
@@ -47,11 +48,19 @@ public class CustomStudyRepository {
                 )
                 .offset(pageable.getPageNumber())
                 .limit(pageable.getPageSize())
-                .fetchResults();
+                .fetch();
 
-        List<StudyResponseDto.StudyInfo> content = results.getResults();
-        long total = results.getTotal();
-        return new PageImpl<>(content, pageable, total);
+        JPAQuery<Long> countQuery = queryFactory
+                .select(qStudy.count())
+                .from(qStudy)
+                .where(recruitmentTypeEq(filter.recruitmentType()),
+                        keywordContains(filter.keyword()),
+                        activityTypeEq(filter.activityType()),
+                        tagsEq(filter.tags()),
+                        fieldEq(filter.field())
+                );
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
     private BooleanExpression recruitmentTypeEq(RecruitmentType recruitmentType) {

@@ -71,15 +71,28 @@ public class StudyResponseDto {
         @Schema(description = "스터디 분야")
         private InterestField field;
 
+        @Schema(description = "스크랩 여부")
+        private boolean isScrapped;
+
+        public void updateScarpStatus(boolean isScrapped) {
+            this.isScrapped = isScrapped;
+        }
+
+        public void updateScarpCount(int scrapCount) {
+            this.scrapCount = scrapCount;
+        }
     }
 
     @Getter
     @Builder
     public static class StudyRecruitListDto {
         private List<StudyResponseDto.DetailInfo> studyRecruitPosts;
-        private int currentPage;    // 현재 페이지
-        private int totalPages;     // 전체 페이지 수
-        private boolean isLast;     // 마지막 페이지 여부
+        @Schema(description = "현재 페이지")
+        private int currentPage;
+        @Schema(description = "전체 페이지 수")
+        private int totalPages;
+        @Schema(description = "마지막 페이지 여부")
+        private boolean isLast;
 
         public static StudyRecruitListDto of(Page<Study> studyPosts, List<StudyResponseDto.DetailInfo> detailInfos) {
             return StudyRecruitListDto.builder()
