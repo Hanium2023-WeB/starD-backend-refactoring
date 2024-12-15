@@ -23,7 +23,7 @@ public interface AuthService {
 
     void validAuthCode(MemberRequestDto.AuthCodeRequestDto request) throws Exception;
 
-    void signOut(Member member, String token);
+    void signOut(Member member, String token, HttpServletResponse response);
 
-    TokenInfo reissue(HttpServletRequest request);
+    TokenInfo reissue(HttpServletResponse response, HttpServletRequest request);
 }

@@ -63,8 +63,8 @@ public class AuthController {
 
     @PostMapping("/reissue")
     @Operation(summary = "JWT 토큰 재발급")
-    public ResponseEntity<TokenInfo> reissue(HttpServletRequest request) {
-        return ResponseEntity.ok(authService.reissue(request));
+    public ResponseEntity<TokenInfo> reissue(HttpServletResponse response, HttpServletRequest request) {
+        return ResponseEntity.ok(authService.reissue(response, request));
     }
 
     @PostMapping("/auth-codes")
@@ -83,8 +83,9 @@ public class AuthController {
 
     @PostMapping("/sign-out")
     @Operation(summary = "로그아웃")
-    public ResponseEntity<Boolean> validAuthCode(@CurrentMember Member member, HttpServletRequest request) {
-        authService.signOut(member, headerUtils.resolveToken(request));
+    public ResponseEntity<Boolean> signOut(@CurrentMember Member member, HttpServletRequest request,
+                                                 HttpServletResponse response) {
+        authService.signOut(member, headerUtils.resolveToken(request), response);
         return ResponseEntity.ok().body(true);
     }
 

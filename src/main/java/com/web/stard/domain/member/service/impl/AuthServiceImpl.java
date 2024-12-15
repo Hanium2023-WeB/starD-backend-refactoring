@@ -206,12 +206,13 @@ public class AuthServiceImpl implements AuthService {
      * @param accessToken 헤더에 전송된 토큰
      */
     @Override
-    public void signOut(Member member, String accessToken) {
+    public void signOut(Member member, String accessToken, HttpServletResponse response) {
         try {
             jwtTokenProvider.validateToken(accessToken);
             String refreshToken = redisUtils.getData(member.getEmail());
             if (Objects.nonNull(refreshToken)) {
                 redisUtils.deleteData(member.getEmail());
+                cookieUtils.deleteRefreshTokenCookie(response, refreshToken);
             }
             redisUtils.setData(accessToken, "signOut", jwtTokenProvider.getExpiration(accessToken));
         } catch (Exception e) {
@@ -219,20 +220,27 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    /**
+     * JWT 토큰 재발급
+     *
+     * @param response
+     * @param request
+     * @return TokenInfo
+     */
     @Override
-    public TokenInfo reissue(HttpServletRequest request) {
+    public TokenInfo reissue(HttpServletResponse response, HttpServletRequest request) {
         String refreshToken = cookieUtils.getCookie(request);
-        jwtTokenProvider.validateToken(refreshToken);
-
-        String username = jwtTokenProvider.parseClaims(refreshToken).getSubject();
-        if (redisUtils.getData(username) != null) {
+        if (refreshToken == null) {
             throw new CustomException(ErrorCode.EXPIRED_TOKEN);
         }
-
+        jwtTokenProvider.validateToken(refreshToken);
+        String username = jwtTokenProvider.parseClaims(refreshToken).getSubject();
+        if (redisUtils.getData(username) == null) {
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
+        }
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
-
-
+        cookieUtils.generateRefreshTokenCookie(response, tokenInfo);
         return tokenInfo;
     }
 
