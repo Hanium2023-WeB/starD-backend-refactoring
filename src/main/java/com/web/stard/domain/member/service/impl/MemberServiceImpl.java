@@ -202,4 +202,48 @@ public class MemberServiceImpl implements MemberService {
         unknownMemberService.createUnknownMemberIfNotExist();
     }
 
+//    @Transactional
+//    public void sendEmailResetPw(MemberRequestDto.EmailRequestDto request) throws MessagingException {
+//
+//        Member member = memberService.findByEmail(emailDto.getEmail());
+//
+//        String pwResetToken = UUID.randomUUID().toString();
+//
+//        boolean isExist = true;
+//
+//        while(isExist){
+//
+//            String existEmail = redisUtil.getData(RESET_PW_PREFIX + pwResetToken);
+//            if (existEmail == null)
+//                break;
+//            else
+//                pwResetToken = UUID.randomUUID().toString();
+//        }
+//
+//        String pwResetUrl = baseUrl + "/reset-password?token=" + pwResetToken;
+//
+//        MimeMessage message = emailSender.createMimeMessage();
+//        message.addRecipients(MimeMessage.RecipientType.TO, emailDto.getEmail());
+//        message.setSubject(RESET_PW_SUBJECT);
+//
+//        String messageContent = "<h2>비밀번호 재설정 안내 </h2> <br>" +
+//                "<p>안녕하세요. " + member.getId() +" 님</p>" +
+//                "<p>본 메일은 비밀번호 재설정을 위해 StarD에서 발송하는 메일입니다. 12시간 이내에 " +
+//                "링크를 클릭하여 비밀번호 재설정을 완료해주세요.</p>" +
+//                "<a href=\"" + pwResetUrl + "\">비밀번호 재설정</a>";
+//
+//        message.setText(messageContent, "UTF-8", "html");
+//        String sender = adminAccount + "@naver.com";
+//        message.setFrom(new InternetAddress(sender));
+//
+//        try {
+//            emailSender.send(message);
+//            redisUtil.setData(RESET_PW_PREFIX + pwResetToken, emailDto.getEmail(), RESET_PW_TOKEN_EXPIRE_TIME);
+//        } catch (MailException e) {
+//            e.printStackTrace();
+//            log.debug("MailService.sendEmail exception occur toEmail: {}", emailDto.getEmail());
+//            throw new IllegalArgumentException();
+//        }
+//    }
+
 }

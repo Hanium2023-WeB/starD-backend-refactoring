@@ -72,6 +72,8 @@ public class JwtTokenProvider {
                 .compact();
 
         String refreshToken = Jwts.builder()
+                .subject(authentication.getName())
+                .claim(AUTHORITIES_KEY, authorities)
                 .expiration(new Date(now + refreshTokenExpTime))
                 .signWith(secretKey)
                 .compact();
@@ -84,8 +86,8 @@ public class JwtTokenProvider {
                 .build();
     }
 
-    public Authentication getAuthentication(String accessToken) {
-        Claims claims = parseClaims(accessToken);
+    public Authentication getAuthentication(String token) {
+        Claims claims = parseClaims(token);
 
         if (claims.get(AUTHORITIES_KEY) == null) {
             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
@@ -97,7 +99,7 @@ public class JwtTokenProvider {
                 .collect(Collectors.toList());
 
         UserDetails principal = userDetailsService.loadUserByUsername(claims.getSubject());
-        return new UsernamePasswordAuthenticationToken(principal, accessToken, authorities);
+        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
     public boolean validateToken(String token) {
@@ -109,7 +111,7 @@ public class JwtTokenProvider {
             throw new CustomException(ErrorCode.INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
             log.info("Expired JWT Token", e);
-            throw new CustomException(ErrorCode.INVALID_TOKEN);
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
         } catch (UnsupportedJwtException e) {
             log.info("Unsupported JWT Token", e);
             throw new CustomException(ErrorCode.INVALID_TOKEN);
@@ -119,11 +121,11 @@ public class JwtTokenProvider {
         }
     }
 
-    private Claims parseClaims(String accessToken) {
+    public Claims parseClaims(String accessToken) {
         try {
             return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(accessToken).getPayload();
         } catch (ExpiredJwtException e) {
-            throw new CustomException(ErrorCode.EMPTY_CLAIMS);
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
         }
     }
 

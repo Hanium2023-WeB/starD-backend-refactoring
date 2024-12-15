@@ -9,6 +9,7 @@ import com.web.stard.global.dto.TokenInfo;
 import com.web.stard.global.utils.HeaderUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -24,7 +25,6 @@ public class AuthController {
     private final HeaderUtils headerUtils;
     private final AuthService authService;
 
-    // 회원가입
     @Operation(summary = "회원가입")
     @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MemberResponseDto.SignupResultDto> signUp(@RequestPart(value = "file", required = false) MultipartFile file,
@@ -53,12 +53,18 @@ public class AuthController {
         MemberResponseDto.AdditionalInfoResultDto result = authService.saveAdditionalInfo(requestDto);
         return ResponseEntity.ok(result);
     }
-    
-    // 로그인
+
     @PostMapping("/sign-in")
     @Operation(summary = "로그인")
-    public ResponseEntity<TokenInfo> signIn(@Valid @RequestBody MemberRequestDto.SignInDto request) {
-        return ResponseEntity.ok(authService.signIn(request));
+    public ResponseEntity<TokenInfo> signIn(@Valid @RequestBody MemberRequestDto.SignInDto request,
+                                            HttpServletResponse response) {
+        return ResponseEntity.ok(authService.signIn(request, response));
+    }
+
+    @PostMapping("/reissue")
+    @Operation(summary = "JWT 토큰 재발급")
+    public ResponseEntity<TokenInfo> reissue(HttpServletResponse response, HttpServletRequest request) {
+        return ResponseEntity.ok(authService.reissue(response, request));
     }
 
     @PostMapping("/auth-codes")
@@ -77,8 +83,9 @@ public class AuthController {
 
     @PostMapping("/sign-out")
     @Operation(summary = "로그아웃")
-    public ResponseEntity<Boolean> validAuthCode(@CurrentMember Member member, HttpServletRequest request) {
-        authService.signOut(member, headerUtils.resolveToken(request));
+    public ResponseEntity<Boolean> signOut(@CurrentMember Member member, HttpServletRequest request,
+                                                 HttpServletResponse response) {
+        authService.signOut(member, headerUtils.resolveToken(request), response);
         return ResponseEntity.ok().body(true);
     }
 
