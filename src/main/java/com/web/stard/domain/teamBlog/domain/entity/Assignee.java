@@ -35,4 +35,8 @@ public class Assignee {
     public void updateToDoStatus(boolean status) {
         toDoStatus = status;
     }
+
+    public void updateMemberToDeleted(StudyMember studyMember) {
+        this.studyMember = studyMember;
+    }
 }

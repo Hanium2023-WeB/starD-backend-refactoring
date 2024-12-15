@@ -21,4 +21,8 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     void deleteAllByMember(Member member);
 
     void deleteAllByTargetIdIn(List<Long> postIds);
+
+    List<Reply> findAllByTargetIdInAndPostType(List<Long> postIds, PostType postType);
+
+    void deleteAllByTargetIdInAndPostType(List<Long> postIds, PostType postType);
 }

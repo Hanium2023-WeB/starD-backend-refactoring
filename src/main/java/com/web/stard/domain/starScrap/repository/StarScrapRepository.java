@@ -33,4 +33,8 @@ public interface StarScrapRepository extends JpaRepository<StarScrap, Long> {
     void deleteByActTypeAndTableTypeAndTargetId(ActType actType, TableType tableType, Long id);
 
     void deleteAllByMember(Member member);
+
+    void deleteAllByTargetIdInAndTableType(List<Long> postIds, TableType tableType);
+
+    void deleteAllByTargetIdAndTableType(Long postIds, TableType tableType);
 }
