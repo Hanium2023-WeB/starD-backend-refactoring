@@ -3,6 +3,7 @@ package com.web.stard.domain.member.domain.dto.response;
 import com.web.stard.domain.member.domain.entity.Interest;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.domain.enums.InterestField;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,7 +15,10 @@ public class MemberResponseDto {
     @Getter
     @Builder
     public static class SignupResultDto {
+        @Schema(description = "회원 고유 id")
         private Long memberId;
+
+        @Schema(description = "계정 등록 시각")
         private LocalDateTime createdAt;
 
         public static SignupResultDto from(Member member){
@@ -28,7 +32,10 @@ public class MemberResponseDto {
     @Getter
     @Builder
     public static class AdditionalInfoResultDto {
+        @Schema(description = "회원 고유 id")
         private Long memberId;
+
+        @Schema(description = "회원 관심분야")
         private List<InterestField> interests;
 
         public static AdditionalInfoResultDto of(Member member){
@@ -43,8 +50,11 @@ public class MemberResponseDto {
     @Getter
     @Builder
     public static class InfoDto {
-        private String nickname; // 닉네임
-        private List<String> interests; // 관심분야
+        @Schema(description = "닉네임")
+        private String nickname;
+
+        @Schema(description = "관심분야")
+        private List<String> interests;
 
         public static InfoDto of(Member member, List<Interest> interests){
             return InfoDto.builder()
@@ -57,7 +67,9 @@ public class MemberResponseDto {
     @Getter
     @Builder
     public static class EditNicknameResponseDto {
+        @Schema(description = "닉네임")
         private String nickname;
+
         private String message;
 
         public static EditNicknameResponseDto of(String nickname) {
@@ -71,7 +83,9 @@ public class MemberResponseDto {
     @Getter
     @Builder
     public static class EditInterestResponseDto {
+        @Schema(description = "관심분야")
         private List<String> interests;
+
         private String message;
 
         public static EditInterestResponseDto of(List<Interest> interestList) {
@@ -85,6 +99,7 @@ public class MemberResponseDto {
     @Getter
     @Builder
     public static class ProfileImageResponseDto {
+        @Schema(description = "프로필 이미지 url")
         private String imageUrl;
 
         public static ProfileImageResponseDto from(String imageUrl) {

@@ -5,6 +5,7 @@ import com.web.stard.domain.post.domain.entity.Post;
 import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.domain.enums.Role;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
@@ -17,21 +18,47 @@ public class PostResponseDto {
     @Getter
     @Builder
     public static class PostDto {
+        @Schema(description = "해당 게시글 고유 id")
         private Long postId;
+
+        @Schema(description = "제목")
         private String title;
+
+        @Schema(description = "내용")
         private String content;
+
+        @Schema(description = "카테고리")
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private String category;
+
+        @Schema(description = "조회수")
         private int hit;
+
+        @Schema(description = "게시글 타입")
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private PostType postType;
+
+        @Schema(description = "회원 - 게시글 작성자 여부")
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private Boolean isAuthor;
+
+        @Schema(description = "작성자 닉네임")
         private String writer;
+
+        @Schema(description = "작성자 프로필 이미지")
         private String profileImg;
+
+        @Schema(description = "게시글 생성 일시")
+        private LocalDateTime createdAt;
+
+        @Schema(description = "게시글 수정 일시")
         private LocalDateTime updatedAt;
+
+        @Schema(description = "공감 수")
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private Integer starCount;
+
+        @Schema(description = "회원 - 공감 등록 여부")
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private Boolean existsStar;
 
@@ -59,8 +86,10 @@ public class PostResponseDto {
                     .isAuthor(isAuthor)
                     .writer(writerName)
                     .profileImg(profileImage)
+                    .createdAt(post.getCreatedAt())
                     .updatedAt(post.getUpdatedAt())
                     .starCount(starCount)
+                    .existsStar(existsStar)
                     .build();
         }
     }
@@ -69,9 +98,15 @@ public class PostResponseDto {
     @Builder
     public static class PostListDto {
         private List<PostDto> posts;
-        private int currentPage;    // 현재 페이지
-        private int totalPages;     // 전체 페이지 수
-        private boolean isLast;     // 마지막 페이지 여부
+
+        @Schema(description = "현재 페이지")
+        private int currentPage;
+
+        @Schema(description = "전체 페이지 수")
+        private int totalPages;
+
+        @Schema(description = "마지막 페이지 여부")
+        private boolean isLast;
 
         public static PostListDto of(Page<Post> posts, List<PostDto> postDtos) {
             return PostListDto.builder()
