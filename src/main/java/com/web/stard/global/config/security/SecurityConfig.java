@@ -35,7 +35,7 @@ public class SecurityConfig {
 
     private static final String[] PERMIT_ALL_PATTERNS = new String[] {
             "/members/auth/join", "/members/auth/check-email", "/members/auth/check-nickname",
-            "/members/auth/join/additional-info", "/members/auth/sign-in",
+            "/members/auth/join/additional-info", "/members/auth/sign-in", "/members/auth/reissue",
             "/members/auth/auth-codes", "/members/auth/auth-codes/verify",
             "/studies/search"
     };
