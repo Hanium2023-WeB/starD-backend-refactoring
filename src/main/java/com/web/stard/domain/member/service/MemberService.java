@@ -23,7 +23,5 @@ public interface MemberService {
 
     void deleteProfileImage(Member member);
 
-    MemberResponseDto.DeleteDto deleteMember(Member member);
-
     void deleteAllRelatedEntities(Member member, boolean isForced);
 }

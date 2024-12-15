@@ -231,27 +231,6 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
-    /**
-     * 회원 탈퇴
-     *
-     * @param member 회원
-     * @return Long 탈퇴한 회원 고유 id, message
-     */
-    @Override
-    @Transactional
-    public MemberResponseDto.DeleteDto deleteMember(Member member) {
-        Member deleteMember = memberRepository.findById(member.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-        deleteAllRelatedEntities(deleteMember, false);
-        memberRepository.delete(deleteMember);
-
-        return MemberResponseDto.DeleteDto.builder()
-                .deletedMemberId(deleteMember.getId())
-                .message("탈퇴 처리되었습니다.")
-                .build();
-    }
-
     // 특정 회원과 관련된 모든 엔티티 삭제
     @Override
     public void deleteAllRelatedEntities(Member member, boolean isForced) {

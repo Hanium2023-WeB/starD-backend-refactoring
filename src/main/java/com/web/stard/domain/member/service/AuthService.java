@@ -4,6 +4,7 @@ import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.domain.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.domain.dto.response.MemberResponseDto;
 import com.web.stard.global.dto.TokenInfo;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface AuthService {
@@ -22,4 +23,6 @@ public interface AuthService {
     void validAuthCode(MemberRequestDto.AuthCodeRequestDto request) throws Exception;
 
     void signOut(Member member, String token);
+
+    MemberResponseDto.DeleteDto deleteMember(Member member, String token, HttpServletResponse response);
 }

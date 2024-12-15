@@ -9,6 +9,7 @@ import com.web.stard.global.dto.TokenInfo;
 import com.web.stard.global.utils.HeaderUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -80,6 +81,13 @@ public class AuthController {
     public ResponseEntity<Boolean> validAuthCode(@CurrentMember Member member, HttpServletRequest request) {
         authService.signOut(member, headerUtils.resolveToken(request));
         return ResponseEntity.ok().body(true);
+    }
+
+    @Operation(summary = "회원 탈퇴")
+    @DeleteMapping("/delete")
+    public ResponseEntity<MemberResponseDto.DeleteDto> deleteMember(@CurrentMember Member member, HttpServletRequest request,
+                                                                    HttpServletResponse response) {
+        return ResponseEntity.ok(authService.deleteMember(member, headerUtils.resolveToken(request), response));
     }
 
 }
