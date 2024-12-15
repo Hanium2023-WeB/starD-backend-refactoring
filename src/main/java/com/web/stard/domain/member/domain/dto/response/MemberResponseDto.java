@@ -108,4 +108,13 @@ public class MemberResponseDto {
                     .build();
         }
     }
+
+    @Getter
+    @Builder
+    public static class DeleteDto {
+        @Schema(description = "탈퇴한 회원 고유 id")
+        private Long deletedMemberId;
+
+        private String message;
+    }
 }

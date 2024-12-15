@@ -146,4 +146,10 @@ public class MemberController {
                                                                                          @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
         return ResponseEntity.ok(studyPostService.getMemberStudyPostListByStudy(studyId, member, page));
     }
+
+    @Operation(summary = "회원 탈퇴")
+    @DeleteMapping("/delete")
+    public ResponseEntity<MemberResponseDto.DeleteDto> deleteMember(@CurrentMember Member member) {
+        return ResponseEntity.ok(memberService.deleteMember(member));
+    }
 }
