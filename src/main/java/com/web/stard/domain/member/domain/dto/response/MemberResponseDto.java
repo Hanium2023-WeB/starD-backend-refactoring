@@ -21,7 +21,7 @@ public class MemberResponseDto {
         @Schema(description = "계정 등록 시각")
         private LocalDateTime createdAt;
 
-        public static SignupResultDto from(Member member){
+        public static SignupResultDto from(Member member) {
             return SignupResultDto.builder()
                     .memberId(member.getId())
                     .createdAt(member.getCreatedAt())
@@ -38,7 +38,7 @@ public class MemberResponseDto {
         @Schema(description = "회원 관심분야")
         private List<InterestField> interests;
 
-        public static AdditionalInfoResultDto of(Member member){
+        public static AdditionalInfoResultDto of(Member member) {
             return AdditionalInfoResultDto.builder()
                     .memberId(member.getId())
                     .interests(member.getInterests().stream().map(Interest::getInterestField).toList())
@@ -56,7 +56,7 @@ public class MemberResponseDto {
         @Schema(description = "관심분야")
         private List<String> interests;
 
-        public static InfoDto of(Member member, List<Interest> interests){
+        public static InfoDto of(Member member, List<Interest> interests) {
             return InfoDto.builder()
                     .nickname(member.getNickname())
                     .interests(interests.stream().map(interest -> interest.getInterestField().getDescription()).toList())
@@ -107,5 +107,13 @@ public class MemberResponseDto {
                     .imageUrl(imageUrl)
                     .build();
         }
+    }
+
+    @Schema(description = "비밀번호 재설정 토큰 응답 값 DTO")
+    public record ValidPasswordResetTokenResponseDto(
+            @Schema(description = "이메일")
+            String email
+    ) {
+
     }
 }
