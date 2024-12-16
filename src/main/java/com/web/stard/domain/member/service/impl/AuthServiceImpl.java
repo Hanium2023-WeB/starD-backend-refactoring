@@ -48,6 +48,8 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final MemberService memberService;
 
+    private static final String RESET_PW_PREFIX = "ResetPwToken ";
+
     /**
      * 회원가입
      *
@@ -279,6 +281,33 @@ public class AuthServiceImpl implements AuthService {
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
         cookieUtils.generateRefreshTokenCookie(response, tokenInfo);
         return tokenInfo;
+    }
+
+    /**
+     * 비밀번호 찾기
+     *
+     * @param email 이메일
+     */
+    @Override
+    public void findPassword(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        String pwResetToken = UUID.randomUUID().toString();
+        emailUtils.sendPwResetUrl(member.getEmail(), pwResetToken);
+    }
+
+    /**
+     * 비밀번호 재설정 토큰 검증
+     *
+     * @param token 비밀번호 재설정 토큰
+     */
+    @Override
+    public String validPasswordResetToken(String token) {
+        String email = redisUtils.getData(RESET_PW_PREFIX + token);
+        if (email == null) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
+        return email;
     }
 
 }

@@ -148,6 +148,7 @@ public class MemberServiceImpl implements MemberService {
     /**
      * 마이페이지 - 개인정보 수정 : 관심분야
      * 기존 관심분야와 비교 - 삭제, 추가
+     *
      * @param requestDto : EditInterestDto  interestField 관심분야
      * @return EditInterestResponseDto      interests 관심분야, message 성공 메시지
      *
@@ -373,54 +374,28 @@ public class MemberServiceImpl implements MemberService {
         profileRepository.deleteById(member.getProfile().getId());
     }
 
+    /**
+     * 비밀번호 재설정
+     *
+     * @param email    이메일
+     * @param password 변경된 비밀번호
+     */
+    @Override
+    @Transactional
+    public void resetPassword(String email, String password) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        if (passwordEncoder.matches(password, member.getPassword())) {
+            throw new CustomException(ErrorCode.DUPLICATE_PASSWORD);
+        }
+        member.updatePassword(passwordEncoder.encode(password));
+    }
+
+
     // 애플리케이션 실행 후 호출됨
     @PostConstruct
     public void initUnknownMember() {
         unknownMemberService.createUnknownMemberIfNotExist();
     }
-
-//    @Transactional
-//    public void sendEmailResetPw(MemberRequestDto.EmailRequestDto request) throws MessagingException {
-//
-//        Member member = memberService.findByEmail(emailDto.getEmail());
-//
-//        String pwResetToken = UUID.randomUUID().toString();
-//
-//        boolean isExist = true;
-//
-//        while(isExist){
-//
-//            String existEmail = redisUtil.getData(RESET_PW_PREFIX + pwResetToken);
-//            if (existEmail == null)
-//                break;
-//            else
-//                pwResetToken = UUID.randomUUID().toString();
-//        }
-//
-//        String pwResetUrl = baseUrl + "/reset-password?token=" + pwResetToken;
-//
-//        MimeMessage message = emailSender.createMimeMessage();
-//        message.addRecipients(MimeMessage.RecipientType.TO, emailDto.getEmail());
-//        message.setSubject(RESET_PW_SUBJECT);
-//
-//        String messageContent = "<h2>비밀번호 재설정 안내 </h2> <br>" +
-//                "<p>안녕하세요. " + member.getId() +" 님</p>" +
-//                "<p>본 메일은 비밀번호 재설정을 위해 StarD에서 발송하는 메일입니다. 12시간 이내에 " +
-//                "링크를 클릭하여 비밀번호 재설정을 완료해주세요.</p>" +
-//                "<a href=\"" + pwResetUrl + "\">비밀번호 재설정</a>";
-//
-//        message.setText(messageContent, "UTF-8", "html");
-//        String sender = adminAccount + "@naver.com";
-//        message.setFrom(new InternetAddress(sender));
-//
-//        try {
-//            emailSender.send(message);
-//            redisUtil.setData(RESET_PW_PREFIX + pwResetToken, emailDto.getEmail(), RESET_PW_TOKEN_EXPIRE_TIME);
-//        } catch (MailException e) {
-//            e.printStackTrace();
-//            log.debug("MailService.sendEmail exception occur toEmail: {}", emailDto.getEmail());
-//            throw new IllegalArgumentException();
-//        }
-//    }
 
 }
