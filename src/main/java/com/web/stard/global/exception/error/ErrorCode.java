@@ -76,8 +76,12 @@ public enum ErrorCode {
     REPORT_NOT_ALLOWED_FOR_AUTHOR(HttpStatus.FORBIDDEN, "내가 작성한 글은 신고할 수 없습니다."),
     INVALID_REPORT_REASON(HttpStatus.BAD_REQUEST, "유효하지 않은 신고 사유입니다."),
     CUSTOM_REASON_REQUIRED(HttpStatus.BAD_REQUEST, "기타 신고 사유는 필수입니다."),
-    REPORT_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 신고된 게시글입니다."),
-    REPORT_PROCESS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "신고 처리 도중 오류가 발생했습니다.")
+    REPORT_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 신고된 게시글입니다."),
+    REPORT_PROCESS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "신고 처리 도중 오류가 발생했습니다."),
+
+    // Chat
+    CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 채팅방입니다."),
+    CHAT_ROOM_ALREADY_EXISTS(HttpStatus.CONFLICT, "채팅방이 이미 존재합니다.")
     ;
 
     private final HttpStatus httpStatus;    // HttpStatus
