@@ -1,5 +1,8 @@
 package com.web.stard.domain.study.service.impl;
 
+import com.web.stard.domain.post.domain.enums.PostType;
+import com.web.stard.domain.reply.domain.entity.Reply;
+import com.web.stard.domain.reply.repository.ReplyRepository;
 import com.web.stard.domain.starScrap.repository.StarScrapRepository;
 import com.web.stard.domain.starScrap.service.StarScrapService;
 import com.web.stard.domain.starScrap.domain.enums.ActType;
@@ -37,6 +40,7 @@ public class StudyServiceImpl implements StudyService {
     private final StudyApplicantRepository studyApplicantRepository;
     private final StudyMemberRepository studyMemberRepository;
     private final CustomStudyRepository studyCustomRepository;
+    private final ReplyRepository replyRepository;
 
     // 진행 중인 스터디인지 확인
     @Override
@@ -89,7 +93,8 @@ public class StudyServiceImpl implements StudyService {
         member = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         Study study = studyRepository.findById(studyId).orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
         int scrapCount = starScrapService.findStarScrapCount(study.getId(), ActType.SCRAP, TableType.STUDY);
-        return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount);
+        boolean isScrapped = (starScrapService.existsStarScrap(member, study.getId(), ActType.SCRAP, TableType.STUDY) != null);
+        return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount, isScrapped);
     }
 
     /**
@@ -124,6 +129,8 @@ public class StudyServiceImpl implements StudyService {
         Study study = findById(studyId);
         validateAuthor(member, study.getMember());
         starScrapService.deletePostStarScraps(studyId, ActType.SCRAP, TableType.STUDY);
+        List<Reply> replies = replyRepository.findAllByTargetIdAndPostType(studyId, PostType.STUDY);
+        replyRepository.deleteAll(replies); // 댓글 삭제
         studyRepository.delete(study);
     }
 
