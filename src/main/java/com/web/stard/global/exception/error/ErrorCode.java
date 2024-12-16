@@ -16,6 +16,7 @@ public enum ErrorCode {
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "사용 불가능한 이메일입니다."),
     INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "사용 불가능한 닉네임입니다."),
     MISMATCH_TOKEN(HttpStatus.BAD_REQUEST, "토큰 불일치"),
+    CANNOT_DELETE_FROM_IN_PROGRESS_STUDY(HttpStatus.FORBIDDEN, "진행 중인 스터디가 있으므로 탈퇴가 불가능합니다."),
     DUPLICATE_PASSWORD(HttpStatus.CONFLICT, "이전과 동일한 비밀번호로 변경할 수 없습니다."),
 
     //Jwt

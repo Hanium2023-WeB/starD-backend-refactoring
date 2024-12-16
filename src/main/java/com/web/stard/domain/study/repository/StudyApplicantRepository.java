@@ -17,4 +17,8 @@ public interface StudyApplicantRepository extends JpaRepository<StudyApplicant, 
     List<StudyApplicant> findByStudyAndStatus(Study study, ApplicationStatus status);
 
     void deleteByMember(Member member);
+
+    List<StudyApplicant> findByMember(Member member);
+
+    void deleteAllByStudy(Study study);
 }

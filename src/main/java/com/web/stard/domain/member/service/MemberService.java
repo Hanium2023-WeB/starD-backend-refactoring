@@ -23,5 +23,7 @@ public interface MemberService {
 
     void deleteProfileImage(Member member);
 
+    void deleteAllRelatedEntities(Member member, boolean isForced);
+
     void resetPassword(String email, String password);
 }

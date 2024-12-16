@@ -89,6 +89,13 @@ public class AuthController {
         return ResponseEntity.ok().body(true);
     }
 
+    @Operation(summary = "회원 탈퇴")
+    @DeleteMapping("/delete")
+    public ResponseEntity<MemberResponseDto.DeleteDto> deleteMember(@CurrentMember Member member, HttpServletRequest request,
+                                                                    HttpServletResponse response) {
+        return ResponseEntity.ok(authService.deleteMember(member, headerUtils.resolveToken(request), response));
+    }
+
     @PostMapping("/find-password")
     @Operation(summary = "비밀번호 찾기")
     public ResponseEntity<Boolean> findPassword(@Valid @RequestBody MemberRequestDto.EmailRequestDto request) {

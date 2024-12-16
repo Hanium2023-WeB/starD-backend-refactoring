@@ -109,6 +109,15 @@ public class MemberResponseDto {
         }
     }
 
+    @Getter
+    @Builder
+    public static class DeleteDto {
+        @Schema(description = "탈퇴한 회원 고유 id")
+        private Long deletedMemberId;
+
+        private String message;
+    }
+
     @Schema(description = "비밀번호 재설정 토큰 응답 값 DTO")
     public record ValidPasswordResetTokenResponseDto(
             @Schema(description = "이메일")

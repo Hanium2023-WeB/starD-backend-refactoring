@@ -51,4 +51,8 @@ public class StudyMember {
         this.studyRemoved = studyRemoved;
     }
 
+    public void updateMemberToDeleted(Member member) {
+        this.member = member;
+    }
+
 }
