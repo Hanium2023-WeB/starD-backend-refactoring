@@ -172,7 +172,10 @@ public class StudyResponseDto {
         @Schema(description = "스터디 분야")
         private String field;
 
-        public static DetailInfo toDto(Study study, Member member, int scrapCount) {
+        @Schema(description = "스터디 게시글 스크랩 여부")
+        private boolean isScrapped;
+
+        public static DetailInfo toDto(Study study, Member member, int scrapCount, boolean isScrapped) {
             return DetailInfo.builder()
                     .scrapCount(scrapCount)
                     .studyId(study.getId())
@@ -195,6 +198,7 @@ public class StudyResponseDto {
                     .district(study.getDistrict())
                     .isAuthor(study.getMember().equals(member))
                     .field(study.getField().getDescription())
+                    .isScrapped(isScrapped)
                     .build();
         }
 
