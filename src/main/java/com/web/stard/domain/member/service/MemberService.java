@@ -22,4 +22,6 @@ public interface MemberService {
     MemberResponseDto.ProfileImageResponseDto updateProfileImage(MultipartFile file, Member member);
 
     void deleteProfileImage(Member member);
+
+    void resetPassword(String email, String password);
 }

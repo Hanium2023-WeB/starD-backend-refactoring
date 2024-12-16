@@ -26,4 +26,8 @@ public interface AuthService {
     void signOut(Member member, String token, HttpServletResponse response);
 
     TokenInfo reissue(HttpServletResponse response, HttpServletRequest request);
+
+    void findPassword(String email);
+
+    void validPasswordResetToken(String token);
 }

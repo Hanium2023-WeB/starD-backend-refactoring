@@ -84,8 +84,22 @@ public class AuthController {
     @PostMapping("/sign-out")
     @Operation(summary = "로그아웃")
     public ResponseEntity<Boolean> signOut(@CurrentMember Member member, HttpServletRequest request,
-                                                 HttpServletResponse response) {
+                                           HttpServletResponse response) {
         authService.signOut(member, headerUtils.resolveToken(request), response);
+        return ResponseEntity.ok().body(true);
+    }
+
+    @PostMapping("/find-password")
+    @Operation(summary = "비밀번호 찾기")
+    public ResponseEntity<Boolean> findPassword(@Valid @RequestBody MemberRequestDto.EmailRequestDto request) {
+        authService.findPassword(request.email());
+        return ResponseEntity.ok().body(true);
+    }
+
+    @GetMapping("/valid-password-reset-token")
+    @Operation(summary = "비밀번호 재설정 토큰 검증")
+    public ResponseEntity<Boolean> validPasswordResetToken(@RequestParam(name = "token") String token) {
+        authService.validPasswordResetToken(token);
         return ResponseEntity.ok().body(true);
     }
 

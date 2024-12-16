@@ -146,4 +146,11 @@ public class MemberController {
                                                                                          @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
         return ResponseEntity.ok(studyPostService.getMemberStudyPostListByStudy(studyId, member, page));
     }
+
+    @PutMapping("/reset-password")
+    @Operation(summary = "비밀번호 재설정")
+    public ResponseEntity<Boolean> resetPassword(@Valid @RequestBody MemberRequestDto.SignInDto requestDto) {
+        memberService.resetPassword(requestDto.email(), requestDto.password());
+        return ResponseEntity.ok().body(true);
+    }
 }
