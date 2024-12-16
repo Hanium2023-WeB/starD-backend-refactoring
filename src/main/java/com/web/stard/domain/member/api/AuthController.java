@@ -98,9 +98,10 @@ public class AuthController {
 
     @GetMapping("/valid-password-reset-token")
     @Operation(summary = "비밀번호 재설정 토큰 검증")
-    public ResponseEntity<Boolean> validPasswordResetToken(@RequestParam(name = "token") String token) {
-        authService.validPasswordResetToken(token);
-        return ResponseEntity.ok().body(true);
+    public ResponseEntity<MemberResponseDto.ValidPasswordResetTokenResponseDto> validPasswordResetToken(@RequestParam(name = "token") String token) {
+        MemberResponseDto.ValidPasswordResetTokenResponseDto responseDto =
+                new MemberResponseDto.ValidPasswordResetTokenResponseDto(authService.validPasswordResetToken(token));
+        return ResponseEntity.ok().body(responseDto);
     }
 
 }

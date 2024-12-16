@@ -29,5 +29,5 @@ public interface AuthService {
 
     void findPassword(String email);
 
-    void validPasswordResetToken(String token);
+    String validPasswordResetToken(String token);
 }

@@ -265,10 +265,12 @@ public class AuthServiceImpl implements AuthService {
      * @param token 비밀번호 재설정 토큰
      */
     @Override
-    public void validPasswordResetToken(String token) {
+    public String validPasswordResetToken(String token) {
         String email = redisUtils.getData(RESET_PW_PREFIX + token);
-        if (email == null)
+        if (email == null) {
             throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
+        return email;
     }
 
 }
