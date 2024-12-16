@@ -21,11 +21,18 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class EmailUtils {
 
+    private static final String RESET_PW_SUBJECT = "[StarD] 비밀번호 재설정 안내 메일";
+    private static final Long RESET_PW_TOKEN_EXPIRE_TIME = 24 * 60 * 60 * 1000L;
+    private static final String RESET_PW_PREFIX = "ResetPwToken ";
+
     private final JavaMailSender mailSender;
     private final RedisUtils redisUtils;
 
     @Value("${spring.mail.username}")
     private String from;
+
+    @Value("${base.front-end.url}")
+    private String url;
 
 
     public void send(String toMail) throws Exception {
@@ -79,6 +86,30 @@ public class EmailUtils {
 
         if (!Objects.equals(redisCode, code)) {
             throw new CustomException(ErrorCode.INVALID_AUTH_CODE);
+        }
+    }
+
+    public void sendPwResetUrl(String email, String pwResetToken) {
+        String pwResetUrl = url + "reset-password?token=" + pwResetToken;
+
+        String messageContent = "<h2>비밀번호 재설정 안내 </h2> <br>" +
+                "<p>안녕하세요. " + email +" 님</p>" +
+                "<p>본 메일은 비밀번호 재설정을 위해 StarD에서 발송하는 메일입니다. 24시간 이내에 " +
+                "링크를 클릭하여 비밀번호 재설정을 완료해주세요.</p>" +
+                "<a href=\"" + pwResetUrl + "\">비밀번호 재설정</a>";
+
+        MimeMessage message = mailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
+            helper.setFrom(from);
+            helper.setTo(email);
+            helper.setSubject(RESET_PW_SUBJECT);
+            helper.setText(messageContent, true);
+            mailSender.send(message);
+            redisUtils.setData(RESET_PW_PREFIX + pwResetToken, email, RESET_PW_TOKEN_EXPIRE_TIME);
+
+        } catch (MessagingException e) {
+            log.error(e.getMessage(), e);
         }
     }
 

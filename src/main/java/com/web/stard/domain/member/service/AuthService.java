@@ -26,4 +26,10 @@ public interface AuthService {
     void signOut(Member member, String token, HttpServletResponse response);
 
     TokenInfo reissue(HttpServletResponse response, HttpServletRequest request);
+
+    MemberResponseDto.DeleteDto deleteMember(Member member, String token, HttpServletResponse response);
+
+    void findPassword(String email);
+
+    String validPasswordResetToken(String token);
 }

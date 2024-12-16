@@ -10,5 +10,8 @@ import java.util.List;
 
 public interface AssigneeRepository extends JpaRepository<Assignee, Long> {
     List<Assignee> findAllByStudyMemberAndToDoDueDateBetween(StudyMember studyMember, LocalDate start, LocalDate end);
+
     List<Assignee> findAllByStudyMemberAndToDoStudyAndToDoDueDateBetween(StudyMember member, Study study, LocalDate start, LocalDate end);
+
+    List<Assignee> findAllByStudyMember(StudyMember studyMember);
 }
