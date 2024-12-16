@@ -15,8 +15,10 @@ import com.web.stard.global.config.security.JwtTokenProvider;
 import com.web.stard.global.dto.TokenInfo;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
+import com.web.stard.global.utils.CookieUtils;
 import com.web.stard.global.utils.EmailUtils;
 import com.web.stard.global.utils.RedisUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,6 +43,7 @@ public class AuthServiceImpl implements AuthService {
     private final S3Manager s3Manager;
     private final RedisUtils redisUtils;
     private final EmailUtils emailUtils;
+    private final CookieUtils cookieUtils;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
     private final MemberService memberService;
@@ -163,12 +166,13 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     @Transactional
-    public TokenInfo signIn(MemberRequestDto.SignInDto request) {
+    public TokenInfo signIn(MemberRequestDto.SignInDto request, HttpServletResponse response) {
         try {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.email(), request.password());
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
             TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
             redisUtils.setData(request.email(), tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExpirationTime());
+            cookieUtils.generateRefreshTokenCookie(response, tokenInfo);
             return tokenInfo;
         } catch (BadCredentialsException e) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
@@ -204,12 +208,13 @@ public class AuthServiceImpl implements AuthService {
      * @param accessToken 헤더에 전송된 토큰
      */
     @Override
-    public void signOut(Member member, String accessToken) {
+    public void signOut(Member member, String accessToken, HttpServletResponse response) {
         try {
             jwtTokenProvider.validateToken(accessToken);
             String refreshToken = redisUtils.getData(member.getEmail());
             if (Objects.nonNull(refreshToken)) {
                 redisUtils.deleteData(member.getEmail());
+                cookieUtils.deleteRefreshTokenCookie(response, refreshToken);
             }
             redisUtils.setData(accessToken, "signOut", jwtTokenProvider.getExpiration(accessToken));
         } catch (Exception e) {
@@ -239,6 +244,7 @@ public class AuthServiceImpl implements AuthService {
             String refreshToken = redisUtils.getData(email);
             if (Objects.nonNull(refreshToken)) {
                 redisUtils.deleteData(email);
+                cookieUtils.deleteRefreshTokenCookie(response, refreshToken);
             }
             redisUtils.setData(accessToken, "signOut", jwtTokenProvider.getExpiration(accessToken));
         } catch (Exception e) {
@@ -249,6 +255,30 @@ public class AuthServiceImpl implements AuthService {
                 .deletedMemberId(deleteMember.getId())
                 .message("탈퇴 처리되었습니다.")
                 .build();
+    }
+
+    /**
+     * JWT 토큰 재발급
+     *
+     * @param response
+     * @param request
+     * @return TokenInfo
+     */
+    @Override
+    public TokenInfo reissue(HttpServletResponse response, HttpServletRequest request) {
+        String refreshToken = cookieUtils.getCookie(request);
+        if (refreshToken == null) {
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
+        }
+        jwtTokenProvider.validateToken(refreshToken);
+        String username = jwtTokenProvider.parseClaims(refreshToken).getSubject();
+        if (redisUtils.getData(username) == null) {
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
+        }
+        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
+        TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
+        cookieUtils.generateRefreshTokenCookie(response, tokenInfo);
+        return tokenInfo;
     }
 
 }
