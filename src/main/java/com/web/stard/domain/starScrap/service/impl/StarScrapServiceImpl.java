@@ -214,7 +214,7 @@ public class StarScrapServiceImpl implements StarScrapService {
         List<StudyResponseDto.DetailInfo> studyPostDtos = studyRecruitPosts.getContent().stream()
                 .map(post -> {
                     int scrapCount = findStarScrapCount(post.getId(), ActType.SCRAP, TableType.STUDY);
-                    return StudyResponseDto.DetailInfo.toDto(post, post.getMember(), scrapCount);
+                    return StudyResponseDto.DetailInfo.toDto(post, post.getMember(), scrapCount, true);
                 })
                 .toList();
 

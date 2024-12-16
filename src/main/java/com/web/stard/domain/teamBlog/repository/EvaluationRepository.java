@@ -11,4 +11,6 @@ public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
     List<Evaluation> findByTarget(StudyMember studyMember);
 
     Optional<Evaluation> findByStudyMemberAndTarget(StudyMember studyMember, StudyMember target);
+
+    List<Evaluation> findByStudyMember(StudyMember studyMember);
 }

@@ -2,6 +2,7 @@ package com.web.stard.global.utils;
 
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
+import com.web.stard.domain.member.service.MemberService;
 import com.web.stard.domain.report.service.ReportService;
 import com.web.stard.domain.study.domain.enums.RecruitmentType;
 import com.web.stard.domain.study.repository.StudyRepository;
@@ -21,7 +22,7 @@ public class SchedulerUtils {
 
     private final StudyRepository studyRepository;
     private final MemberRepository memberRepository;
-    private final ReportService reportService;
+    private final MemberService memberService;
 
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional
@@ -44,7 +45,7 @@ public class SchedulerUtils {
 
         for (Member member : membersToDelete) {
             try {
-                reportService.deleteAllRelatedEntities(member);
+                memberService.deleteAllRelatedEntities(member, true);
                 memberRepository.delete(member);
             } catch (Exception e) {
                 log.info("Force deletion failed for member: " + member.getId() + " - " + e.getMessage());
