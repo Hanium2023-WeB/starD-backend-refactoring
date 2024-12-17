@@ -21,5 +21,7 @@ public interface StudyMemberRepository extends JpaRepository<StudyMember, Long> 
 
     void deleteByMember(Member member);
 
+    Optional<StudyMember> findStudyMemberByMember(Member member);
+
     Optional<StudyMember> findByMember_NicknameAndStudyIsNull(String nickname); // 회원 탈퇴 용
 }
