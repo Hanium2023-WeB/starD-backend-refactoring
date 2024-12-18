@@ -1,5 +1,6 @@
 package com.web.stard.domain.member.service.impl;
 
+import com.web.stard.domain.member.domain.enums.Role;
 import com.web.stard.domain.member.service.AuthService;
 import com.web.stard.domain.member.domain.entity.Interest;
 import com.web.stard.domain.member.domain.entity.Member;
@@ -308,6 +309,11 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
         return email;
+    }
+
+    @Override
+    public Role getMemberRole(Member member) {
+        return member.getRole();
     }
 
 }
