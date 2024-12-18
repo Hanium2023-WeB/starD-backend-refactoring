@@ -18,7 +18,6 @@ public class ChatMessage extends BaseEntity {
     @Column(name = "chat_message_id", nullable = false)
     private Long id;
 
-    @Column(nullable = false)
     private String message;
 
     @Column(name = "img_url")

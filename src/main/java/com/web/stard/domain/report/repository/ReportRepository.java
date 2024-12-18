@@ -20,4 +20,8 @@ public interface ReportRepository extends JpaRepository<Report,Long> {
     void deleteByTargetIdAndPostType(Long targetId, PostType postType);
 
     void deleteAllByMember(Member member);
+
+    void deleteAllByTargetIdInAndPostType(List<Long> postIds, PostType postType);
+
+    void deleteAllByTargetIdAndPostType(Long postIds, PostType postType);
 }

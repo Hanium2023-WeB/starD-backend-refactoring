@@ -1,5 +1,6 @@
 package com.web.stard.domain.member.api;
 
+import com.web.stard.domain.member.domain.enums.Role;
 import com.web.stard.domain.member.service.AuthService;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.domain.dto.request.MemberRequestDto;
@@ -89,6 +90,13 @@ public class AuthController {
         return ResponseEntity.ok().body(true);
     }
 
+    @Operation(summary = "회원 탈퇴")
+    @DeleteMapping("/delete")
+    public ResponseEntity<MemberResponseDto.DeleteDto> deleteMember(@CurrentMember Member member, HttpServletRequest request,
+                                                                    HttpServletResponse response) {
+        return ResponseEntity.ok(authService.deleteMember(member, headerUtils.resolveToken(request), response));
+    }
+
     @PostMapping("/find-password")
     @Operation(summary = "비밀번호 찾기")
     public ResponseEntity<Boolean> findPassword(@Valid @RequestBody MemberRequestDto.EmailRequestDto request) {
@@ -104,4 +112,9 @@ public class AuthController {
         return ResponseEntity.ok().body(responseDto);
     }
 
+    @GetMapping
+    @Operation(summary = "권한 조회", description = "관리자인 경우 ADMIN, 회원인 경우 USER가 반환됩니다.")
+    public ResponseEntity<Role> getMemberRole(@CurrentMember Member member) {
+        return ResponseEntity.ok(authService.getMemberRole(member));
+    }
 }

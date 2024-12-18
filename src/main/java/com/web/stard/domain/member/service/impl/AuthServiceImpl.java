@@ -1,5 +1,6 @@
 package com.web.stard.domain.member.service.impl;
 
+import com.web.stard.domain.member.domain.enums.Role;
 import com.web.stard.domain.member.service.AuthService;
 import com.web.stard.domain.member.domain.entity.Interest;
 import com.web.stard.domain.member.domain.entity.Member;
@@ -9,6 +10,7 @@ import com.web.stard.domain.member.domain.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.domain.dto.response.MemberResponseDto;
 import com.web.stard.domain.member.repository.InterestRepository;
 import com.web.stard.domain.member.repository.MemberRepository;
+import com.web.stard.domain.member.service.MemberService;
 import com.web.stard.global.config.aws.S3Manager;
 import com.web.stard.global.config.security.JwtTokenProvider;
 import com.web.stard.global.dto.TokenInfo;
@@ -45,6 +47,7 @@ public class AuthServiceImpl implements AuthService {
     private final CookieUtils cookieUtils;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
+    private final MemberService memberService;
 
     private static final String RESET_PW_PREFIX = "ResetPwToken ";
 
@@ -223,6 +226,41 @@ public class AuthServiceImpl implements AuthService {
     }
 
     /**
+     * 회원 탈퇴
+     *
+     * @param member 회원
+     * @return Long 탈퇴한 회원 고유 id, message
+     */
+    @Override
+    @Transactional
+    public MemberResponseDto.DeleteDto deleteMember(Member member, String accessToken, HttpServletResponse response) {
+        Member deleteMember = memberRepository.findById(member.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        String email = deleteMember.getEmail();
+
+        memberService.deleteAllRelatedEntities(deleteMember, false);
+        memberRepository.delete(deleteMember);
+
+        try {
+            jwtTokenProvider.validateToken(accessToken);
+            String refreshToken = redisUtils.getData(email);
+            if (Objects.nonNull(refreshToken)) {
+                redisUtils.deleteData(email);
+                cookieUtils.deleteRefreshTokenCookie(response, refreshToken);
+            }
+            redisUtils.setData(accessToken, "signOut", jwtTokenProvider.getExpiration(accessToken));
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
+
+        return MemberResponseDto.DeleteDto.builder()
+                .deletedMemberId(deleteMember.getId())
+                .message("탈퇴 처리되었습니다.")
+                .build();
+    }
+
+    /**
      * JWT 토큰 재발급
      *
      * @param response
@@ -271,6 +309,11 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
         return email;
+    }
+
+    @Override
+    public Role getMemberRole(Member member) {
+        return member.getRole();
     }
 
 }

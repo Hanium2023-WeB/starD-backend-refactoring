@@ -51,4 +51,8 @@ public class StudyApplicant extends BaseEntity {
         this.status = status;
     }
 
+    public void updateMemberToDeleted(Member member) {
+        this.member = member;
+    }
+
 }
