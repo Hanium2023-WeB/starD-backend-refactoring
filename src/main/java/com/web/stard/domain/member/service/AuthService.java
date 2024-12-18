@@ -3,6 +3,7 @@ package com.web.stard.domain.member.service;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.domain.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.domain.dto.response.MemberResponseDto;
+import com.web.stard.domain.member.domain.enums.Role;
 import com.web.stard.global.dto.TokenInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,4 +33,6 @@ public interface AuthService {
     void findPassword(String email);
 
     String validPasswordResetToken(String token);
+
+    Role getMemberRole(Member member);
 }
