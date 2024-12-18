@@ -22,6 +22,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 @Service
@@ -268,6 +272,18 @@ public class StudyServiceImpl implements StudyService {
         study.updateRecruitmentType(RecruitmentType.COMPLETED);
         study.updateProcessType(ProgressType.IN_PROGRESS);
         return study.getId();
+    }
+
+    /**
+     * 주간 인기 태그 Top 5 조회
+     *
+     * @return List -Tag
+     */
+    @Override
+    @Transactional
+    public List<Tag> getHotTagTop5() {
+        LocalDateTime startTime = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).atStartOfDay();
+        return studyTagRepository.tagsByStudy(startTime);
     }
 
     /**

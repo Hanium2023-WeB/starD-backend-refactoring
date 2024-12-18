@@ -1,5 +1,6 @@
 package com.web.stard.domain.study.domain.entity;
 
+import com.web.stard.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Table
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StudyTag {
+public class StudyTag extends BaseEntity {
 
     @Builder
     public StudyTag(Study study, Tag tag) {
