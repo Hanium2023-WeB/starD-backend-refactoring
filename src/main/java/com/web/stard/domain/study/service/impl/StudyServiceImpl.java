@@ -79,9 +79,11 @@ public class StudyServiceImpl implements StudyService {
     }
 
     /**
-     * @param studyId
-     * @param member
-     * @return
+     * 스터디 모집 게시글 상세 조회
+     *
+     * @param studyId 스터디 모집 게시글 id
+     * @param member  회원 정보
+     * @return DetailInfo
      */
     @Override
     @Transactional
@@ -89,6 +91,7 @@ public class StudyServiceImpl implements StudyService {
         member = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         Study study = studyRepository.findById(studyId).orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
         int scrapCount = starScrapService.findStarScrapCount(study.getId(), ActType.SCRAP, TableType.STUDY);
+        studyRepository.incrementHitById(studyId);
         return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount);
     }
 
