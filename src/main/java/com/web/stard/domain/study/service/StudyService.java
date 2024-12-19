@@ -5,6 +5,7 @@ import com.web.stard.domain.study.domain.dto.request.StudyRequestDto;
 import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.domain.entity.StudyApplicant;
+import com.web.stard.domain.study.domain.entity.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -35,4 +36,6 @@ public interface StudyService {
     Page<StudyResponseDto.StudyInfo> searchStudies(Member member, StudyRequestDto.StudySearchFilter filter, Pageable pageable);
 
     Long openStudy(Member member, Long studyId);
+
+    List<Tag> getHotTagTop5();
 }

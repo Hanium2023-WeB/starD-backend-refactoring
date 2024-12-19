@@ -5,6 +5,7 @@ import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.domain.enums.InterestField;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.domain.entity.StudyApplicant;
+import com.web.stard.domain.study.domain.entity.Tag;
 import com.web.stard.domain.study.domain.enums.ActivityType;
 import com.web.stard.domain.study.domain.enums.ApplicationStatus;
 import com.web.stard.domain.study.domain.enums.ProgressType;
@@ -243,6 +244,37 @@ public class StudyResponseDto {
                     .introduce(studyApplicant.getIntroduction())
                     .nickname(studyApplicant.getMember().getNickname())
                     .status(studyApplicant.getStatus())
+                    .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    public static class TagInfoDto {
+
+        @Schema(description = "태그 id")
+        private Long tagId;
+
+        @Schema(description = "태그 이름")
+        private String tagName;
+
+        public static TagInfoDto toDto(Tag tag) {
+            return TagInfoDto.builder()
+                    .tagId(tag.getId())
+                    .tagName(tag.getName())
+                    .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    public static class TagInfosDto {
+        @Schema(description = "태그 정보")
+        private List<TagInfoDto> tags;
+
+        public static TagInfosDto toDto(List<TagInfoDto> tags) {
+            return TagInfosDto.builder()
+                    .tags(tags)
                     .build();
         }
     }

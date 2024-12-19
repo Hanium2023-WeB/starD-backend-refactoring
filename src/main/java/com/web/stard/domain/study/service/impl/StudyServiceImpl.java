@@ -25,6 +25,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 @Service
@@ -83,9 +87,11 @@ public class StudyServiceImpl implements StudyService {
     }
 
     /**
-     * @param studyId
-     * @param member
-     * @return
+     * 스터디 모집 게시글 상세 조회
+     *
+     * @param studyId 스터디 모집 게시글 id
+     * @param member  회원 정보
+     * @return DetailInfo
      */
     @Override
     @Transactional
@@ -93,6 +99,7 @@ public class StudyServiceImpl implements StudyService {
         member = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         Study study = studyRepository.findById(studyId).orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
         int scrapCount = starScrapService.findStarScrapCount(study.getId(), ActType.SCRAP, TableType.STUDY);
+        studyRepository.incrementHitById(studyId);
         boolean isScrapped = (starScrapService.existsStarScrap(member, study.getId(), ActType.SCRAP, TableType.STUDY) != null);
         return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount, isScrapped);
     }
@@ -272,6 +279,18 @@ public class StudyServiceImpl implements StudyService {
         study.updateRecruitmentType(RecruitmentType.COMPLETED);
         study.updateProcessType(ProgressType.IN_PROGRESS);
         return study.getId();
+    }
+
+    /**
+     * 주간 인기 태그 Top 5 조회
+     *
+     * @return List -Tag
+     */
+    @Override
+    @Transactional
+    public List<Tag> getHotTagTop5() {
+        LocalDateTime startTime = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).atStartOfDay();
+        return studyTagRepository.tagsByStudy(startTime);
     }
 
     /**

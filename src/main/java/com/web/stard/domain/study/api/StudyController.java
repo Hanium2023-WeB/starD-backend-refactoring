@@ -5,6 +5,7 @@ import com.web.stard.domain.member.domain.enums.InterestField;
 import com.web.stard.domain.study.domain.dto.request.StudyRequestDto;
 import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.study.domain.entity.Study;
+import com.web.stard.domain.study.domain.entity.Tag;
 import com.web.stard.domain.study.domain.enums.ActivityType;
 import com.web.stard.domain.study.domain.enums.RecruitmentType;
 import com.web.stard.domain.study.service.StudyService;
@@ -38,6 +39,15 @@ public class StudyController {
         study.updateMember(member);
         Study saveStudy = studyService.createStudy(member, study);
         return ResponseEntity.ok().body(saveStudy.getId());
+    }
+
+    @Operation(summary = "주간 인기 태그 Top 5 조회")
+    @GetMapping
+    public ResponseEntity<StudyResponseDto.TagInfosDto> getHotTagTop5() {
+        List<Tag> tags = studyService.getHotTagTop5();
+        StudyResponseDto.TagInfosDto response = StudyResponseDto.TagInfosDto.toDto(
+                tags.stream().map(StudyResponseDto.TagInfoDto::toDto).toList());
+        return ResponseEntity.ok().body(response);
     }
 
     @Operation(summary = "스터디 모집 게시글 수정")
