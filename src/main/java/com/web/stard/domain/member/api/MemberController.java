@@ -1,6 +1,8 @@
 package com.web.stard.domain.member.api;
 
 import com.web.stard.domain.post.service.PostService;
+import com.web.stard.domain.reply.domain.dto.response.ReplyResponseDto;
+import com.web.stard.domain.reply.service.ReplyService;
 import com.web.stard.domain.starScrap.service.StarScrapService;
 import com.web.stard.domain.post.domain.dto.response.PostResponseDto;
 import com.web.stard.domain.member.service.MemberService;
@@ -36,6 +38,7 @@ public class MemberController {
     private final ToDoService toDoService;
     private final ScheduleService scheduleService;
     private final StudyPostService studyPostService;
+    private final ReplyService replyService;
 
     @Operation(summary = "개인정보 반환")
     @GetMapping("/edit")
@@ -96,6 +99,13 @@ public class MemberController {
     public ResponseEntity<PostResponseDto.PostListDto> getCommPostList(@CurrentMember Member member,
                                                                        @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
         return ResponseEntity.ok(postService.getCommPostListByMember(member, page));
+    }
+
+    @Operation(summary = "사용자가 작성한 댓글 조회")
+    @GetMapping("/replies")
+    public ResponseEntity<ReplyResponseDto.MyPageReplyListDto> getReplyList(@CurrentMember Member member,
+                                                                            @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(replyService.getMemberReplyList(page, member));
     }
 
     @Operation(summary = "스크랩 스터디 리스트 조회")
