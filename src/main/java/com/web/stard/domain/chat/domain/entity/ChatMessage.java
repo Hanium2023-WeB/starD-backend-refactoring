@@ -34,4 +34,9 @@ public class ChatMessage extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
+
+
+    public void updateMemberToDeleted(StudyMember studyMember) {
+        this.studyMember = studyMember;
+    }
 }

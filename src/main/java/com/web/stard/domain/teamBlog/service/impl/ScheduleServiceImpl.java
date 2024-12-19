@@ -1,6 +1,8 @@
 package com.web.stard.domain.teamBlog.service.impl;
 
 import com.web.stard.domain.member.domain.entity.Member;
+import com.web.stard.domain.study.domain.entity.StudyMember;
+import com.web.stard.domain.study.repository.StudyMemberRepository;
 import com.web.stard.domain.teamBlog.domain.dto.request.ScheduleRequestDto;
 import com.web.stard.domain.teamBlog.domain.dto.response.ScheduleResponseDto;
 import com.web.stard.domain.teamBlog.domain.entity.Schedule;
@@ -25,6 +27,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final StudyService studyService;
+    private final StudyMemberRepository studyMemberRepository;
 
     // id로 일정 찾기
     private Schedule findSchedule(Long id) {
@@ -120,7 +123,7 @@ public class ScheduleServiceImpl implements ScheduleService {
      *
      * @return ScheduleDto 리스트 : scheduleId, title 일정명, color 달력 표시 색상, startDate 일정일, studyId
      */
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<ScheduleResponseDto.ScheduleDto> getAllScheduleListByStudy(Long studyId, Member member, int year, int month) {
         Study study = studyService.findById(studyId);
@@ -143,19 +146,18 @@ public class ScheduleServiceImpl implements ScheduleService {
      *
      * @return ScheduleDto 리스트 : scheduleId, title 일정명, color 달력 표시 색상, startDate 일정일, studyId
      */
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<ScheduleResponseDto.ScheduleDto> getMemberScheduleList(Member member, int year, int month) {
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = LocalDate.of(year, month, YearMonth.of(year, month).lengthOfMonth());
 
-        // TODO: StudyMember 구현 시 수정
-//        List<StudyMember> studies = studyMemberRepository.findByMember(member);
+        List<StudyMember> studies = studyMemberRepository.findByMember(member);
         List<Schedule> scheduleList = new ArrayList<>();
 
-//        for (StudyMember study : studies) {
-//            scheduleList.addAll(scheduleRepository.findAllByStudyAndStartDateBetween(study.getStudy(), start, end));
-//        }
+        for (StudyMember study : studies) {
+            scheduleList.addAll(scheduleRepository.findAllByStudyAndStartDateBetween(study.getStudy(), start, end));
+        }
 
         return scheduleList.stream().map(ScheduleResponseDto.ScheduleDto::from).toList();
     }
