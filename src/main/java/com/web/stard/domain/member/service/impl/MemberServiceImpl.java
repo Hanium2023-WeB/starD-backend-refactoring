@@ -1,5 +1,7 @@
 package com.web.stard.domain.member.service.impl;
 
+import com.web.stard.domain.chat.domain.entity.ChatMessage;
+import com.web.stard.domain.chat.repository.ChatMessageRepository;
 import com.web.stard.domain.member.repository.ProfileRepository;
 import com.web.stard.domain.member.service.MemberService;
 import com.web.stard.domain.member.domain.entity.Interest;
@@ -72,6 +74,7 @@ public class MemberServiceImpl implements MemberService {
     private final StarScrapRepository starScrapRepository;
     private final AssigneeRepository assigneeRepository;
     private final EvaluationRepository evaluationRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     /**
      * 현재 비밀번호 확인
@@ -315,8 +318,9 @@ public class MemberServiceImpl implements MemberService {
             evaluations = evaluationRepository.findByTarget(studyMember);
             evaluationRepository.deleteAll(evaluations);
 
-            // todo: 채팅
-
+            // 탈퇴할 회원이 작성한 채팅 - 알수없음 사용자로 변경
+            List<ChatMessage> chatMessages = chatMessageRepository.findAllByStudyMember(studyMember);
+            chatMessages.forEach(chatMessage -> chatMessage.updateMemberToDeleted(unknownStudyMember));
 
             studyMember.updateMemberToDeleted(unknownMember);
         }

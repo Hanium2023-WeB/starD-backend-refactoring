@@ -103,6 +103,15 @@ public class StudyResponseDto {
                     .isLast(studyPosts.isLast())
                     .build();
         }
+
+        public static StudyRecruitListDto fromApplicantPage(Page<StudyApplicant> applicants, List<StudyResponseDto.DetailInfo> detailInfos) {
+            return StudyRecruitListDto.builder()
+                    .studyRecruitPosts(detailInfos)
+                    .currentPage(applicants.getNumber() + 1)
+                    .totalPages(applicants.getTotalPages())
+                    .isLast(applicants.isLast())
+                    .build();
+        }
     }
 
     @Builder
@@ -181,7 +190,7 @@ public class StudyResponseDto {
                     .scrapCount(scrapCount)
                     .studyId(study.getId())
                     .nickname(study.getMember().getNickname())
-                    .profileImg(member.getProfile().getImgUrl())
+                    .profileImg(study.getMember().getProfile().getImgUrl())
                     .title(study.getTitle())
                     .content(study.getContent())
                     .tags(study.getTagText())
@@ -197,7 +206,7 @@ public class StudyResponseDto {
                     .recruitmentDeadline(study.getRecruitmentDeadline())
                     .city(study.getCity())
                     .district(study.getDistrict())
-                    .isAuthor(study.getMember().equals(member))
+                    .isAuthor(study.getMember().getId().equals(member.getId()))
                     .field(study.getField().getDescription())
                     .isScrapped(isScrapped)
                     .build();

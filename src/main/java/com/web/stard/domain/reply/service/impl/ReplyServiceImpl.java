@@ -141,4 +141,24 @@ public class ReplyServiceImpl implements ReplyService {
 
         return ReplyResponseDto.ReplyListDto.of(replies, replyDtos);
     }
+
+
+    /**
+     * 사용자가 작성한 댓글 전체 조회
+     * @param page 조회할 페이지 번호
+     * @return ReplyListDto replies 댓글 리스트, currentPage 현재 페이지, totalPages 전체 페이지, isLast 마지막 페이지 여부
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public ReplyResponseDto.MyPageReplyListDto getMemberReplyList(int page, Member member) {
+        Member user = memberRepository.findById(member.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC, "createdAt"));   // 최신 순
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<Reply> replies = replyRepository.findAllByMember(member, pageable);
+
+        return ReplyResponseDto.MyPageReplyListDto.of(replies, user);
+    }
 }

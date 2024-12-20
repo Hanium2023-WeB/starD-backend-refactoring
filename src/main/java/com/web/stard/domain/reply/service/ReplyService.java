@@ -12,4 +12,6 @@ public interface ReplyService {
     Long deleteReply(Long replyId, Member member);
 
     ReplyResponseDto.ReplyListDto getReplyList(Long targetId, String type, int page, Member member);
+
+    ReplyResponseDto.MyPageReplyListDto getMemberReplyList(int page, Member member);
 }

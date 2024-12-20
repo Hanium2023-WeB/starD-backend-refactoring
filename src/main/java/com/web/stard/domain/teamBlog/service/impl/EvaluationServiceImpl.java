@@ -122,7 +122,7 @@ public class EvaluationServiceImpl implements EvaluationService {
      * @return EvaluationDto 리스트 :
      *      studyId, nickname 상대방 회원 닉네임, evaluationStatus 평가 부여 여부, starRating 별점, starReason 별점 사유
      */
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<EvaluationResponseDto.EvaluationDto> getStudyMembersWithEvaluations(Long studyId, Member member, String status) {
         Study study = studyService.findById(studyId);

@@ -257,9 +257,8 @@ public class StudyPostServiceImpl implements StudyPostService {
         // 스크랩 삭제
         starScrapService.deletePostStarScraps(studyPostId, ActType.SCRAP, TableType.STUDYPOST);
 
-        // TODO 댓글 삭제
-
-
+        List<Reply> replies = replyRepository.findAllByTargetIdAndPostType(studyPost.getId(), PostType.STUDYPOST);
+        replyRepository.deleteAll(replies); // 댓글 삭제
 
         studyPostRepository.delete(studyPost);
 
