@@ -161,4 +161,14 @@ public class ReplyServiceImpl implements ReplyService {
 
         return ReplyResponseDto.MyPageReplyListDto.of(replies, user);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReplyResponseDto.ReplyParentDto getReplyParent(Long replyId, Member member) {
+        Reply reply = findReply(replyId);
+        return ReplyResponseDto.ReplyParentDto.builder()
+                .parentId(reply.getTargetId())
+                .parentPostType(reply.getPostType())
+                .build();
+    }
 }

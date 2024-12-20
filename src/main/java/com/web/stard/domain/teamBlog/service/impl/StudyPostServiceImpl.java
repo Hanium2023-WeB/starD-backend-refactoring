@@ -420,4 +420,14 @@ public class StudyPostServiceImpl implements StudyPostService {
             throw new CustomException(ErrorCode.DOWNLOAD_FAILED);
         }
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public StudyPostResponseDto.StudyPostParentDto getStudyPostParent(Long studyPostId, Member member) {
+        StudyPost studyPost = findStudyPost(studyPostId);
+        return StudyPostResponseDto.StudyPostParentDto.builder()
+                .parentId(studyPost.getStudy().getId())
+                .parentPostType(studyPost.getStudy().getPostType())
+                .build();
+    }
 }

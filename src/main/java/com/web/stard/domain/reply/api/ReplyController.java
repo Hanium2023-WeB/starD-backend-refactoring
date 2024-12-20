@@ -52,4 +52,10 @@ public class ReplyController {
 
     }
 
+    @Operation(summary = "댓글 id로 부모 게시글 id 조회", description = "신고 내역에서 대상 글을 조회할 때 사용합니다.")
+    @GetMapping("/{replyId}/parent")
+    public ResponseEntity<ReplyResponseDto.ReplyParentDto> getReplyParent(@PathVariable(name = "replyId") Long replyId,
+                                                                          @CurrentMember Member member) {
+        return ResponseEntity.ok(replyService.getReplyParent(replyId, member));
+    }
 }

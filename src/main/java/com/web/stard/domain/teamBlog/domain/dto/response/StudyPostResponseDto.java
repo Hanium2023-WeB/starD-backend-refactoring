@@ -1,5 +1,6 @@
 package com.web.stard.domain.teamBlog.domain.dto.response;
 
+import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.teamBlog.domain.entity.StudyPost;
 import com.web.stard.domain.teamBlog.domain.entity.StudyPostFile;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -174,5 +175,15 @@ public class StudyPostResponseDto {
                     .isLast(studyPosts.isLast())
                     .build();
         }
+    }
+
+    @Getter
+    @Builder
+    public static class StudyPostParentDto {
+        @Schema(description = "댓글의 부모 게시글 아이디")
+        private Long parentId;
+
+        @Schema(description = "댓글의 부모 게시글 타입")
+        private PostType parentPostType;
     }
 }

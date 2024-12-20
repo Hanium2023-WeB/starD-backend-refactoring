@@ -28,7 +28,7 @@ public class ReportResponseDto {
     @Getter
     @Builder
     public static class ReportDetailDto {
-        private Long reportId;
+        private Long targetId;
         private String content;
         private int reportCount;
         private PostType postType;

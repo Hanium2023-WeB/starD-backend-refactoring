@@ -135,4 +135,14 @@ public class ReplyResponseDto {
                     .build();
         }
     }
+    
+    @Getter
+    @Builder
+    public static class ReplyParentDto {
+        @Schema(description = "댓글의 부모 게시글 아이디")
+        private Long parentId;
+        
+        @Schema(description = "댓글의 부모 게시글 타입")
+        private PostType parentPostType;
+    }
 }

@@ -24,4 +24,6 @@ public interface StudyPostService {
     StudyPostResponseDto.StudyPostListDto getMemberStudyPostListByStudy(Long studyId, Member member, int page);
 
     ResponseEntity<byte[]> downloadFile(Long studyId, Long studyPostFileId, Member member);
+
+    StudyPostResponseDto.StudyPostParentDto getStudyPostParent(Long studyPostId, Member member);
 }

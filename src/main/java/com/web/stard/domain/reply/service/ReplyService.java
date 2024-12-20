@@ -14,4 +14,6 @@ public interface ReplyService {
     ReplyResponseDto.ReplyListDto getReplyList(Long targetId, String type, int page, Member member);
 
     ReplyResponseDto.MyPageReplyListDto getMemberReplyList(int page, Member member);
+
+    ReplyResponseDto.ReplyParentDto getReplyParent(Long replyId, Member member);
 }

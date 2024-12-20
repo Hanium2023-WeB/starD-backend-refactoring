@@ -171,7 +171,7 @@ public class ReportServiceImpl implements ReportService {
                     String content = getContentFromTargetId(targetId, postType);
 
                     return ReportResponseDto.ReportDetailDto.builder()
-                            .reportId(targetId)
+                            .targetId(targetId)
                             .reportCount(Integer.parseInt(row[1].toString()))
                             .content(content)
                             .postType(postType)
