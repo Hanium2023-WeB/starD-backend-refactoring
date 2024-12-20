@@ -3,7 +3,12 @@ package com.web.stard.domain.study.repository;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.domain.entity.StudyMember;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,4 +29,13 @@ public interface StudyMemberRepository extends JpaRepository<StudyMember, Long> 
     Optional<StudyMember> findStudyMemberByMember(Member member);
 
     Optional<StudyMember> findByMember_NicknameAndStudyIsNull(String nickname); // 회원 탈퇴 용
+
+    @EntityGraph(attributePaths = {"study.member", "study.member.profile"})
+    @Query("SELECT s FROM Study s JOIN StudyMember sm ON s = sm.study WHERE sm.member = :member ORDER BY " +
+            "CASE s.progressType " +
+            "WHEN 'IN_PROGRESS' THEN 1 " +
+            "WHEN 'CANCELED' THEN 2 " +
+            "WHEN 'COMPLETED' THEN 3 " +
+            "END, s.createdAt DESC")
+    Page<Study> findStudiesByMemberParticipate(@Param("member") Member member, Pageable pageable);
 }

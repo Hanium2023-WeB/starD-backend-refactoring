@@ -42,4 +42,6 @@ public interface StudyService {
     StudyResponseDto.StudyRecruitListDto getMemberOpenStudy(Member member, int page);
 
     StudyResponseDto.StudyRecruitListDto getMemberApplyStudy(Member member, int page);
+
+    StudyResponseDto.StudyRecruitListDto getMemberParticipateStudy(Member member, int page);
 }

@@ -438,4 +438,25 @@ public class StudyServiceImpl implements StudyService {
 
         return StudyResponseDto.StudyRecruitListDto.fromApplicantPage(applicants, studiesDtos);
     }
+
+    /**
+     * 사용자 - 스터디 참여 리스트 조회
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StudyResponseDto.StudyRecruitListDto getMemberParticipateStudy(Member member, int page) {
+        Pageable pageable = PageRequest.of(page-1, 10);
+
+        Page<Study> studies = studyMemberRepository.findStudiesByMemberParticipate(member, pageable);
+
+        List<StudyResponseDto.DetailInfo> studiesDtos = studies.getContent().stream()
+                .map(study -> {
+                    int scrapCount = starScrapService.findStarScrapCount(study.getId(), ActType.SCRAP, TableType.STUDY);
+                    boolean isScrapped = (starScrapService.existsStarScrap(member, study.getId(), ActType.SCRAP, TableType.STUDY) != null);
+                    return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount, isScrapped);
+                })
+                .toList();
+
+        return StudyResponseDto.StudyRecruitListDto.of(studies, studiesDtos);
+    }
 }

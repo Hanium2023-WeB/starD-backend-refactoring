@@ -206,7 +206,7 @@ public class StudyResponseDto {
                     .recruitmentDeadline(study.getRecruitmentDeadline())
                     .city(study.getCity())
                     .district(study.getDistrict())
-                    .isAuthor(study.getMember().equals(member))
+                    .isAuthor(study.getMember().getId().equals(member.getId()))
                     .field(study.getField().getDescription())
                     .isScrapped(isScrapped)
                     .build();

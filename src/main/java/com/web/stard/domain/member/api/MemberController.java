@@ -117,7 +117,7 @@ public class MemberController {
         return ResponseEntity.ok(starScrapService.getMemberScrapStudyList(member, page));
     }
 
-    @Operation(summary = "사용자가 개설한 스터디 모집 글 리스트 조회")
+    @Operation(summary = "사용자가 개설한 스터디 모집 글 리스트 조회", description = "모집 중 -> 모집 완료 -> 알 수 없음 순으로 조회됩니다.")
     @GetMapping("/studies/open")
     public ResponseEntity<StudyResponseDto.StudyRecruitListDto> getMemberOpenStudyList(@CurrentMember Member member,
                                                                                        @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
@@ -129,6 +129,13 @@ public class MemberController {
     public ResponseEntity<StudyResponseDto.StudyRecruitListDto> getMemberApplyStudyList(@CurrentMember Member member,
                                                                                         @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
         return ResponseEntity.ok(studyService.getMemberApplyStudy(member, page));
+    }
+
+    @Operation(summary = "사용자가 참여한(참여 중인) 스터디 모집 글 리스트 조회", description = "진행 중 -> 진행 중단 -> 진행 완료 순으로 조회됩니다.")
+    @GetMapping("/studies/participate")
+    public ResponseEntity<StudyResponseDto.StudyRecruitListDto> getMemberParticipateStudyList(@CurrentMember Member member,
+                                                                                              @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(studyService.getMemberParticipateStudy(member, page));
     }
 
     @Operation(summary = "사용자 전체 ToDo 조회 - 월 단위")
