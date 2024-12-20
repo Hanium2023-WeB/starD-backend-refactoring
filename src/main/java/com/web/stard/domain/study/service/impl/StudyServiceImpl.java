@@ -21,7 +21,9 @@ import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -392,5 +394,26 @@ public class StudyServiceImpl implements StudyService {
         });
         List<StudyTag> savedStudyTags = studyTagRepository.saveAll(studyTags);
         study.addTags(savedStudyTags);
+    }
+
+    /**
+     * 사용자 - 스터디 개설 리스트 조회
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StudyResponseDto.StudyRecruitListDto getMemberOpenStudy(Member member, int page) {
+        Pageable pageable = PageRequest.of(page-1, 10);
+
+        Page<Study> studies = studyRepository.findOpenStudiesByMember(member, pageable);
+
+        List<StudyResponseDto.DetailInfo> studiesDtos = studies.getContent().stream()
+                .map(study -> {
+                    int scrapCount = starScrapService.findStarScrapCount(study.getId(), ActType.SCRAP, TableType.STUDY);
+                    boolean isScrapped = (starScrapService.existsStarScrap(member, study.getId(), ActType.SCRAP, TableType.STUDY) != null);
+                    return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount, isScrapped);
+                })
+                .toList();
+
+        return StudyResponseDto.StudyRecruitListDto.of(studies, studiesDtos);
     }
 }

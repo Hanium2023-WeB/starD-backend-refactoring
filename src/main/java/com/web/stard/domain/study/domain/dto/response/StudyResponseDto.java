@@ -181,7 +181,7 @@ public class StudyResponseDto {
                     .scrapCount(scrapCount)
                     .studyId(study.getId())
                     .nickname(study.getMember().getNickname())
-                    .profileImg(member.getProfile().getImgUrl())
+                    .profileImg(study.getMember().getProfile().getImgUrl())
                     .title(study.getTitle())
                     .content(study.getContent())
                     .tags(study.getTagText())

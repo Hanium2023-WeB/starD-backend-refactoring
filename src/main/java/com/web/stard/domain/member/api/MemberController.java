@@ -9,6 +9,7 @@ import com.web.stard.domain.member.service.MemberService;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.domain.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.domain.dto.response.MemberResponseDto;
+import com.web.stard.domain.study.service.StudyService;
 import com.web.stard.domain.teamBlog.domain.dto.response.ScheduleResponseDto;
 import com.web.stard.domain.study.domain.dto.response.StudyResponseDto;
 import com.web.stard.domain.teamBlog.domain.dto.response.StudyPostResponseDto;
@@ -39,6 +40,7 @@ public class MemberController {
     private final ScheduleService scheduleService;
     private final StudyPostService studyPostService;
     private final ReplyService replyService;
+    private final StudyService studyService;
 
     @Operation(summary = "개인정보 반환")
     @GetMapping("/edit")
@@ -87,13 +89,6 @@ public class MemberController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "공감한 게시글 리스트 조회")
-    @GetMapping("/stars")
-    public ResponseEntity<PostResponseDto.PostListDto> getStarPostList(@CurrentMember Member member,
-                                                                       @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
-        return ResponseEntity.ok(starScrapService.getMemberStarPostList(member, page));
-    }
-
     @Operation(summary = "사용자가 작성한 커뮤니티 게시글 조회")
     @GetMapping("/communities")
     public ResponseEntity<PostResponseDto.PostListDto> getCommPostList(@CurrentMember Member member,
@@ -108,11 +103,25 @@ public class MemberController {
         return ResponseEntity.ok(replyService.getMemberReplyList(page, member));
     }
 
+    @Operation(summary = "공감한 게시글 리스트 조회")
+    @GetMapping("/stars")
+    public ResponseEntity<PostResponseDto.PostListDto> getStarPostList(@CurrentMember Member member,
+                                                                       @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(starScrapService.getMemberStarPostList(member, page));
+    }
+
     @Operation(summary = "스크랩 스터디 리스트 조회")
     @GetMapping("/scraps")
     public ResponseEntity<StudyResponseDto.StudyRecruitListDto> getScrapStudyList(@CurrentMember Member member,
                                                                                   @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
         return ResponseEntity.ok(starScrapService.getMemberScrapStudyList(member, page));
+    }
+
+    @Operation(summary = "사용자가 개설한 스터디 모집 글 리스트 조회")
+    @GetMapping("/studies/open")
+    public ResponseEntity<StudyResponseDto.StudyRecruitListDto> getMemberOpenStudyList(@CurrentMember Member member,
+                                                                                       @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(studyService.getMemberOpenStudy(member, page));
     }
 
     @Operation(summary = "사용자 전체 ToDo 조회 - 월 단위")

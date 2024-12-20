@@ -38,4 +38,6 @@ public interface StudyService {
     Long openStudy(Member member, Long studyId);
 
     List<Tag> getHotTagTop5();
+
+    StudyResponseDto.StudyRecruitListDto getMemberOpenStudy(Member member, int page);
 }
