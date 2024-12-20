@@ -124,6 +124,13 @@ public class MemberController {
         return ResponseEntity.ok(studyService.getMemberOpenStudy(member, page));
     }
 
+    @Operation(summary = "사용자가 신청한 스터디 모집 글 리스트 조회")
+    @GetMapping("/studies/apply")
+    public ResponseEntity<StudyResponseDto.StudyRecruitListDto> getMemberApplyStudyList(@CurrentMember Member member,
+                                                                                        @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
+        return ResponseEntity.ok(studyService.getMemberApplyStudy(member, page));
+    }
+
     @Operation(summary = "사용자 전체 ToDo 조회 - 월 단위")
     @GetMapping("/to-dos")
     public ResponseEntity<List<ToDoResponseDto.MemberToDoDto>> getToDoList(@CurrentMember Member member,

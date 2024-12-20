@@ -103,6 +103,15 @@ public class StudyResponseDto {
                     .isLast(studyPosts.isLast())
                     .build();
         }
+
+        public static StudyRecruitListDto fromApplicantPage(Page<StudyApplicant> applicants, List<StudyResponseDto.DetailInfo> detailInfos) {
+            return StudyRecruitListDto.builder()
+                    .studyRecruitPosts(detailInfos)
+                    .currentPage(applicants.getNumber() + 1)
+                    .totalPages(applicants.getTotalPages())
+                    .isLast(applicants.isLast())
+                    .build();
+        }
     }
 
     @Builder

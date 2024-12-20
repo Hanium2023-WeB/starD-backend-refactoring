@@ -40,4 +40,6 @@ public interface StudyService {
     List<Tag> getHotTagTop5();
 
     StudyResponseDto.StudyRecruitListDto getMemberOpenStudy(Member member, int page);
+
+    StudyResponseDto.StudyRecruitListDto getMemberApplyStudy(Member member, int page);
 }

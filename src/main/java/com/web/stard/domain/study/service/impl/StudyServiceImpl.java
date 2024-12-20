@@ -416,4 +416,26 @@ public class StudyServiceImpl implements StudyService {
 
         return StudyResponseDto.StudyRecruitListDto.of(studies, studiesDtos);
     }
+
+    /**
+     * 사용자 - 스터디 신청 리스트 조회
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StudyResponseDto.StudyRecruitListDto getMemberApplyStudy(Member member, int page) {
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<StudyApplicant> applicants = studyApplicantRepository.findByMember(member, pageable);
+
+        List<StudyResponseDto.DetailInfo> studiesDtos = applicants.getContent().stream()
+                .map(applicant -> {
+                    int scrapCount = starScrapService.findStarScrapCount(applicant.getStudy().getId(), ActType.SCRAP, TableType.STUDY);
+                    boolean isScrapped = (starScrapService.existsStarScrap(member, applicant.getStudy().getId(), ActType.SCRAP, TableType.STUDY) != null);
+                    return StudyResponseDto.DetailInfo.toDto(applicant.getStudy(), member, scrapCount, isScrapped);
+                })
+                .toList();
+
+        return StudyResponseDto.StudyRecruitListDto.fromApplicantPage(applicants, studiesDtos);
+    }
 }
