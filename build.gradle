@@ -70,8 +70,6 @@ dependencies {
     implementation 'org.webjars:sockjs-client:1.0.2'
     implementation 'org.webjars:stomp-websocket:2.3.3'
 
-    // Firebase
-    implementation 'com.google.firebase:firebase-admin:9.2.0'
 }
 
 tasks.named('test') {
