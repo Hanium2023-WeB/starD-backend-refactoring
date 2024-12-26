@@ -6,6 +6,7 @@ import com.web.stard.domain.chat.domain.entity.ChatRoom;
 import com.web.stard.domain.chat.repository.ChatMessageRepository;
 import com.web.stard.domain.chat.repository.ChatRoomRepository;
 import com.web.stard.domain.chat.service.ChatRoomService;
+import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.repository.StudyRepository;
 import com.web.stard.global.exception.CustomException;
@@ -58,7 +59,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
      */
     @Override
     @Transactional(readOnly = true)
-    public ChatResponseDto.ChatMessageListDto getChatHistory(Long studyId) {
+    public ChatResponseDto.ChatMessageListDto getChatHistory(Long studyId, Member member) {
         Study study = studyRepository.findById(studyId)
                 .orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
 
@@ -67,7 +68,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
         List<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoomId(chatRoom.getId());
 
-        return ChatResponseDto.ChatMessageListDto.of(chatRoom, chatMessages);
+        return ChatResponseDto.ChatMessageListDto.of(chatRoom, chatMessages, member);
     }
 
 }

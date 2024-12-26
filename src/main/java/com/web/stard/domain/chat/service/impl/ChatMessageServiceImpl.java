@@ -54,7 +54,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .build();
 
         ChatMessage savedChatMessage =  chatMessageRepository.save(chatMessage);
-        return ChatResponseDto.ChatMessageDto.of(savedChatMessage);
+        return ChatResponseDto.ChatMessageDto.of(savedChatMessage, member);
     }
 
 }
