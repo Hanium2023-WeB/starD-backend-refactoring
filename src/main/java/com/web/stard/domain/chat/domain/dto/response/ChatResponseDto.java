@@ -49,9 +49,6 @@ public class ChatResponseDto {
         @Schema(description = "작성자 닉네임")
         private String nickname;
 
-        @Schema(description = "작성자 프로필 url")
-        private String profileImg;
-
         @Schema(description = "작성자 여부")
         private boolean isAuthor;
         
@@ -65,7 +62,6 @@ public class ChatResponseDto {
                     .imgUrl(chatMessage.getImgUrl())
                     .messageType(chatMessage.getMessageType())
                     .nickname(chatMessage.getStudyMember().getMember().getNickname())
-                    .profileImg(chatMessage.getStudyMember().getMember().getProfile().getImgUrl())
                     .isAuthor(chatMessage.getStudyMember().getMember().getNickname().equals(member.getNickname()))
                     .createdAt(chatMessage.getCreatedAt())
                     .build();
