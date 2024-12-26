@@ -59,7 +59,6 @@ public class NotificationServiceImpl implements NotificationService {
      * @param request
      */
     public void sendNotis(List<Member> targets, NotificationRequest.SendRequestDto request) {
-        targets = memberRepository.findAll();
         targets.forEach(target -> {
             sendNoti(target, request);
         });
@@ -76,13 +75,14 @@ public class NotificationServiceImpl implements NotificationService {
                 .title(request.title())
                 .body(request.body())
                 .receiver(target)
+                .type(request.type())
                 .targetId(request.targetId()).build();
         notification = save(notification);
 
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllEmitterStartWithByMemberId(target.getId());
 
         NotificationResponse.SendResponseDto response = new NotificationResponse.SendResponseDto(notification.getId(),
-                notification.getTitle(), notification.getBody(), notification.getRead(), notification.getType(), notification.getTargetId());
+                notification.getTitle(), notification.getBody(), notification.getIsRead(), notification.getType(), notification.getTargetId());
 
         sseEmitters.forEach((key, emitter) -> {
             emitterRepository.saveEventCache(key, emitter);

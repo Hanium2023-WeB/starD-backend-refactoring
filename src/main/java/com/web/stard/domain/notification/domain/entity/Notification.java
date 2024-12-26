@@ -20,7 +20,7 @@ public class Notification extends BaseEntity {
         this.title = title;
         this.body = body;
         this.type = type;
-        this.read = false;
+        this.isRead = false;
         this.receiver = receiver;
         this.targetId = targetId;
     }
@@ -33,7 +33,7 @@ public class Notification extends BaseEntity {
 
     private String body;
 
-    private boolean read;
+    private boolean isRead;
 
     @Enumerated(EnumType.STRING)
     private NotificationType type;
@@ -46,7 +46,7 @@ public class Notification extends BaseEntity {
     private Long targetId;
 
     public void updateReadStatus() {
-        this.read = true;
+        this.isRead = true;
     }
 
 }
