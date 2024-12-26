@@ -29,7 +29,6 @@ public class GreetingController {
                 .messageId(null)
                 .message(message)
                 .nickname(member.getNickname())
-                .profileImg(member.getProfile().getImgUrl())
                 .createdAt(LocalDateTime.now())
                 .build();
     }
@@ -44,7 +43,6 @@ public class GreetingController {
                 .messageId(null)
                 .message(message)
                 .nickname(member.getNickname())
-                .profileImg(member.getProfile().getImgUrl())
                 .createdAt(LocalDateTime.now())
                 .build();
     }

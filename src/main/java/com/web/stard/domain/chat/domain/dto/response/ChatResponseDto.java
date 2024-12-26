@@ -2,6 +2,8 @@ package com.web.stard.domain.chat.domain.dto.response;
 
 import com.web.stard.domain.chat.domain.entity.ChatMessage;
 import com.web.stard.domain.chat.domain.entity.ChatRoom;
+import com.web.stard.domain.chat.domain.enums.MessageType;
+import com.web.stard.domain.member.domain.entity.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,23 +42,27 @@ public class ChatResponseDto {
 
         @Schema(description = "메시지 이미지 url")
         private String imgUrl;
+        
+        @Schema(description = "메시지 타입")
+        private MessageType messageType;
 
         @Schema(description = "작성자 닉네임")
         private String nickname;
 
-        @Schema(description = "작성자 프로필 url")
-        private String profileImg;
-
+        @Schema(description = "작성자 여부")
+        private boolean isAuthor;
+        
         @Schema(description = "작성 일시")
         private LocalDateTime createdAt;
 
-        public static ChatMessageDto of(ChatMessage chatMessage) {
+        public static ChatMessageDto of(ChatMessage chatMessage, Member member) {
             return ChatMessageDto.builder()
                     .messageId(chatMessage.getId())
                     .message(chatMessage.getMessage())
                     .imgUrl(chatMessage.getImgUrl())
+                    .messageType(chatMessage.getMessageType())
                     .nickname(chatMessage.getStudyMember().getMember().getNickname())
-                    .profileImg(chatMessage.getStudyMember().getMember().getProfile().getImgUrl())
+                    .isAuthor(chatMessage.getStudyMember().getMember().getNickname().equals(member.getNickname()))
                     .createdAt(chatMessage.getCreatedAt())
                     .build();
         }
@@ -71,12 +77,12 @@ public class ChatResponseDto {
         @Schema(description = "채팅 내역 리스트")
         private List<ChatMessageDto> chatMessages;
 
-        public static ChatMessageListDto of(ChatRoom chatRoom, List<ChatMessage> chatMessages) {
+        public static ChatMessageListDto of(ChatRoom chatRoom, List<ChatMessage> chatMessages, Member member) {
             return ChatMessageListDto.builder()
                     .chatRoomId(chatRoom.getId())
                     .chatMessages(
                             chatMessages.stream()
-                                    .map(ChatMessageDto::of)
+                                    .map(chatMessage -> ChatMessageDto.of(chatMessage, member))
                                     .collect(Collectors.toList())
                     )
                     .build();
