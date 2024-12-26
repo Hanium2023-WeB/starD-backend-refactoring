@@ -38,7 +38,7 @@ public class SecurityConfig {
             "/members/auth/join/additional-info", "/members/auth/sign-in", "/members/auth/reissue",
             "/members/auth/auth-codes", "/members/auth/auth-codes/verify",
             "/studies/search", "/members/auth/find-password", "/members/reset-password",
-            "/members/auth/valid-password-reset-token"
+            "/members/auth/valid-password-reset-token", "/gs-guide-websocket"
     };
 
     @Bean
