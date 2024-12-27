@@ -73,10 +73,10 @@ public class StudyResponseDto {
         private InterestField field;
 
         @Schema(description = "스크랩 여부")
-        private boolean isScrapped;
+        private boolean existsScrap;
 
-        public void updateScarpStatus(boolean isScrapped) {
-            this.isScrapped = isScrapped;
+        public void updateScarpStatus(boolean existsScrap) {
+            this.existsScrap = existsScrap;
         }
 
         public void updateScarpCount(int scrapCount) {
@@ -183,9 +183,9 @@ public class StudyResponseDto {
         private String field;
 
         @Schema(description = "스터디 게시글 스크랩 여부")
-        private boolean isScrapped;
+        private boolean existsScrap;
 
-        public static DetailInfo toDto(Study study, Member member, int scrapCount, boolean isScrapped) {
+        public static DetailInfo toDto(Study study, Member member, int scrapCount, boolean existsScrap) {
             return DetailInfo.builder()
                     .scrapCount(scrapCount)
                     .studyId(study.getId())
@@ -208,7 +208,7 @@ public class StudyResponseDto {
                     .district(study.getDistrict())
                     .isAuthor(study.getMember().getId().equals(member.getId()))
                     .field(study.getField().getDescription())
-                    .isScrapped(isScrapped)
+                    .existsScrap(existsScrap)
                     .build();
         }
 
