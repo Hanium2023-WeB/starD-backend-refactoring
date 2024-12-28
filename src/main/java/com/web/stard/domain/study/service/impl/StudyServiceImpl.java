@@ -471,7 +471,7 @@ public class StudyServiceImpl implements StudyService {
     public List<StudyResponseDto.StudyMemberInfo> getStudyMembers(Member member, Long studyId) {
         Study study = findById(studyId);
         List<Member> studyMembers = studyMemberRepository.findMembersByStudy(study);
-        return studyMembers.stream().map(studyMember -> new StudyResponseDto.StudyMemberInfo(studyMember.getId(), studyMember.getEmail(),
+        return studyMembers.stream().map(studyMember -> new StudyResponseDto.StudyMemberInfo(studyMember.getId(), studyMember.getNickname(),
                 studyMember.getProfile().getImgUrl())).toList();
     }
 }
