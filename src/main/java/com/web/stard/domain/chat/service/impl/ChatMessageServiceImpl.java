@@ -2,8 +2,10 @@ package com.web.stard.domain.chat.service.impl;
 
 import com.web.stard.domain.chat.domain.dto.response.ChatResponseDto;
 import com.web.stard.domain.chat.domain.entity.ChatMessage;
+import com.web.stard.domain.chat.domain.entity.ChatRoom;
 import com.web.stard.domain.chat.domain.enums.MessageType;
 import com.web.stard.domain.chat.repository.ChatMessageRepository;
+import com.web.stard.domain.chat.repository.ChatRoomRepository;
 import com.web.stard.domain.chat.service.ChatMessageService;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.study.domain.entity.StudyMember;
@@ -24,6 +26,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final StudyMemberRepository studyMemberRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     /**
      * 채팅 전송
@@ -32,14 +35,17 @@ public class ChatMessageServiceImpl implements ChatMessageService {
      */
     @Override
     @Transactional
-    public ChatResponseDto.ChatMessageDto saveChatMessage(String message, Member member) {
+    public ChatResponseDto.ChatMessageDto saveChatMessage(Long chatRoomId, String message, Member member) {
         StudyMember studyMember = studyMemberRepository.findStudyMemberByMember(member)
                 .orElseThrow(() -> new CustomException(ErrorCode.STUDY_MEMBER_NOT_FOUND));
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
         ChatMessage chatMessage = ChatMessage.builder()
                 .message(message)
                 .messageType(MessageType.TALK)
                 .studyMember(studyMember)
+                .chatRoom(chatRoom)
                 .build();
 
         ChatMessage savedChatMessage =  chatMessageRepository.save(chatMessage);

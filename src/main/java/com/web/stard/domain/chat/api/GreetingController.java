@@ -6,16 +6,15 @@ import com.web.stard.domain.chat.service.ChatMessageService;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.global.config.security.JwtTokenProvider;
-import com.web.stard.global.domain.CurrentMember;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.HtmlUtils;
 
 import java.time.LocalDateTime;
@@ -72,14 +71,15 @@ public class GreetingController {
     }
 
     // 채팅 전송
-    @MessageMapping("/chat/{studyId}")
-    @SendTo("/topic/greetings/{studyId}")
-    public ChatResponseDto.ChatMessageDto chat(String message, SimpMessageHeaderAccessor session) {
+    @MessageMapping("/chat/{chatRoomId}")
+    @SendTo("/topic/greetings/{chatRoomId}")
+    public ChatResponseDto.ChatMessageDto chat(@DestinationVariable Long chatRoomId,
+                                               String message, SimpMessageHeaderAccessor session) {
         Authentication authentication = getUserAuthenticationFromToken(session.getFirstNativeHeader("Authorization"));
         Member member = memberRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return chatMessageService.saveChatMessage(message, member);
+        return chatMessageService.saveChatMessage(chatRoomId, message, member);
     }
 
 }
