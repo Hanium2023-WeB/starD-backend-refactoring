@@ -71,9 +71,9 @@ public class GreetingController {
     }
 
     // 채팅 전송
-    @MessageMapping("/chat/{chatRoomId}")
+    @MessageMapping("/chat/{studyId}/{chatRoomId}")
     @SendTo("/topic/greetings/{studyId}")
-    public ChatResponseDto.ChatMessageDto chat(@DestinationVariable Long chatRoomId,
+    public ChatResponseDto.ChatMessageDto chat(@DestinationVariable Long studyId, @DestinationVariable Long chatRoomId,
                                                String message, SimpMessageHeaderAccessor session) {
         Authentication authentication = getUserAuthenticationFromToken(session.getFirstNativeHeader("Authorization"));
         Member member = memberRepository.findByEmail(authentication.getName())
