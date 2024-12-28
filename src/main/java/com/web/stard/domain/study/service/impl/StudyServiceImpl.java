@@ -402,7 +402,7 @@ public class StudyServiceImpl implements StudyService {
     @Override
     @Transactional(readOnly = true)
     public StudyResponseDto.StudyRecruitListDto getMemberOpenStudy(Member member, int page) {
-        Pageable pageable = PageRequest.of(page-1, 10);
+        Pageable pageable = PageRequest.of(page - 1, 10);
 
         Page<Study> studies = studyRepository.findOpenStudiesByMember(member, pageable);
 
@@ -424,7 +424,7 @@ public class StudyServiceImpl implements StudyService {
     @Transactional(readOnly = true)
     public StudyResponseDto.StudyRecruitListDto getMemberApplyStudy(Member member, int page) {
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
+        Pageable pageable = PageRequest.of(page - 1, 10, sort);
 
         Page<StudyApplicant> applicants = studyApplicantRepository.findByMember(member, pageable);
 
@@ -445,7 +445,7 @@ public class StudyServiceImpl implements StudyService {
     @Override
     @Transactional(readOnly = true)
     public StudyResponseDto.StudyRecruitListDto getMemberParticipateStudy(Member member, int page) {
-        Pageable pageable = PageRequest.of(page-1, 10);
+        Pageable pageable = PageRequest.of(page - 1, 10);
 
         Page<Study> studies = studyMemberRepository.findStudiesByMemberParticipate(member, pageable);
 
@@ -458,5 +458,20 @@ public class StudyServiceImpl implements StudyService {
                 .toList();
 
         return StudyResponseDto.StudyRecruitListDto.of(studies, studiesDtos);
+    }
+
+    /**
+     * 팀 블로그 스터디 멤버 목록 조회
+     *
+     * @param member  회원 정보
+     * @param studyId 스터디 id
+     * @return List - StudyMemberInfo
+     */
+    @Override
+    public List<StudyResponseDto.StudyMemberInfo> getStudyMembers(Member member, Long studyId) {
+        Study study = findById(studyId);
+        List<Member> studyMembers = studyMemberRepository.findMembersByStudy(study);
+        return studyMembers.stream().map(studyMember -> new StudyResponseDto.StudyMemberInfo(studyMember.getId(), studyMember.getEmail(),
+                studyMember.getProfile().getImgUrl())).toList();
     }
 }

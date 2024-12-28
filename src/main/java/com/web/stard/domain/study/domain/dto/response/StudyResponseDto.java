@@ -287,4 +287,12 @@ public class StudyResponseDto {
                     .build();
         }
     }
+
+    public record StudyMemberInfo(
+            long memberId,
+            String nickname,
+            String profileUrl
+    ) {
+
+    }
 }

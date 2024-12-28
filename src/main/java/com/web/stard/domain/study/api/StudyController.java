@@ -108,7 +108,7 @@ public class StudyController {
             @RequestParam(required = false, name = "keyword") String keyword, @RequestParam(required = false, name = "tags") String tags,
             @RequestParam(required = false, name = "recruitmentType") RecruitmentType recruitmentType,
             @RequestParam(required = false, name = "activityType") ActivityType activityType,
-            @RequestParam(required = false, name = "city") String city, @RequestParam(required = false, name ="district" ) String district,
+            @RequestParam(required = false, name = "city") String city, @RequestParam(required = false, name = "district") String district,
             @RequestParam(required = false, name = "field") InterestField field,
             @CurrentMember Member member) {
         Pageable pageable = PageRequest.of(page - 1, size);
@@ -150,6 +150,12 @@ public class StudyController {
     @PostMapping("/{studyId}/open")
     public ResponseEntity<Long> openStudy(@CurrentMember Member member, @PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok().body(studyService.openStudy(member, studyId));
+    }
+
+    @Operation(summary = "팀블로그 스터디원 목록 조회")
+    @GetMapping("/{studyId}/members")
+    public ResponseEntity<List<StudyResponseDto.StudyMemberInfo>> getStudyMembers(@CurrentMember Member member, @PathVariable("studyId") Long studyId) {
+        return ResponseEntity.ok().body(studyService.getStudyMembers(member, studyId));
     }
 
     @Operation(summary = "팀블로그 id로 스터디 게시글 id 조회", description = "신고 내역에서 대상 글을 조회할 때 사용합니다.")

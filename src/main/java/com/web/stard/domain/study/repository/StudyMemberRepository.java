@@ -22,7 +22,11 @@ public interface StudyMemberRepository extends JpaRepository<StudyMember, Long> 
 
     boolean existsByStudyAndMember(Study study, Member member);
 
+
     List<StudyMember> findByStudy(Study study);
+
+    @Query("SELECT sm.member FROM StudyMember sm WHERE sm.study = :study")
+    List<Member> findMembersByStudy(@Param("study") Study study);
 
     void deleteByMember(Member member);
 
