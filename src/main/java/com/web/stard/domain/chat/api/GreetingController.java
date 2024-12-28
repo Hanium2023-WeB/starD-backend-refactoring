@@ -72,7 +72,7 @@ public class GreetingController {
 
     // 채팅 전송
     @MessageMapping("/chat/{chatRoomId}")
-    @SendTo("/topic/greetings/{chatRoomId}")
+    @SendTo("/topic/greetings/{studyId}")
     public ChatResponseDto.ChatMessageDto chat(@DestinationVariable Long chatRoomId,
                                                String message, SimpMessageHeaderAccessor session) {
         Authentication authentication = getUserAuthenticationFromToken(session.getFirstNativeHeader("Authorization"));
