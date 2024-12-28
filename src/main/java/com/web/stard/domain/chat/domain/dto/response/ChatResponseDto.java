@@ -56,6 +56,9 @@ public class ChatResponseDto {
         @Schema(description = "작성 일시")
         private LocalDateTime createdAt;
 
+        @Schema(description = "스터디 id")
+        private Long studyId;
+
         public static ChatMessageDto of(ChatMessage chatMessage, Member member) {
             return ChatMessageDto.builder()
                     .messageId(chatMessage.getId())
@@ -64,6 +67,7 @@ public class ChatResponseDto {
                     .nickname(chatMessage.getStudyMember().getMember().getNickname())
                     .isAuthor(chatMessage.getStudyMember().getMember().getNickname().equals(member.getNickname()))
                     .createdAt(chatMessage.getCreatedAt())
+                    .studyId(chatMessage.getChatRoom().getStudy().getId())
                     .build();
         }
     }
