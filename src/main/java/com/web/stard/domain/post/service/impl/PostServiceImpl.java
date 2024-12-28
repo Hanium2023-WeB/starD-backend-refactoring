@@ -146,12 +146,13 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public Long deletePost(Long postId, Member member, PostType postType) {
         Post post = findPost(postId, postType);
-        isPostAuthor(member, post);
 
         if (post.getPostType() == PostType.NOTICE || postType == PostType.FAQ) {
             isAdmin(member);
-        }
+        } else {
+            isPostAuthor(member, post);
 
+        }
         // 공감 삭제
         starScrapService.deletePostStarScraps(postId, ActType.STAR, TableType.POST);
 

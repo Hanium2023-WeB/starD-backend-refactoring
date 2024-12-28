@@ -1,6 +1,7 @@
 package com.web.stard.domain.chat.api;
 
 import com.web.stard.domain.chat.domain.dto.response.ChatResponseDto;
+import com.web.stard.domain.chat.domain.enums.MessageType;
 import com.web.stard.domain.chat.service.ChatMessageService;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
@@ -45,6 +46,7 @@ public class GreetingController {
         return ChatResponseDto.ChatMessageDto.builder()
                 .messageId(null)
                 .message(message)
+                .messageType(MessageType.GREETING)
                 .nickname(member.getNickname())
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -63,6 +65,7 @@ public class GreetingController {
         return ChatResponseDto.ChatMessageDto.builder()
                 .messageId(null)
                 .message(message)
+                .messageType(MessageType.GREETING)
                 .nickname(member.getNickname())
                 .createdAt(LocalDateTime.now())
                 .build();
