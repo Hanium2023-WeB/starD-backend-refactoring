@@ -24,31 +24,20 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final StudyMemberRepository studyMemberRepository;
-    private final S3Manager s3Manager;
 
     /**
      * 채팅 전송
      * @param message 전송할 메시지
-     * @param file  전송할 이미지 url
-     * @return ChatMessageDto messageId 메시지 id, message 메시지 내용, imgUrl 메시지 이미지 url, nickname 작성자 닉네임, profileImg 작성자 프로필 url, createdAt 작성 일시
+     * @return ChatMessageDto messageId 메시지 id, message 메시지 내용, nickname 작성자 닉네임, createdAt 작성 일시
      */
     @Override
     @Transactional
-    public ChatResponseDto.ChatMessageDto saveChatMessage(String message, MultipartFile file, Member member) {
-        String fileUrl = null;
-
-        if (file != null && !file.isEmpty()) {
-            UUID uuid = UUID.randomUUID();
-            String keyName = s3Manager.generateProfileKeyName(uuid);
-            fileUrl = s3Manager.uploadFile(keyName, file);
-        }
-
+    public ChatResponseDto.ChatMessageDto saveChatMessage(String message, Member member) {
         StudyMember studyMember = studyMemberRepository.findStudyMemberByMember(member)
                 .orElseThrow(() -> new CustomException(ErrorCode.STUDY_MEMBER_NOT_FOUND));
 
         ChatMessage chatMessage = ChatMessage.builder()
                 .message(message)
-                .imgUrl(fileUrl)
                 .messageType(MessageType.TALK)
                 .studyMember(studyMember)
                 .build();

@@ -74,12 +74,12 @@ public class GreetingController {
     // 채팅 전송
     @MessageMapping("/chat/{studyId}")
     @SendTo("/topic/greetings/{studyId}")
-    public ChatResponseDto.ChatMessageDto chat(String message, MultipartFile file, SimpMessageHeaderAccessor session) {
+    public ChatResponseDto.ChatMessageDto chat(String message, SimpMessageHeaderAccessor session) {
         Authentication authentication = getUserAuthenticationFromToken(session.getFirstNativeHeader("Authorization"));
         Member member = memberRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return chatMessageService.saveChatMessage(message, file, member);
+        return chatMessageService.saveChatMessage(message, member);
     }
 
 }

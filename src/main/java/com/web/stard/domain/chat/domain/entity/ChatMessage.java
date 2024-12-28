@@ -20,9 +20,6 @@ public class ChatMessage extends BaseEntity {
 
     private String message;
 
-    @Column(name = "img_url")
-    private String imgUrl;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "message_type", nullable = false)
     private MessageType messageType;

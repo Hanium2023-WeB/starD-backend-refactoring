@@ -5,8 +5,10 @@ import com.web.stard.domain.chat.domain.entity.ChatRoom;
 import com.web.stard.domain.chat.domain.enums.MessageType;
 import com.web.stard.domain.member.domain.entity.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,6 +35,8 @@ public class ChatResponseDto {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ChatMessageDto {
         @Schema(description = "메시지 id")
         private Long messageId;
@@ -40,9 +44,6 @@ public class ChatResponseDto {
         @Schema(description = "메시지 내용")
         private String message;
 
-        @Schema(description = "메시지 이미지 url")
-        private String imgUrl;
-        
         @Schema(description = "메시지 타입")
         private MessageType messageType;
 
@@ -59,7 +60,6 @@ public class ChatResponseDto {
             return ChatMessageDto.builder()
                     .messageId(chatMessage.getId())
                     .message(chatMessage.getMessage())
-                    .imgUrl(chatMessage.getImgUrl())
                     .messageType(chatMessage.getMessageType())
                     .nickname(chatMessage.getStudyMember().getMember().getNickname())
                     .isAuthor(chatMessage.getStudyMember().getMember().getNickname().equals(member.getNickname()))
