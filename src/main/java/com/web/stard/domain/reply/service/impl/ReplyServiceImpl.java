@@ -1,5 +1,8 @@
 package com.web.stard.domain.reply.service.impl;
 
+import com.web.stard.domain.notification.domain.dto.request.NotificationRequest;
+import com.web.stard.domain.notification.domain.enums.NotificationType;
+import com.web.stard.domain.notification.service.NotificationService;
 import com.web.stard.domain.reply.service.ReplyService;
 import com.web.stard.domain.reply.domain.entity.Reply;
 import com.web.stard.domain.post.domain.enums.PostType;
@@ -9,6 +12,7 @@ import com.web.stard.domain.post.repository.PostRepository;
 import com.web.stard.domain.reply.repository.ReplyRepository;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
+import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.repository.StudyRepository;
 import com.web.stard.domain.teamBlog.repository.StudyPostRepository;
 import com.web.stard.global.exception.CustomException;
@@ -32,6 +36,7 @@ public class ReplyServiceImpl implements ReplyService {
     private final PostRepository postRepository;
     private final StudyRepository studyRepository;
     private final StudyPostRepository studyPostRepository;
+    private final NotificationService notificationService;
 
     // 게시글 존재 여부 확인
     private void validatePostExists(Long targetId, PostType postType) {
@@ -64,7 +69,7 @@ public class ReplyServiceImpl implements ReplyService {
     /**
      * 댓글 생성
      *
-     * @param targetId 댓글 작성할 게시글 id
+     * @param targetId   댓글 작성할 게시글 id
      * @param requestDto content 내용, type 게시글 타입
      * @return ReplyDto replyId 댓글 id, content 내용, writer 작성자, profileImg 프로필 이미지, updatedAt 수정일시
      */
@@ -78,13 +83,24 @@ public class ReplyServiceImpl implements ReplyService {
         Member writer = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
+        if (postType.equals(PostType.STUDY)) {
+            Study study = studyRepository.findById(targetId).orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
+
+            if (!writer.equals(study.getMember())) {
+                List<Member> members = List.of(writer);
+                notificationService.sendNotis(members,
+                        new NotificationRequest.SendRequestDto("댓글이 달렸습니다.", reply.getContent(), NotificationType.REPLY
+                                , study.getId()));
+            }
+
+        }
         return ReplyResponseDto.ReplyDto.from(reply, writer, true);
     }
 
     /**
      * 댓글 수정
      *
-     * @param replyId 댓글 작성할 게시글 id
+     * @param replyId    댓글 작성할 게시글 id
      * @param requestDto content 내용
      * @return ReplyDto replyId 댓글 id, content 내용, writer 작성자, profileImg 프로필 이미지, updatedAt 수정일시
      */
@@ -101,6 +117,7 @@ public class ReplyServiceImpl implements ReplyService {
 
     /**
      * 댓글 삭제
+     *
      * @param replyId 댓글 삭제할 게시글 id
      * @return Long 삭제한 댓글 id
      */
@@ -117,9 +134,10 @@ public class ReplyServiceImpl implements ReplyService {
 
     /**
      * 댓글 전체 조회
+     *
      * @param targetId 댓글 조회할 게시글 id
-     * @param type  게시글 타입
-     * @param page 조회할 페이지 번호
+     * @param type     게시글 타입
+     * @param page     조회할 페이지 번호
      * @return ReplyListDto replies 댓글 리스트, currentPage 현재 페이지, totalPages 전체 페이지, isLast 마지막 페이지 여부
      */
     @Override
@@ -128,7 +146,7 @@ public class ReplyServiceImpl implements ReplyService {
         validatePostExists(targetId, PostType.fromString(type));
 
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC, "createdAt"));   // 최신 순
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
+        Pageable pageable = PageRequest.of(page - 1, 10, sort);
 
         Page<Reply> replies = replyRepository.findByTargetIdAndPostType(targetId, PostType.fromString(type), pageable);
 
@@ -145,6 +163,7 @@ public class ReplyServiceImpl implements ReplyService {
 
     /**
      * 사용자가 작성한 댓글 전체 조회
+     *
      * @param page 조회할 페이지 번호
      * @return ReplyListDto replies 댓글 리스트, currentPage 현재 페이지, totalPages 전체 페이지, isLast 마지막 페이지 여부
      */
@@ -155,7 +174,7 @@ public class ReplyServiceImpl implements ReplyService {
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC, "createdAt"));   // 최신 순
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
+        Pageable pageable = PageRequest.of(page - 1, 10, sort);
 
         Page<Reply> replies = replyRepository.findAllByMember(member, pageable);
 
