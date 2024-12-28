@@ -1,6 +1,10 @@
 package com.web.stard.domain.notification.service.impl;
 
 import com.web.stard.domain.member.domain.entity.Member;
+import com.web.stard.domain.member.repository.MemberRepository;
+import com.web.stard.domain.notification.domain.dto.request.NotificationRequest;
+import com.web.stard.domain.notification.domain.dto.response.NotificationResponse;
+import com.web.stard.domain.notification.domain.entity.Notification;
 import com.web.stard.domain.notification.repository.EmitterRepository;
 import com.web.stard.domain.notification.repository.NotificationRepository;
 import com.web.stard.domain.notification.service.NotificationService;
@@ -9,13 +13,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.*;
+
 
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
     private final EmitterRepository emitterRepository;
+    private final NotificationRepository notificationRepository;
+    private final MemberRepository memberRepository;
     private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;    // 1 hour
 
     /**
@@ -46,6 +53,54 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     /**
+     * 단체 알림 전송
+     *
+     * @param targets
+     * @param request
+     */
+    public void sendNotis(List<Member> targets, NotificationRequest.SendRequestDto request) {
+        targets.forEach(target -> {
+            sendNoti(target, request);
+        });
+    }
+
+    /**
+     * 단 건 알림 전송
+     *
+     * @param target
+     * @param request
+     */
+    private void sendNoti(Member target, NotificationRequest.SendRequestDto request) {
+        Notification notification = Notification.builder()
+                .title(request.title())
+                .body(request.body())
+                .receiver(target)
+                .type(request.type())
+                .targetId(request.targetId()).build();
+        notification = save(notification);
+
+        Map<String, SseEmitter> sseEmitters = emitterRepository.findAllEmitterStartWithByMemberId(target.getId());
+
+        NotificationResponse.SendResponseDto response = new NotificationResponse.SendResponseDto(notification.getId(),
+                notification.getTitle(), notification.getBody(), notification.getIsRead(), notification.getType(), notification.getTargetId());
+
+        sseEmitters.forEach((key, emitter) -> {
+            emitterRepository.saveEventCache(key, emitter);
+            sendToClient(emitter, key, response);
+        });
+    }
+
+    /**
+     * 알림 저장
+     *
+     * @param notification
+     * @return Notification
+     */
+    private Notification save(Notification notification) {
+        return notificationRepository.save(notification);
+    }
+
+    /**
      * 이벤트 전달
      *
      * @param emitter
@@ -63,4 +118,5 @@ public class NotificationServiceImpl implements NotificationService {
             throw new RuntimeException(e);
         }
     }
+
 }

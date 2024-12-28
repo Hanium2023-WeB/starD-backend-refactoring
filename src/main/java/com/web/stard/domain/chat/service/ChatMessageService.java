@@ -5,5 +5,5 @@ import com.web.stard.domain.member.domain.entity.Member;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ChatMessageService {
-    ChatResponseDto.ChatMessageDto saveChatMessage(String message, MultipartFile imgUrl, Member member);
+    ChatResponseDto.ChatMessageDto saveChatMessage(Long chatRoomId, String message, Member member);
 }
