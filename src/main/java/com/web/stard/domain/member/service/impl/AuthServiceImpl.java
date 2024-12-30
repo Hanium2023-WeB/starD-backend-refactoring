@@ -18,6 +18,7 @@ import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import com.web.stard.global.utils.CookieUtils;
 import com.web.stard.global.utils.EmailUtils;
+import com.web.stard.global.utils.HeaderUtils;
 import com.web.stard.global.utils.RedisUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -50,6 +51,7 @@ public class AuthServiceImpl implements AuthService {
     private final MemberService memberService;
 
     private static final String RESET_PW_PREFIX = "ResetPwToken ";
+    private final HeaderUtils headerUtils;
 
     /**
      * 회원가입
@@ -314,6 +316,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Role getMemberRole(Member member) {
         return member.getRole();
+    }
+
+    @Override
+    public Long getExpiration(Member member, HttpServletRequest request) {
+        String accessToken = headerUtils.resolveToken(request);
+        jwtTokenProvider.validateToken(accessToken);
+
+        return jwtTokenProvider.getExpiration(accessToken);
     }
 
 }

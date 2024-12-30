@@ -37,8 +37,10 @@ public class SecurityConfig {
             "/members/auth/join", "/members/auth/check-email", "/members/auth/check-nickname",
             "/members/auth/join/additional-info", "/members/auth/sign-in", "/members/auth/reissue",
             "/members/auth/auth-codes", "/members/auth/auth-codes/verify",
-            "/studies/search", "/members/auth/find-password", "/members/reset-password",
-            "/members/auth/valid-password-reset-token", "/gs-guide-websocket"
+            "/members/auth/find-password", "/members/reset-password",
+            "/members/auth/valid-password-reset-token", "/gs-guide-websocket",
+
+            "/studies/hot-tag", "/studies/search", "/studies/hot-field"
     };
 
     @Bean
@@ -66,7 +68,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/faqs-and-qnas/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/qnas/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/replies/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/studies/{studyId}").permitAll()
                         .anyRequest().authenticated() // 다른 모든 요청은 인증 필요
                 )
                 .sessionManagement(session -> {
