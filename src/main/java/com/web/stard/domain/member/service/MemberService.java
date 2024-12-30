@@ -26,4 +26,6 @@ public interface MemberService {
     void deleteAllRelatedEntities(Member member, boolean isForced);
 
     void resetPassword(String email, String password);
+
+    MemberResponseDto.EditIntroduceResponseDto editIntroduce(Member member, MemberRequestDto.EditIntroduceDto requestDto);
 }

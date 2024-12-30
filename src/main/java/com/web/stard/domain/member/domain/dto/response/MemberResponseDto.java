@@ -98,6 +98,22 @@ public class MemberResponseDto {
 
     @Getter
     @Builder
+    public static class EditIntroduceResponseDto {
+        @Schema(description = "자기소개")
+        private String introduce;
+
+        private String message;
+
+        public static EditIntroduceResponseDto of(String introduce) {
+            return EditIntroduceResponseDto.builder()
+                    .introduce(introduce)
+                    .message("자기소개가 성공적으로 변경되었습니다.")
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
     public static class ProfileImageResponseDto {
         @Schema(description = "프로필 이미지 url")
         private String imageUrl;

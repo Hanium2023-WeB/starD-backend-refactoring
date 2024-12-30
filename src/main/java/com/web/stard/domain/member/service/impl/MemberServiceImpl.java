@@ -90,9 +90,9 @@ public class MemberServiceImpl implements MemberService {
     /**
      * 마이페이지 - 개인정보 수정 기존 데이터 상세 조회
      *
-     * @param member    로그인 사용자
+     * @param member 로그인 사용자
      * @return InfoDto  nickname, interests
-     *                   닉네임     관심분야
+     * 닉네임     관심분야
      */
     @Transactional(readOnly = true)
     @Override
@@ -129,7 +129,7 @@ public class MemberServiceImpl implements MemberService {
     /**
      * 마이페이지 - 개인정보 수정 : 닉네임
      *
-     * @param requestDto                nickname 닉네임
+     * @param requestDto nickname 닉네임
      * @return EditNicknameResponseDto  nickname 닉네임, message 성공 메시지
      */
     @Transactional
@@ -139,7 +139,7 @@ public class MemberServiceImpl implements MemberService {
         if (memberRepository.existsByNickname(requestDto.getNickname())) {
             throw new CustomException(ErrorCode.NICKNAME_CONFLICT);
         }
-        
+
         // 닉네임 변경
         member.updateNickname(requestDto.getNickname());
 
@@ -154,7 +154,6 @@ public class MemberServiceImpl implements MemberService {
      *
      * @param requestDto : EditInterestDto  interestField 관심분야
      * @return EditInterestResponseDto      interests 관심분야, message 성공 메시지
-     *
      */
     @Transactional
     @Override
@@ -393,6 +392,20 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(ErrorCode.DUPLICATE_PASSWORD);
         }
         member.updatePassword(passwordEncoder.encode(password));
+    }
+
+    /**
+     * 자기소개 수정
+     *
+     * @param member     회원 정보
+     * @param requestDto 수정된 자기소개
+     * @return EditIntroduceResponseDto
+     */
+    @Override
+    @Transactional
+    public MemberResponseDto.EditIntroduceResponseDto editIntroduce(Member member, MemberRequestDto.EditIntroduceDto requestDto) {
+        member.updateIntroduce(requestDto.introduce());
+        return MemberResponseDto.EditIntroduceResponseDto.of(requestDto.introduce());
     }
 
 

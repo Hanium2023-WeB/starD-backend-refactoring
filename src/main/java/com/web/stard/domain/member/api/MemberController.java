@@ -69,6 +69,13 @@ public class MemberController {
         return ResponseEntity.ok(memberService.editInterest(member, requestDto));
     }
 
+    @Operation(summary = "자기 소개 변경")
+    @PostMapping("/edit/interests")
+    public ResponseEntity<MemberResponseDto.EditIntroduceResponseDto> editInterests(@CurrentMember Member member,
+                                                                                   @Valid @RequestBody MemberRequestDto.EditIntroduceDto requestDto) {
+        return ResponseEntity.ok(memberService.editIntroduce(member, requestDto));
+    }
+
     @Operation(summary = "프로필 이미지 조회")
     @GetMapping("/profile/image")
     public ResponseEntity<MemberResponseDto.ProfileImageResponseDto> getProfileImage(@CurrentMember Member member) {

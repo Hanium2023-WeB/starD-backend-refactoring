@@ -36,6 +36,8 @@ public class Member extends BaseEntity implements UserDetails {
 
     private String nickname;    // 닉네임
 
+    private String introduce;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role; // 권한
@@ -94,6 +96,12 @@ public class Member extends BaseEntity implements UserDetails {
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void updateIntroduce(String introduce) {
+        if (!this.introduce.equals(introduce)) {
+            this.introduce = introduce;
+        }
     }
 
     public void increaseReportCount() {
