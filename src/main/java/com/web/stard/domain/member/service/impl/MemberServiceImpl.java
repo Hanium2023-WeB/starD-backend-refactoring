@@ -47,6 +47,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -408,6 +410,20 @@ public class MemberServiceImpl implements MemberService {
         Profile profile = member.getProfile();
         profile.updateIntroduce(requestDto.introduce());
         return MemberResponseDto.EditIntroduceResponseDto.of(requestDto.introduce());
+    }
+
+    /**
+     * 개인 신뢰도 조회
+     *
+     * @param member 회원 정보
+     * @return CredibilityResponseDto
+     */
+    @Override
+    @Transactional
+    public MemberResponseDto.CredibilityResponseDto getCredibility(Member member) {
+        member = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        double credibility = new BigDecimal(member.getProfile().getCredibility()).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        return new MemberResponseDto.CredibilityResponseDto(credibility);
     }
 
 

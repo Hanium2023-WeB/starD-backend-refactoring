@@ -62,6 +62,12 @@ public class MemberController {
         return ResponseEntity.ok(memberService.editNickname(member, requestDto));
     }
 
+    @Operation(summary = "개인 신뢰도 조회")
+    @PostMapping("/credibility")
+    public ResponseEntity<MemberResponseDto.CredibilityResponseDto> getCredibility(@CurrentMember Member member) {
+        return ResponseEntity.ok(memberService.getCredibility(member));
+    }
+
     @Operation(summary = "관심분야 변경")
     @PostMapping("/edit/interests")
     public ResponseEntity<MemberResponseDto.EditInterestResponseDto> editInterests(@CurrentMember Member member,

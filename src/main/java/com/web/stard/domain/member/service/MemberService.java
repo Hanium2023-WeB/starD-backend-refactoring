@@ -28,4 +28,6 @@ public interface MemberService {
     void resetPassword(String email, String password);
 
     MemberResponseDto.EditIntroduceResponseDto editIntroduce(Member member, MemberRequestDto.EditIntroduceDto requestDto);
+
+    MemberResponseDto.CredibilityResponseDto getCredibility(Member member);
 }

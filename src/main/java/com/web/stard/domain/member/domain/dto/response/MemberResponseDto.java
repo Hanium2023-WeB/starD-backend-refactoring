@@ -141,4 +141,12 @@ public class MemberResponseDto {
     ) {
 
     }
+
+    @Schema(description = "개인 신뢰도 DTO")
+    public record CredibilityResponseDto(
+            @Schema(description = "개인 신뢰도")
+            double credibility
+    ) {
+
+    }
 }
