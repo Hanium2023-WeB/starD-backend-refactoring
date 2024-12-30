@@ -404,7 +404,9 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public MemberResponseDto.EditIntroduceResponseDto editIntroduce(Member member, MemberRequestDto.EditIntroduceDto requestDto) {
-        member.updateIntroduce(requestDto.introduce());
+        member = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Profile profile = member.getProfile();
+        profile.updateIntroduce(requestDto.introduce());
         return MemberResponseDto.EditIntroduceResponseDto.of(requestDto.introduce());
     }
 

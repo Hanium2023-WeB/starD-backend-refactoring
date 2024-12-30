@@ -69,8 +69,8 @@ public class MemberController {
         return ResponseEntity.ok(memberService.editInterest(member, requestDto));
     }
 
-    @Operation(summary = "자기 소개 변경")
-    @PostMapping("/edit/interests")
+    @Operation(summary = "자기소개 변경")
+    @PostMapping("/edit/introduce")
     public ResponseEntity<MemberResponseDto.EditIntroduceResponseDto> editInterests(@CurrentMember Member member,
                                                                                    @Valid @RequestBody MemberRequestDto.EditIntroduceDto requestDto) {
         return ResponseEntity.ok(memberService.editIntroduce(member, requestDto));
