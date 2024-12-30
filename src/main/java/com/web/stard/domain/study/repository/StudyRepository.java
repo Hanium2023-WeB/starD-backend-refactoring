@@ -1,6 +1,7 @@
 package com.web.stard.domain.study.repository;
 
 import com.web.stard.domain.member.domain.entity.Member;
+import com.web.stard.domain.member.domain.enums.InterestField;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.domain.enums.RecruitmentType;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,10 @@ import java.util.List;
 public interface StudyRepository extends JpaRepository<Study, Long> {
 
     List<Study> findByRecruitmentDeadlineBeforeAndRecruitmentType(LocalDate deadLine, RecruitmentType type);
+
+    @Query("SELECT s.field FROM Study s " +
+            "group by s.field order by count(s.field) desc")
+    List<InterestField> getTop5HotStudyFields();
 
     List<Study> findByMember(Member member);
 

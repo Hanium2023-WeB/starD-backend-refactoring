@@ -295,4 +295,10 @@ public class StudyResponseDto {
     ) {
 
     }
+
+    public record StudyFieldInfoDto(
+            @Schema(description = "스터디 필드명")
+            String field
+    ) {
+    }
 }

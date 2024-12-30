@@ -45,7 +45,7 @@ public class StudyController {
     }
 
     @Operation(summary = "주간 인기 태그 Top 5 조회")
-    @GetMapping
+    @GetMapping("/hot-tag")
     public ResponseEntity<StudyResponseDto.TagInfosDto> getHotTagTop5() {
         List<Tag> tags = studyService.getHotTagTop5();
         StudyResponseDto.TagInfosDto response = StudyResponseDto.TagInfosDto.toDto(
@@ -164,4 +164,23 @@ public class StudyController {
                                                                                       @CurrentMember Member member) {
         return ResponseEntity.ok(studyPostService.getStudyPostParent(studyPostId, member));
     }
+
+    @Operation(summary = "인기 있는 스터디 분야 Top 5")
+    @GetMapping("/hot-field")
+    public ResponseEntity<List<StudyResponseDto.StudyFieldInfoDto>> getTop5HotStudyFields() {
+        return ResponseEntity.ok(studyService.getTop5HotStudyFields());
+    }
+
+//    @Operation(summary = "스터디 중단 동의 여부")
+//    @GetMapping("/{studyId}/disable")
+//    public Boolean findStudyDiscontinueAllow(@CurrentMember Member member,
+//                                             @PathVariable(name = "studyId") Long studyId) {
+//        return studyService.findStudyDiscontinueAllow(studyId, authentication);
+//    }
+//
+//    @Operation(summary = "스터디 중단 동의 여부")
+//    @PostMapping("/discontinue/{studyId}")  // 스터디 중단 동의
+//    public Boolean studyDiscontinueAllow(@CurrentMember Member member, @PathVariable(name = "studyId") Long studyId) {
+//        return studyService.studyDiscontinueAllow(studyId, authentication);
+//    }
 }

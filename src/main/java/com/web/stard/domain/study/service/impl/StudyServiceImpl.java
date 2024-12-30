@@ -1,5 +1,6 @@
 package com.web.stard.domain.study.service.impl;
 
+import com.web.stard.domain.member.domain.enums.InterestField;
 import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.reply.domain.entity.Reply;
 import com.web.stard.domain.reply.repository.ReplyRepository;
@@ -473,5 +474,11 @@ public class StudyServiceImpl implements StudyService {
         List<Member> studyMembers = studyMemberRepository.findMembersByStudy(study);
         return studyMembers.stream().map(studyMember -> new StudyResponseDto.StudyMemberInfo(studyMember.getId(), studyMember.getNickname(),
                 studyMember.getProfile().getImgUrl())).toList();
+    }
+
+    @Override
+    public List<StudyResponseDto.StudyFieldInfoDto> getTop5HotStudyFields() {
+        List<InterestField> fields = studyRepository.getTop5HotStudyFields();
+        return fields.stream().map(field -> new StudyResponseDto.StudyFieldInfoDto(field.getDescription())).toList();
     }
 }
