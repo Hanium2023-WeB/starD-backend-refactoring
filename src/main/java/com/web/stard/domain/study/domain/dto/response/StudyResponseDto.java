@@ -301,4 +301,14 @@ public class StudyResponseDto {
             String field
     ) {
     }
+
+    public record StudyMemberDeletionInfo(
+            long memberId,
+            String nickname,
+            String profileUrl,
+            boolean studyRemoved
+    ) {
+
+    }
+
 }

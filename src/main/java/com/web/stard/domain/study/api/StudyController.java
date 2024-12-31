@@ -171,16 +171,23 @@ public class StudyController {
         return ResponseEntity.ok(studyService.getTop5HotStudyFields());
     }
 
-//    @Operation(summary = "스터디 중단 동의 여부")
-//    @GetMapping("/{studyId}/disable")
-//    public Boolean findStudyDiscontinueAllow(@CurrentMember Member member,
-//                                             @PathVariable(name = "studyId") Long studyId) {
-//        return studyService.findStudyDiscontinueAllow(studyId, authentication);
-//    }
-//
-//    @Operation(summary = "스터디 중단 동의 여부")
-//    @PostMapping("/discontinue/{studyId}")  // 스터디 중단 동의
-//    public Boolean studyDiscontinueAllow(@CurrentMember Member member, @PathVariable(name = "studyId") Long studyId) {
-//        return studyService.studyDiscontinueAllow(studyId, authentication);
-//    }
+    @Operation(summary = "진행 중인 스터디 삭제 동의")
+    @PutMapping("/{studyId}/consent")
+    public ResponseEntity<Void> agreeToStudyDeletion(@CurrentMember Member member, @PathVariable(name = "studyId") Long studyId) {
+        studyService.agreeToStudyDeletion(member, studyId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "진행 중인 스터디 삭제 동의 상태 조회")
+    @GetMapping("/{studyId}/consents")
+    public ResponseEntity<List<StudyResponseDto.StudyMemberDeletionInfo>> getStudyDeletionConsentStatus(@CurrentMember Member member, @PathVariable(name = "studyId") Long studyId) {
+        return ResponseEntity.ok().body(studyService.getStudyDeletionConsentStatus(member, studyId));
+    }
+
+    @Operation(summary = "스터디 중단")
+    @DeleteMapping("/{studyId}/cancel")
+    public ResponseEntity<Void> canceledStudy(@CurrentMember Member member, @PathVariable(name = "studyId") Long studyId) {
+        studyService.canceledStudy(member, studyId);
+        return ResponseEntity.ok().build();
+    }
 }
