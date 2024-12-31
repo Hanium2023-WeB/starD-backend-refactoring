@@ -47,6 +47,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -90,9 +92,9 @@ public class MemberServiceImpl implements MemberService {
     /**
      * 마이페이지 - 개인정보 수정 기존 데이터 상세 조회
      *
-     * @param member    로그인 사용자
+     * @param member 로그인 사용자
      * @return InfoDto  nickname, interests
-     *                   닉네임     관심분야
+     * 닉네임     관심분야
      */
     @Transactional(readOnly = true)
     @Override
@@ -129,7 +131,7 @@ public class MemberServiceImpl implements MemberService {
     /**
      * 마이페이지 - 개인정보 수정 : 닉네임
      *
-     * @param requestDto                nickname 닉네임
+     * @param requestDto nickname 닉네임
      * @return EditNicknameResponseDto  nickname 닉네임, message 성공 메시지
      */
     @Transactional
@@ -139,7 +141,7 @@ public class MemberServiceImpl implements MemberService {
         if (memberRepository.existsByNickname(requestDto.getNickname())) {
             throw new CustomException(ErrorCode.NICKNAME_CONFLICT);
         }
-        
+
         // 닉네임 변경
         member.updateNickname(requestDto.getNickname());
 
@@ -154,7 +156,6 @@ public class MemberServiceImpl implements MemberService {
      *
      * @param requestDto : EditInterestDto  interestField 관심분야
      * @return EditInterestResponseDto      interests 관심분야, message 성공 메시지
-     *
      */
     @Transactional
     @Override
@@ -393,6 +394,36 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(ErrorCode.DUPLICATE_PASSWORD);
         }
         member.updatePassword(passwordEncoder.encode(password));
+    }
+
+    /**
+     * 자기소개 수정
+     *
+     * @param member     회원 정보
+     * @param requestDto 수정된 자기소개
+     * @return EditIntroduceResponseDto
+     */
+    @Override
+    @Transactional
+    public MemberResponseDto.EditIntroduceResponseDto editIntroduce(Member member, MemberRequestDto.EditIntroduceDto requestDto) {
+        member = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Profile profile = member.getProfile();
+        profile.updateIntroduce(requestDto.introduce());
+        return MemberResponseDto.EditIntroduceResponseDto.of(requestDto.introduce());
+    }
+
+    /**
+     * 개인 신뢰도 조회
+     *
+     * @param member 회원 정보
+     * @return CredibilityResponseDto
+     */
+    @Override
+    @Transactional
+    public MemberResponseDto.CredibilityResponseDto getCredibility(Member member) {
+        member = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        double credibility = new BigDecimal(member.getProfile().getCredibility()).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        return new MemberResponseDto.CredibilityResponseDto(credibility);
     }
 
 

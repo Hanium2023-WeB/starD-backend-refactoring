@@ -119,4 +119,11 @@ public class MemberRequestDto {
         private String nickname;
     }
 
+    public record EditIntroduceDto(
+            @Schema(example = "안녕하세요!", description = "자기소개")
+            String introduce
+    ) {
+
+    }
+
 }

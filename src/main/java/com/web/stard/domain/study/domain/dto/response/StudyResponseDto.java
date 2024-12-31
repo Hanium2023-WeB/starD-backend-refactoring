@@ -295,4 +295,20 @@ public class StudyResponseDto {
     ) {
 
     }
+
+    public record StudyFieldInfoDto(
+            @Schema(description = "스터디 필드명")
+            String field
+    ) {
+    }
+
+    public record StudyMemberDeletionInfo(
+            long memberId,
+            String nickname,
+            String profileUrl,
+            boolean studyRemoved
+    ) {
+
+    }
+
 }

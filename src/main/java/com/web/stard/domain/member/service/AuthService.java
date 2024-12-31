@@ -35,4 +35,6 @@ public interface AuthService {
     String validPasswordResetToken(String token);
 
     Role getMemberRole(Member member);
+
+    Long getExpiration(Member member, HttpServletRequest request);
 }

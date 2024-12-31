@@ -39,4 +39,8 @@ public class Profile {
         double total = this.credibility * evaluatorCount + starRating;
         this.credibility = total / (evaluatorCount + 1);
     }
+
+    public void updateIntroduce(String introduce) {
+        this.introduce = introduce;
+    }
 }

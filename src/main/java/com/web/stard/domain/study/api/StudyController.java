@@ -45,7 +45,7 @@ public class StudyController {
     }
 
     @Operation(summary = "주간 인기 태그 Top 5 조회")
-    @GetMapping
+    @GetMapping("/hot-tag")
     public ResponseEntity<StudyResponseDto.TagInfosDto> getHotTagTop5() {
         List<Tag> tags = studyService.getHotTagTop5();
         StudyResponseDto.TagInfosDto response = StudyResponseDto.TagInfosDto.toDto(
@@ -163,5 +163,31 @@ public class StudyController {
     public ResponseEntity<StudyPostResponseDto.StudyPostParentDto> getStudyPostParent(@PathVariable(name = "studyPostId") Long studyPostId,
                                                                                       @CurrentMember Member member) {
         return ResponseEntity.ok(studyPostService.getStudyPostParent(studyPostId, member));
+    }
+
+    @Operation(summary = "인기 있는 스터디 분야 Top 5")
+    @GetMapping("/hot-field")
+    public ResponseEntity<List<StudyResponseDto.StudyFieldInfoDto>> getTop5HotStudyFields() {
+        return ResponseEntity.ok(studyService.getTop5HotStudyFields());
+    }
+
+    @Operation(summary = "진행 중인 스터디 삭제 동의")
+    @PutMapping("/{studyId}/consent")
+    public ResponseEntity<Void> agreeToStudyDeletion(@CurrentMember Member member, @PathVariable(name = "studyId") Long studyId) {
+        studyService.agreeToStudyDeletion(member, studyId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "진행 중인 스터디 삭제 동의 상태 조회")
+    @GetMapping("/{studyId}/consents")
+    public ResponseEntity<List<StudyResponseDto.StudyMemberDeletionInfo>> getStudyDeletionConsentStatus(@CurrentMember Member member, @PathVariable(name = "studyId") Long studyId) {
+        return ResponseEntity.ok().body(studyService.getStudyDeletionConsentStatus(member, studyId));
+    }
+
+    @Operation(summary = "스터디 중단")
+    @DeleteMapping("/{studyId}/cancel")
+    public ResponseEntity<Void> canceledStudy(@CurrentMember Member member, @PathVariable(name = "studyId") Long studyId) {
+        studyService.canceledStudy(member, studyId);
+        return ResponseEntity.ok().build();
     }
 }

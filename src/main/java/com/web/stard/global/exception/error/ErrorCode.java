@@ -50,11 +50,14 @@ public enum ErrorCode {
     STUDY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스터디 게시글입니다."),
     STUDY_FORBIDDEN(HttpStatus.FORBIDDEN, "스터디 작성자가 아니므로 권한이 없습니다."),
     STUDY_NOT_EDITABLE(HttpStatus.BAD_REQUEST, "진행 전인 스터디만 수정 및 삭제가 가능합니다."),
-    STUDY_DUPLICATE_APPLICATION(HttpStatus.BAD_REQUEST,"중복 신청은 불가능합니다."),
+    STUDY_DUPLICATE_APPLICATION(HttpStatus.BAD_REQUEST, "중복 신청은 불가능합니다."),
     STUDY_APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스터디 신청자입니다."),
     STUDY_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스터디 참여자입니다."),
     STUDY_MINIMUM_MEMBERS_REQUIRED(HttpStatus.BAD_REQUEST, "스터디 참여자는 최소 3명 이상이어야 합니다."),
     STUDY_MEMBER_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "스터디 모집 인원을 초과했습니다."),
+    STUDY_DUPLICATE_OPEN(HttpStatus.BAD_REQUEST, "이미 스터디 진행 중, 완료 상태이므로 스터디 팀블로그를 개설할 수 없습니다."),
+    STUDY_NOT_MEMBER(HttpStatus.BAD_REQUEST, "스터디 팀원이 아닙니다"),
+    STUDY_NOT_CANCELED(HttpStatus.BAD_REQUEST, "동의하지 않는 팀원이 있어 스터디 중단할 수 없습니다."),
 
     // Study - TeamBlog
     STUDY_NOT_IN_PROGRESS(HttpStatus.BAD_REQUEST, "진행 중인 스터디가 아니므로 작업을 수행할 수 없습니다."),
@@ -83,8 +86,7 @@ public enum ErrorCode {
 
     // Chat
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 채팅방입니다."),
-    CHAT_ROOM_ALREADY_EXISTS(HttpStatus.CONFLICT, "채팅방이 이미 존재합니다.")
-    ;
+    CHAT_ROOM_ALREADY_EXISTS(HttpStatus.CONFLICT, "채팅방이 이미 존재합니다.");
 
     private final HttpStatus httpStatus;    // HttpStatus
     private final String message;       // 설명

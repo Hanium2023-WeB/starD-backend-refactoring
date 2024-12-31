@@ -1,5 +1,6 @@
 package com.web.stard.domain.study.service.impl;
 
+import com.web.stard.domain.member.domain.enums.InterestField;
 import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.reply.domain.entity.Reply;
 import com.web.stard.domain.reply.repository.ReplyRepository;
@@ -252,6 +253,11 @@ public class StudyServiceImpl implements StudyService {
     @Transactional
     public Long openStudy(Member member, Long studyId) {
         Study study = findById(studyId);
+
+        if (!study.getProgressType().equals(ProgressType.NOT_STARTED)) {
+            throw new CustomException(ErrorCode.STUDY_DUPLICATE_OPEN);
+        }
+
         validateAuthor(member, study.getMember());
 
         List<StudyApplicant> applicants =
@@ -473,5 +479,71 @@ public class StudyServiceImpl implements StudyService {
         List<Member> studyMembers = studyMemberRepository.findMembersByStudy(study);
         return studyMembers.stream().map(studyMember -> new StudyResponseDto.StudyMemberInfo(studyMember.getId(), studyMember.getNickname(),
                 studyMember.getProfile().getImgUrl())).toList();
+    }
+
+    /**
+     * 인기있는 스터디 분야 목록 조회
+     *
+     * @return List - StudyFieldInfoDto
+     */
+    @Override
+    public List<StudyResponseDto.StudyFieldInfoDto> getTop5HotStudyFields() {
+        List<InterestField> fields = studyRepository.getTop5HotStudyFields();
+        return fields.stream().map(field -> new StudyResponseDto.StudyFieldInfoDto(field.getDescription())).toList();
+    }
+
+    /**
+     * 스터디 중단 동의
+     *
+     * @param member  회원 정보
+     * @param studyId 스터디 id
+     */
+    @Override
+    @Transactional
+    public void agreeToStudyDeletion(Member member, Long studyId) {
+        Study study = findById(studyId);
+        StudyMember studyMember = studyMemberRepository.findByStudyAndMember(study, member).orElseThrow();
+        studyMember.updateStudyRemoved(true);
+    }
+
+    /**
+     * 스터디 팀원의 중단 상태 목록 조회
+     *
+     * @param member  회원 정보
+     * @param studyId 스터디 id
+     * @return List - StudyMemberDeletionInfo
+     */
+    @Override
+    @Transactional
+    public List<StudyResponseDto.StudyMemberDeletionInfo> getStudyDeletionConsentStatus(Member member, Long studyId) {
+        List<StudyMember> studyMembers = studyMemberRepository.findByStudyId(studyId);
+        return studyMembers.stream().map(studyMember -> new StudyResponseDto.StudyMemberDeletionInfo(studyMember.getId(), studyMember.getMember().getNickname(),
+                studyMember.getMember().getProfile().getImgUrl(), studyMember.getStudyRemoved())).toList();
+    }
+
+    /**
+     * 스터디 중단
+     *
+     * @param member  회원 정보
+     * @param studyId 스터디 id
+     */
+    @Override
+    @Transactional
+    public void canceledStudy(Member member, Long studyId) {
+        Study study = findById(studyId);
+        List<StudyMember> studyMembers = studyMemberRepository.findByStudy(study);
+
+        List<Long> memberIds = studyMembers.stream().map(studyMember -> studyMember.getMember().getId()).toList();
+        if (!memberIds.contains(member.getId())) {
+            throw new CustomException(ErrorCode.STUDY_NOT_MEMBER);
+        }
+
+        List<StudyMember> agree = studyMembers.stream().filter(studyMember -> studyMember.getStudyRemoved()).toList();
+
+        if (agree.size() != studyMembers.size()) {
+            throw new CustomException(ErrorCode.STUDY_NOT_CANCELED);
+        }
+
+        study.updateProcessType(ProgressType.CANCELED);
     }
 }

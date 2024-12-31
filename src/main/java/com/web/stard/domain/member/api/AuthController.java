@@ -117,4 +117,11 @@ public class AuthController {
     public ResponseEntity<Role> getMemberRole(@CurrentMember Member member) {
         return ResponseEntity.ok(authService.getMemberRole(member));
     }
+
+    @GetMapping("/token-expiration")
+    @Operation(summary = "access token 남은 만료 시간 조회")
+    public ResponseEntity<Long> getExpiration(@CurrentMember Member member,
+                                                  HttpServletRequest request) {
+        return ResponseEntity.ok(authService.getExpiration(member, request));
+    }
 }
