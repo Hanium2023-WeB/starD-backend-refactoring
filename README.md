@@ -10,6 +10,8 @@
 - StarD는 스터디 모집부터 관리까지 한 곳에서 할 수 있는 웹 플랫폼입니다.
 채팅부터 TODO, 일정 관리, 중간 장소 찾기 등의 기능이 담겨있습니다.
 
+<br/>
+
 ## 👩‍💻 팀원 소개
 
 <table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -51,21 +53,52 @@
   </tr>
 </table>
 
+<br/>
+
 ## 🖥️ **기술 스택**
 
 SpringBoot, JPA, MySQL, JWT, AWS, Nginx, Swagger, SpringSecurity, Querydsl
 
+<br/>
+
 ## 🛠️ 개발 환경
 
-| 통합 개발 환경 | IntelliJ |
-| --- | --- |
-| Spring 버전 | 3.3.4 |
-| 데이터베이스 | AWS RDS(MySQL), Redis |
-| 배포 | Docker, Github Actions, EC2 |
-| Project 빌드 관리 도구 | Gradle |
-| Java version | java 17 |
-| 패키지 구조 | 도메인 패키지 구조 |
-| API 테스트 | Swagger |
+<table style="width: 100%; text-align: left; border-collapse: collapse;">
+  <tr>
+    <th style="text-align: left;">통합 개발 환경</th>
+    <td>IntelliJ</td>
+  </tr>
+  <tr>
+    <th style="text-align: left;">Spring 버전</th>
+    <td>3.3.4</td>
+  </tr>
+  <tr>
+    <th style="text-align: left;">데이터베이스</th>
+    <td>AWS RDS(MySQL), Redis</td>
+  </tr>
+  <tr>
+    <th style="text-align: left;">배포</th>
+    <td>Docker, Github Actions, EC2</td>
+  </tr>
+  <tr>
+    <th style="text-align: left;">Project 빌드 관리 도구</th>
+    <td>Gradle</td>
+  </tr>
+  <tr>
+    <th style="text-align: left;">Java version</th>
+    <td>java 17</td>
+  </tr>
+  <tr>
+    <th style="text-align: left;">패키지 구조</th>
+    <td>도메인 패키지 구조</td>
+  </tr>
+  <tr>
+    <th style="text-align: left;">API 테스트</th>
+    <td>Swagger</td>
+  </tr>
+</table>
+
+<br/>
 
 ## 🔧 ERD 설계
 
