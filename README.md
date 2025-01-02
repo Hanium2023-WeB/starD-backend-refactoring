@@ -69,7 +69,22 @@
 
 ## 🖥️ **기술 스택**
 
-SpringBoot, JPA, MySQL, JWT, AWS, Nginx, Swagger, SpringSecurity, Querydsl
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="https://img.shields.io/badge/SpringBoot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" style="border-radius: 8px;">
+  <img src="https://img.shields.io/badge/jpa-D22128?style=for-the-badge&logo=jpa&logoColor=white">
+  <img src="https://img.shields.io/badge/Querydsl-3B85C7?style=for-the-badge&logo=Querydsl&logoColor=white">
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white">
+  <img src="https://img.shields.io/badge/Redis-FF4438?style=for-the-badge&logo=Redis&logoColor=white">
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonwebservices&logoColor=white">
+  <img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=Nginx&logoColor=white">
+  <img src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=Swagger&logoColor=white">
+</div>
 
 <br/>
 
