@@ -51,7 +51,7 @@
   </tr>
 </table>
 
-## **기술 스택**
+## 🖥️ **기술 스택**
 
 SpringBoot, JPA, MySQL, JWT, AWS, Nginx, Swagger, SpringSecurity, Querydsl
 
@@ -67,8 +67,8 @@ SpringBoot, JPA, MySQL, JWT, AWS, Nginx, Swagger, SpringSecurity, Querydsl
 | 패키지 구조 | 도메인 패키지 구조 |
 | API 테스트 | Swagger |
 
-## ERD 설계
+## 🔧 ERD 설계
 
-![image](https://github.com/user-attachments/assets/3fc2b3e2-1931-42dc-9e72-0cfdff6012ac)
-![image](https://github.com/user-attachments/assets/e2a09027-e20c-4fa5-a9d3-b1b911e2841b)
+<img src="https://github.com/user-attachments/assets/3fc2b3e2-1931-42dc-9e72-0cfdff6012ac" alt="image" width="150px">
+<img src="https://github.com/user-attachments/assets/e2a09027-e20c-4fa5-a9d3-b1b911e2841b" alt="image" width="150px">
 
