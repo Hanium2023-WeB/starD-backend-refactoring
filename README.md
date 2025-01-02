@@ -69,6 +69,6 @@ SpringBoot, JPA, MySQL, JWT, AWS, Nginx, Swagger, SpringSecurity, Querydsl
 
 ## 🔧 ERD 설계
 
-<img src="https://github.com/user-attachments/assets/3fc2b3e2-1931-42dc-9e72-0cfdff6012ac" alt="image" width="150px">
-<img src="https://github.com/user-attachments/assets/e2a09027-e20c-4fa5-a9d3-b1b911e2841b" alt="image" width="150px">
+<img src="https://github.com/user-attachments/assets/3fc2b3e2-1931-42dc-9e72-0cfdff6012ac" alt="image" width="800px">
+<img src="https://github.com/user-attachments/assets/e2a09027-e20c-4fa5-a9d3-b1b911e2841b" alt="image" width="800px">
 
