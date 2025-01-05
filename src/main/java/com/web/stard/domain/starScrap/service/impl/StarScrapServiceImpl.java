@@ -38,11 +38,14 @@ public class StarScrapServiceImpl implements StarScrapService {
     // 해당 게시글의 공감 혹은 스크랩 여부 확인
     @Override
     public StarScrap existsStarScrap(Member member, Long targetId, ActType actType, TableType tableType) {
-        Optional<StarScrap> starScrap = starScrapRepository.findByMemberAndActTypeAndTableTypeAndTargetId(member, actType, tableType, targetId);
+        if (member != null) {
+            Optional<StarScrap> starScrap = starScrapRepository.findByMemberAndActTypeAndTableTypeAndTargetId(member, actType, tableType, targetId);
 
-        if (starScrap.isPresent()) {
-            return starScrap.get();
-        } return null;
+            if (starScrap.isPresent()) {
+                return starScrap.get();
+            }
+        }
+        return null;
     }
 
     // 존재하는 게시글인지 확인
