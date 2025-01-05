@@ -99,10 +99,12 @@ public class StudyServiceImpl implements StudyService {
     @Override
     @Transactional
     public StudyResponseDto.DetailInfo findStudyDetailInfo(Long studyId, Member member) {
-        member = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         Study study = studyRepository.findById(studyId).orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
         int scrapCount = starScrapService.findStarScrapCount(study.getId(), ActType.SCRAP, TableType.STUDY);
         studyRepository.incrementHitById(studyId);
+        if (!Objects.isNull(member)) {
+            member = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        }
         boolean isScrapped = (starScrapService.existsStarScrap(member, study.getId(), ActType.SCRAP, TableType.STUDY) != null);
         return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount, isScrapped);
     }

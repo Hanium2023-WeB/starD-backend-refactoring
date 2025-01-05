@@ -33,14 +33,13 @@ public class SecurityConfig {
     private final HeaderUtils headerUtils;
     private final RedisUtils redisUtils;
 
-    private static final String[] PERMIT_ALL_PATTERNS = new String[] {
+    private static final String[] PERMIT_ALL_PATTERNS = new String[]{
             "/members/auth/join", "/members/auth/check-email", "/members/auth/check-nickname",
             "/members/auth/join/additional-info", "/members/auth/sign-in", "/members/auth/reissue",
             "/members/auth/auth-codes", "/members/auth/auth-codes/verify",
             "/members/auth/find-password", "/members/reset-password",
             "/members/auth/valid-password-reset-token", "/gs-guide-websocket",
-
-            "/studies/hot-tag", "/studies/search", "/studies/hot-field"
+            "/studies/*"
     };
 
     @Bean
