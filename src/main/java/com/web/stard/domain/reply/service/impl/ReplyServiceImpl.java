@@ -87,7 +87,7 @@ public class ReplyServiceImpl implements ReplyService {
             Study study = studyRepository.findById(targetId).orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
 
             if (!writer.equals(study.getMember())) {
-                List<Member> members = List.of(writer);
+                List<Member> members = List.of(study.getMember());
                 notificationService.sendNotis(members,
                         new NotificationRequest.SendRequestDto("댓글이 달렸습니다.", reply.getContent(), NotificationType.REPLY
                                 , study.getId()));
