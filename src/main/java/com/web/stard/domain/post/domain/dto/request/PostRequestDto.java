@@ -6,15 +6,18 @@ import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.member.domain.entity.Member;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 public class PostRequestDto {
 
     @Getter
-    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class CreatePostDto {
 
         @Size(max = 100, message = "제목은 최대 100자 이내여야 합니다.")
@@ -37,7 +40,8 @@ public class PostRequestDto {
     }
 
     @Getter
-    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class CreateCommPostDto {
         @Size(max = 100, message = "제목은 최대 100자 이내여야 합니다.")
         @NotBlank(message = "제목은 필수입니다.")
