@@ -54,4 +54,6 @@ public interface StudyService {
     List<StudyResponseDto.StudyMemberDeletionInfo> getStudyDeletionConsentStatus(Member member, Long studyId);
 
     void canceledStudy(Member member, Long studyId);
+
+    StudyResponseDto.StudyApplicantInfo getApplicationInfo(Member member, Long studyId);
 }

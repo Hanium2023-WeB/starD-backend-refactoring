@@ -548,4 +548,22 @@ public class StudyServiceImpl implements StudyService {
 
         study.updateProcessType(ProgressType.CANCELED);
     }
+
+    /**
+     * 스터디 지원 동기 정보 조회
+     *
+     * @param member  회원 정보
+     * @param studyId 스터디 id
+     * @return StudyApplicantInfo
+     */
+    @Override
+    @Transactional
+    public StudyResponseDto.StudyApplicantInfo getApplicationInfo(Member member, Long studyId) {
+        member = memberRepository.findById(member.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Study study = findById(studyId);
+        StudyApplicant applicant = studyApplicantRepository.findByMemberAndStudy(member, study).orElse(null);
+
+        return (applicant == null) ? null : StudyResponseDto.StudyApplicantInfo.toDto(applicant);
+    }
 }

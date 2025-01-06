@@ -84,6 +84,12 @@ public class StudyController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "스터디 지원 동기 정보 조회")
+    @GetMapping("/{studyId}/application")
+    public ResponseEntity<StudyResponseDto.StudyApplicantInfo> getApplicationInfo(@CurrentMember Member member, @PathVariable("studyId") Long studyId) {
+        return ResponseEntity.ok().body(studyService.getApplicationInfo(member, studyId));
+    }
+
     @Operation(summary = "스터디 신청자 선택")
     @PostMapping("/{studyId}/applications/{applicationId}/assignment")
     public ResponseEntity<?> selectApplicant(@CurrentMember Member member, @PathVariable("studyId") Long studyId,
