@@ -77,10 +77,10 @@ public class PostServiceImpl implements PostService {
     /**
      * 커뮤니티 게시글 생성
      *
-     * @param requestDto     title, content, category
-     *                       제목     내용      카테고리
+     * @param requestDto title, content, category
+     *                   제목     내용      카테고리
      * @return CommPostDto  commPostId, title, content, category, hit, writer, profileImg, updatedAt
-     *                       게시글 id    제목      내용     카테고리  조회수 작성자 프로필 이미지   수정일시
+     * 게시글 id    제목      내용     카테고리  조회수 작성자 프로필 이미지   수정일시
      */
     @Override
     @Transactional
@@ -95,7 +95,7 @@ public class PostServiceImpl implements PostService {
     /**
      * 게시글 수정
      *
-     * @param postId 수정할 게시글 id
+     * @param postId     수정할 게시글 id
      * @param requestDto title 제목, content 내용
      * @return PostDto postId 게시글 id, title 제목, content 내용, hit 조회수, writer 작성자, profileImg 프로필 이미지, updatedAt 수정일시
      */
@@ -118,11 +118,11 @@ public class PostServiceImpl implements PostService {
     /**
      * 커뮤니티 게시글 수정
      *
-     * @param commPostId      수정할 게시글의 id
-     * @param requestDto     title, content, category
-     *                       제목     내용      카테고리
+     * @param commPostId 수정할 게시글의 id
+     * @param requestDto title, content, category
+     *                   제목     내용      카테고리
      * @return CommPostDto  commPostId, title, content, category, hit, writer, profileImg, updatedAt
-     *                       게시글 id    제목      내용     카테고리  조회수 작성자  프로필 이미지   수정일시
+     * 게시글 id    제목      내용     카테고리  조회수 작성자  프로필 이미지   수정일시
      */
     @Transactional
     @Override
@@ -192,7 +192,7 @@ public class PostServiceImpl implements PostService {
     @Transactional(readOnly = true)
     public PostResponseDto.PostListDto getPostList(int page, PostType postType, Member member) {
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
+        Pageable pageable = PageRequest.of(page - 1, 10, sort);
 
         Page<Post> posts = postRepository.findByPostType(postType, pageable);
 
@@ -227,20 +227,17 @@ public class PostServiceImpl implements PostService {
      * 게시글 검색
      *
      * @param keyword 조회할 키워드
-     * @param page 조회할 페이지 번호
+     * @param page    조회할 페이지 번호
      * @return PostListDto posts 게시글 리스트, currentPage 현재 페이지, totalPages 전체 페이지, isLast 마지막 페이지 여부
      */
     @Override
     @Transactional(readOnly = true)
     public PostResponseDto.PostListDto searchPost(String keyword, int page, PostType postType, Member member) {
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
+        Pageable pageable = PageRequest.of(page - 1, 10, sort);
 
-        Page<Post> posts = postRepository.findByPostTypeAndTitleContainingOrContentContaining(
-                                postType, keyword, keyword, pageable);
-
+        Page<Post> posts = postRepository.findByPostTypeAndKeyword(postType, keyword, pageable);
         List<PostResponseDto.PostDto> postDtos = findAllStarCount(posts, member);
-
         return PostResponseDto.PostListDto.of(posts, postDtos);
     }
 
@@ -271,7 +268,7 @@ public class PostServiceImpl implements PostService {
      * faq, qna 전체 검색
      *
      * @param keyword 조회할 키워드
-     * @param page 조회할 페이지 번호
+     * @param page    조회할 페이지 번호
      * @return PostListDto posts 게시글 리스트, currentPage 현재 페이지, totalPages 전체 페이지, isLast 마지막 페이지 여부
      */
     @Override
@@ -280,7 +277,7 @@ public class PostServiceImpl implements PostService {
         List<PostType> postTypes = List.of(PostType.FAQ, PostType.QNA);
 
         List<Post> posts = postRepository.findByPostTypeInAndTitleOrContentContaining(
-                                postTypes, keyword, PostType.FAQ, PostType.QNA);
+                postTypes, keyword, PostType.FAQ, PostType.QNA);
         Pageable pageable = PageRequest.of(page - 1, 10);
 
         Page<Post> paginatePostList = paginateList(posts, pageable);
@@ -309,16 +306,16 @@ public class PostServiceImpl implements PostService {
     /**
      * 커뮤니티 게시글 리스트 조회 - 카테고리 선택
      *
-     * @param category          조회할 카테고리
-     * @param page              조회할 페이지 번호
+     * @param category 조회할 카테고리
+     * @param page     조회할 페이지 번호
      * @return CommPostListDto  commPostList, currentPage, totalPages, isLast
-     *                     커뮤니티 게시글 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
+     * 커뮤니티 게시글 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
      */
     @Transactional(readOnly = true)
     @Override
     public PostResponseDto.PostListDto getCommPostListByCategory(String category, int page, Member member) {
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
+        Pageable pageable = PageRequest.of(page - 1, 10, sort);
 
         Page<Post> posts = postRepository.findByPostTypeAndCategory(PostType.COMM, Category.find(category), pageable);
 
@@ -330,17 +327,17 @@ public class PostServiceImpl implements PostService {
     /**
      * 커뮤니티 게시글 - 키워드 + 카테고리 검색 조회
      *
-     * @param keyword           검색할 키워드
-     * @param category          검색할 카테고리
-     * @param page              조회할 페이지 번호
+     * @param keyword  검색할 키워드
+     * @param category 검색할 카테고리
+     * @param page     조회할 페이지 번호
      * @return CommPostListDto  commPostList, currentPage, totalPages, isLast
-     *                     커뮤니티 게시글 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
+     * 커뮤니티 게시글 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
      */
     @Transactional(readOnly = true)
     @Override
     public PostResponseDto.PostListDto searchCommPostWithCategory(String keyword, String category, int page, Member member) {
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
+        Pageable pageable = PageRequest.of(page - 1, 10, sort);
 
         Page<Post> posts = postRepository.searchCommPostWithCategory(PostType.COMM, keyword, Category.find(category), pageable);
 
@@ -352,16 +349,16 @@ public class PostServiceImpl implements PostService {
     /**
      * 사용자가 작성한 커뮤니티 게시글 조회
      *
-     * @param member            사용자
-     * @param page              조회할 페이지 번호
+     * @param member 사용자
+     * @param page   조회할 페이지 번호
      * @return CommPostListDto  commPostList, currentPage, totalPages, isLast
-     *                     커뮤니티 게시글 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
+     * 커뮤니티 게시글 리스트  현재 페이지   전체 페이지   마지막 페이지 여부
      */
     @Transactional(readOnly = true)
     @Override
     public PostResponseDto.PostListDto getCommPostListByMember(Member member, int page) {
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
+        Pageable pageable = PageRequest.of(page - 1, 10, sort);
 
         Page<Post> posts = postRepository.findByMemberAndPostType(member, PostType.COMM, pageable);
 
