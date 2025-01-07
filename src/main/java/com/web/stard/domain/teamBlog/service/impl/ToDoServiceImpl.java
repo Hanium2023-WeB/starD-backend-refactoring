@@ -1,7 +1,6 @@
 package com.web.stard.domain.teamBlog.service.impl;
 
 import com.web.stard.domain.member.domain.entity.Member;
-import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.domain.study.domain.entity.StudyMember;
 import com.web.stard.domain.study.repository.StudyMemberRepository;
 import com.web.stard.domain.teamBlog.domain.dto.request.ToDoRequestDto;
@@ -92,18 +91,18 @@ public class ToDoServiceImpl implements ToDoService {
     }
 
     /**
-     * 스터디 - 투두 업무 내용 수정
+     * 스터디 - 투두 수정
      *
      * @param studyId 해당 study 고유 id
      * @param toDoId 해당 투두 고유 id
      * @param member 로그인 회원
-     * @param requestDto task 담당 업무
+     * @param requestDto task 담당 업무, dueDate 마감일, assignees 담당자 (닉네임)
      *
      * @return ToDoDto toDoId, task 담당 업무, dueDate 마감일, studyId, toDoStatus 투두 상태, assignees 담당자 (닉네임, 투두 상태)
      */
     @Transactional
     @Override
-    public ToDoResponseDto.ToDoDto updateTask(Long studyId, Long toDoId, ToDoRequestDto.TaskDto requestDto, Member member) {
+    public ToDoResponseDto.ToDoDto updateToDo(Long studyId, Long toDoId, ToDoRequestDto.CreateDto requestDto, Member member) {
         Study study = studyService.findById(studyId);
         studyService.isStudyInProgress(study);
         studyService.isStudyMember(study, member);
@@ -112,57 +111,7 @@ public class ToDoServiceImpl implements ToDoService {
 
         isEqualToDoStudyAndStudy(study, toDo);
 
-        toDo.updateTask(requestDto.getTask());
-
-        return ToDoResponseDto.ToDoDto.from(toDo, toDo.getAssignees());
-    }
-
-    /**
-     * 스터디 - 투두 마감일 수정
-     *
-     * @param studyId 해당 study 고유 id
-     * @param toDoId 해당 투두 고유 id
-     * @param member 로그인 회원
-     * @param requestDto dueDate 마감일
-     *
-     * @return ToDoDto toDoId, task 담당 업무, dueDate 마감일, studyId, toDoStatus 투두 상태, assignees 담당자 (닉네임, 투두 상태)
-     */
-    @Transactional
-    @Override
-    public ToDoResponseDto.ToDoDto updateDueDate(Long studyId, Long toDoId, ToDoRequestDto.DueDateDto requestDto, Member member) {
-        Study study = studyService.findById(studyId);
-        studyService.isStudyInProgress(study);
-        studyService.isStudyMember(study, member);
-
-        ToDo toDo = findToDo(toDoId);
-
-        isEqualToDoStudyAndStudy(study, toDo);
-
-        toDo.updateDueDate(requestDto.getDueDate());
-
-        return ToDoResponseDto.ToDoDto.from(toDo, toDo.getAssignees());
-    }
-
-    /**
-     * 스터디 - 투두 담당자 수정
-     *
-     * @param studyId 해당 study 고유 id
-     * @param toDoId 해당 투두 고유 id
-     * @param member 로그인 회원
-     * @param requestDto assignees 담당자
-     *
-     * @return ToDoDto toDoId, task 담당 업무, dueDate 마감일, studyId, toDoStatus 투두 상태, assignees 담당자 (닉네임, 투두 상태)
-     */
-    @Transactional
-    @Override
-    public ToDoResponseDto.ToDoDto updateAssignee(Long studyId, Long toDoId, ToDoRequestDto.AssigneeDto requestDto, Member member) {
-        Study study = studyService.findById(studyId);
-        studyService.isStudyInProgress(study);
-        studyService.isStudyMember(study, member);
-
-        ToDo toDo = findToDo(toDoId);
-
-        isEqualToDoStudyAndStudy(study, toDo);
+        toDo.updateToDo(requestDto.getTask(), requestDto.getDueDate()); // 업무 내용, 마감일 수정
 
         // 기존 담당자와 비교 후 추가 및 삭제
         List<Assignee> assignees = new ArrayList<>(toDo.getAssignees());
@@ -201,7 +150,7 @@ public class ToDoServiceImpl implements ToDoService {
             }
         });
 
-        return ToDoResponseDto.ToDoDto.from(toDo, assignees);
+        return ToDoResponseDto.ToDoDto.from(toDo, toDo.getAssignees());
     }
 
     /**

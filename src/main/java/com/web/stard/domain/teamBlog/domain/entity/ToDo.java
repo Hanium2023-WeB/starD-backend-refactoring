@@ -38,11 +38,8 @@ public class ToDo {
     private List<Assignee> assignees = new ArrayList<>();
 
 
-    public void updateTask(String task) {
+    public void updateToDo(String task, LocalDate dueDate) {
         this.task = task;
-    }
-
-    public void updateDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
     }
 
