@@ -150,7 +150,7 @@ public class ToDoServiceImpl implements ToDoService {
             }
         });
 
-        return ToDoResponseDto.ToDoDto.from(toDo, toDo.getAssignees());
+        return ToDoResponseDto.ToDoDto.from(toDo, assignees);
     }
 
     /**
