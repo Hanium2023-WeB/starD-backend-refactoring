@@ -8,17 +8,18 @@ import com.web.stard.domain.notification.repository.EmitterRepository;
 import com.web.stard.domain.notification.repository.NotificationRepository;
 import com.web.stard.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
 import java.util.*;
 
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
@@ -41,7 +42,10 @@ public class NotificationServiceImpl implements NotificationService {
         emitter.onCompletion(() -> emitterRepository.deleteById(emitterId));
         emitter.onTimeout(() -> emitterRepository.deleteById(emitterId));
 
-        sendToClient(emitter, emitterId, "EventStream Created. [userId=" + member.getId() + "]");
+        NotificationResponse.InfoResponseDto response = new NotificationResponse.InfoResponseDto(null,
+                "EventStream Created.", "EventStream Created. [userId=" + member.getId() + "]", true, null, null );
+
+        sendToClient(emitter, emitterId, response);
 
         if (!lastEventId.isEmpty()) {
             Map<String, Object> events = emitterRepository.findAllEventCacheStartWithByMemberId(member.getId());
@@ -154,10 +158,11 @@ public class NotificationServiceImpl implements NotificationService {
             emitter.send(SseEmitter.event()
                     .id(emitterId)
                     .data(data));
-        } catch (IOException e) {
+        } catch (Exception e) {
             emitterRepository.deleteById(emitterId);
-            // TODO 커스텀 에러로 변경 필요
-            throw new RuntimeException(e);
+            if (e.getMessage().contains("Broken pipe")) {
+                log.error("Broken pipe", e);
+            }
         }
     }
 
