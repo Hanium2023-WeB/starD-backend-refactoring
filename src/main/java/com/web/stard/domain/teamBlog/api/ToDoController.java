@@ -6,6 +6,7 @@ import com.web.stard.domain.teamBlog.domain.dto.response.ToDoResponseDto;
 import com.web.stard.domain.teamBlog.service.ToDoService;
 import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/studies/{studyId}/to-dos")
 @RequiredArgsConstructor
+@Tag(name = "studies-to-dos", description = "스터디 팀블로그 - to do 관련 API")
 public class ToDoController {
 
     private final ToDoService toDoService;

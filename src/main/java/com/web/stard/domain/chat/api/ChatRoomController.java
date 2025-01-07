@@ -5,6 +5,7 @@ import com.web.stard.domain.chat.service.ChatRoomService;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/chats")
+@Tag(name = "chats", description = "채팅 관련 API")
 public class ChatRoomController {
 
     private final ChatRoomService chatService;

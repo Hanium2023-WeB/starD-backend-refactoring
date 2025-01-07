@@ -6,6 +6,7 @@ import com.web.stard.domain.report.domain.dto.resquest.ReportRequestDto;
 import com.web.stard.domain.report.service.ReportService;
 import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/reports")
+@Tag(name = "reports", description = "신고 관련 API")
 public class ReportController {
 
     private final ReportService reportService;

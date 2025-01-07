@@ -28,6 +28,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/studies")
 @RequiredArgsConstructor
+@io.swagger.v3.oas.annotations.tags.Tag(name = "studies", description = "스터디 관련 API")
 public class StudyController {
 
     private final StudyService studyService;

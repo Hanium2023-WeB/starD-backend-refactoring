@@ -19,6 +19,7 @@ import com.web.stard.domain.teamBlog.service.StudyPostService;
 import com.web.stard.domain.teamBlog.service.ToDoService;
 import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -31,6 +32,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
+@Tag(name = "members", description = "회원 관련 API")
 public class MemberController {
 
     private final MemberService memberService;

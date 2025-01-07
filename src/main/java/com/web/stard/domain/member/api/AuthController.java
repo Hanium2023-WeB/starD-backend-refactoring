@@ -9,6 +9,7 @@ import com.web.stard.global.domain.CurrentMember;
 import com.web.stard.global.dto.TokenInfo;
 import com.web.stard.global.utils.HeaderUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/members/auth")
 @RequiredArgsConstructor
+@Tag(name = "members-auth", description = "회원 권한 관련 API")
 public class AuthController {
 
     private final HeaderUtils headerUtils;

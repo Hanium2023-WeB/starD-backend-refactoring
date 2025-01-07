@@ -7,6 +7,7 @@ import com.web.stard.domain.post.domain.dto.response.PostResponseDto;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/notices")
+@Tag(name = "notices", description = "공지사항 관련 API")
 public class NoticeController {
 
     private final PostService postService;

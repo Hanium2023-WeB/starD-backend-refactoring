@@ -6,6 +6,7 @@ import com.web.stard.domain.reply.domain.dto.response.ReplyResponseDto;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/replies")
+@Tag(name = "replies", description = "댓글 관련 API")
 public class ReplyController {
 
     private final ReplyService replyService;

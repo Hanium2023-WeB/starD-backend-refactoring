@@ -1,17 +1,17 @@
 package com.web.stard.domain.starScrap.api;
 
 import com.web.stard.domain.starScrap.service.StarScrapService;
-import com.web.stard.domain.starScrap.domain.enums.ActType;
-import com.web.stard.domain.starScrap.domain.enums.TableType;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "stars-and-scraps", description = "공감 및 스크랩 관련 API")
 public class StarScrapController {
 
     private final StarScrapService starScrapService;

@@ -6,6 +6,7 @@ import com.web.stard.domain.teamBlog.domain.dto.response.StudyPostResponseDto;
 import com.web.stard.domain.teamBlog.service.StudyPostService;
 import com.web.stard.global.domain.CurrentMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/studies/{studyId}/study-posts")
 @RequiredArgsConstructor
+@Tag(name = "studies-posts", description = "스터디 팀블로그 - 게시판 관련 API")
 public class StudyPostController {
 
     private final StudyPostService studyPostService;

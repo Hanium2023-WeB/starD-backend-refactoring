@@ -3,6 +3,7 @@ package com.web.stard.domain.teamBlog.api;
 import com.web.stard.domain.teamBlog.domain.dto.response.Location;
 import com.web.stard.domain.teamBlog.service.LocationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/studies/{studyId}/locations")
 @RequiredArgsConstructor
+@Tag(name = "studies-locations", description = "스터디 팀블로그 - 장소 추천 관련 API")
 public class LocationController {
 
     private final LocationService locationService;
