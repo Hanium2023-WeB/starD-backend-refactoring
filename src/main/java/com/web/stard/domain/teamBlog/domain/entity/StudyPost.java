@@ -54,8 +54,13 @@ public class StudyPost extends BaseEntity {
     }
 
     public void updateStudyPost(String title, String content) {
-        this.title = title;
-        this.content = content;
+        if (!this.title.equals(title)) {
+            this.title = title;
+        }
+
+        if (!this.content.equals(content)) {
+            this.content = content;
+        }
     }
 
     public void incrementHitCount() {

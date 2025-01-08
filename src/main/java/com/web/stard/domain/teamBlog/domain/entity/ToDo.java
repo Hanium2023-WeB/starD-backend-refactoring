@@ -39,8 +39,13 @@ public class ToDo {
 
 
     public void updateToDo(String task, LocalDate dueDate) {
-        this.task = task;
-        this.dueDate = dueDate;
+        if (!this.task.equals(task)) {
+            this.task = task;
+        }
+
+        if (!this.dueDate.equals(dueDate)) {
+            this.dueDate = dueDate;
+        }
     }
 
     public void updateToDoStatus(boolean status) {

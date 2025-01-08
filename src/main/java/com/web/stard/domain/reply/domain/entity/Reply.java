@@ -33,6 +33,8 @@ public class Reply extends BaseEntity {
     private Member member;
 
     public void updateReply(String content) {
-        this.content = content;
+        if (!this.content.equals(content)) {
+            this.content = content;
+        }
     }
 }
