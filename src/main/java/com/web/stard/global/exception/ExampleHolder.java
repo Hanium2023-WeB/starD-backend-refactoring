@@ -11,5 +11,6 @@ public class ExampleHolder {
     private Example holder;
     private String name;
     private int code;
+    private String description;
 
 }

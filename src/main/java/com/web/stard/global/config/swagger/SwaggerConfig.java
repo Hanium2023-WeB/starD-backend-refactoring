@@ -95,6 +95,7 @@ public class SwaggerConfig {
                             .holder(getSwaggerExample(errorCode))
                             .code(errorCode.getHttpStatus().value())
                             .name(errorCode.name())
+                            .description(errorCode.getHttpStatus().getReasonPhrase())
                             .build()
                 )
                 .collect(Collectors.groupingBy(ExampleHolder::getCode));
@@ -111,6 +112,7 @@ public class SwaggerConfig {
                 .holder(getSwaggerExample(errorCode))
                 .name(errorCode.name())
                 .code(errorCode.getHttpStatus().value())
+                .description(errorCode.getHttpStatus().getReasonPhrase())
                 .build();
 
         addExamplesToResponses(responses, exampleHolder);
@@ -123,17 +125,6 @@ public class SwaggerConfig {
         example.setValue(errorResponseDto);
 
         return example;
-    }
-
-    private String getDescription(int status) {
-        return switch (status) {
-            case 400 -> "BAD_REQUEST";
-            case 401 -> "UNAUTHORIZED";
-            case 403 -> "FORBIDDEN";
-            case 404 -> "NOT_FOUND";
-            case 409 -> "CONFLICT";
-            default -> "INTERNAL_SERVER_ERROR";
-        };
     }
 
     private void addExamplesToResponses(ApiResponses responses,
@@ -150,8 +141,11 @@ public class SwaggerConfig {
                                     exampleHolder.getHolder()
                             )
                     );
+
+                    if (!v.isEmpty()) {
+                        apiResponse.setDescription(v.get(0).getDescription());
+                    }
                     content.addMediaType("application/json", mediaType);
-                    apiResponse.setDescription(getDescription(status));
                     apiResponse.setContent(content);
                     responses.addApiResponse(String.valueOf(status), apiResponse);
                 }
@@ -165,7 +159,7 @@ public class SwaggerConfig {
 
         mediaType.addExamples(exampleHolder.getName(), exampleHolder.getHolder());
         content.addMediaType("application/json", mediaType);
-        apiResponse.setDescription(getDescription(exampleHolder.getCode()));
+        apiResponse.setDescription(exampleHolder.getDescription());
         apiResponse.content(content);
         responses.addApiResponse(String.valueOf(exampleHolder.getCode()), apiResponse);
     }
