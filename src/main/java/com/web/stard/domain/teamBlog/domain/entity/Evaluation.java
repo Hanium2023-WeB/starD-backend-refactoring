@@ -36,7 +36,9 @@ public class Evaluation {
 
 
     public void updateStarReason(String starReason) {
-        this.starReason = starReason;
+        if (!this.starReason.equals(starReason)) {
+            this.starReason = starReason;
+        }
     }
 
     public void updateMemberToDeleted(StudyMember studyMember) {

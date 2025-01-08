@@ -9,11 +9,7 @@ import java.util.List;
 public interface ToDoService {
     ToDoResponseDto.ToDoDto createToDo(Long studyId, ToDoRequestDto.CreateDto requestDto, Member member);
 
-    ToDoResponseDto.ToDoDto updateTask(Long studyId, Long toDoId, ToDoRequestDto.TaskDto requestDto, Member member);
-
-    ToDoResponseDto.ToDoDto updateDueDate(Long studyId, Long toDoId, ToDoRequestDto.DueDateDto requestDto, Member member);
-
-    ToDoResponseDto.ToDoDto updateAssignee(Long studyId, Long toDoId, ToDoRequestDto.AssigneeDto requestDto, Member member);
+    ToDoResponseDto.ToDoDto updateToDo(Long studyId, Long toDoId, ToDoRequestDto.CreateDto requestDto, Member member);
 
     ToDoResponseDto.ToDoDto updateTodoStatus(Long studyId, Long toDoId, Long assigneeId, boolean status, Member member);
 

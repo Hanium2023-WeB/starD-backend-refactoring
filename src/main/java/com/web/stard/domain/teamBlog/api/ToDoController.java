@@ -30,31 +30,13 @@ public class ToDoController {
         return ResponseEntity.ok(toDoService.createToDo(studyId, requestDto, member));
     }
 
-    @Operation(summary = "ToDo 업무 내용 수정")
-    @PutMapping("/{toDoId}/task")
+    @Operation(summary = "ToDo 수정")
+    @PutMapping("/{toDoId}")
     public ResponseEntity<ToDoResponseDto.ToDoDto> updateTask(@CurrentMember Member member,
                                                               @PathVariable(name = "studyId") Long studyId,
                                                               @PathVariable(name = "toDoId") Long toDoId,
-                                                              @Valid @RequestBody ToDoRequestDto.TaskDto requestDto) {
-        return ResponseEntity.ok(toDoService.updateTask(studyId, toDoId, requestDto, member));
-    }
-
-    @Operation(summary = "ToDo 마감일 수정")
-    @PutMapping("/{toDoId}/dueDate")
-    public ResponseEntity<ToDoResponseDto.ToDoDto> updateDueDate(@CurrentMember Member member,
-                                                                 @PathVariable(name = "studyId") Long studyId,
-                                                                 @PathVariable(name = "toDoId") Long toDoId,
-                                                                 @Valid @RequestBody ToDoRequestDto.DueDateDto requestDto) {
-        return ResponseEntity.ok(toDoService.updateDueDate(studyId, toDoId, requestDto, member));
-    }
-
-    @Operation(summary = "ToDo 담당자 수정")
-    @PutMapping("/{toDoId}/assignees")
-    public ResponseEntity<ToDoResponseDto.ToDoDto> updateAssignee(@CurrentMember Member member,
-                                                                  @PathVariable(name = "studyId") Long studyId,
-                                                                  @PathVariable(name = "toDoId") Long toDoId,
-                                                                  @Valid @RequestBody ToDoRequestDto.AssigneeDto requestDto) {
-        return ResponseEntity.ok(toDoService.updateAssignee(studyId, toDoId, requestDto, member));
+                                                              @Valid @RequestBody ToDoRequestDto.CreateDto requestDto) {
+        return ResponseEntity.ok(toDoService.updateToDo(studyId, toDoId, requestDto, member));
     }
 
     @Operation(summary = "ToDo 상태 변화")

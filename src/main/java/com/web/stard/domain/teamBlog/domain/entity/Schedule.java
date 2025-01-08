@@ -33,7 +33,12 @@ public class Schedule {
     private Study study;
 
     public void updateSchedule(String title, String color) {
-        this.title = title;
-        this.color = color;
+        if (!this.title.equals(title)) {
+            this.title = title;
+        }
+
+        if (!this.color.equals(color)) {
+            this.color = color;
+        }
     }
 }

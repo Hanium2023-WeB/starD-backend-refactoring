@@ -38,12 +38,14 @@ public class ToDo {
     private List<Assignee> assignees = new ArrayList<>();
 
 
-    public void updateTask(String task) {
-        this.task = task;
-    }
+    public void updateToDo(String task, LocalDate dueDate) {
+        if (!this.task.equals(task)) {
+            this.task = task;
+        }
 
-    public void updateDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
+        if (!this.dueDate.equals(dueDate)) {
+            this.dueDate = dueDate;
+        }
     }
 
     public void updateToDoStatus(boolean status) {
