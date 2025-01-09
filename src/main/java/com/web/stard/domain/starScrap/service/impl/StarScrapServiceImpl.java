@@ -58,7 +58,7 @@ public class StarScrapServiceImpl implements StarScrapService {
     // 존재하는 STUDY인지 확인
     private Study existsStudyRecruitPost(Long targetId) {
         Study study = studyRepository.findById(targetId)
-                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
         return study;
     }
 
