@@ -91,12 +91,18 @@ public class SwaggerConfig {
         // ExampleHolder(에러 응답값) 객체를 만들고 에러 코드별로 그룹화
         Map<Integer, List<ExampleHolder>> statusWithExampleHolders = Arrays.stream(errorCodes)
                 .map(
-                    errorCode -> ExampleHolder.builder()
-                            .holder(getSwaggerExample(errorCode))
-                            .code(errorCode.getHttpStatus().value())
-                            .name(errorCode.name())
-                            .description(errorCode.getHttpStatus().getReasonPhrase())
-                            .build()
+                    errorCode -> {
+                        try {
+                            return ExampleHolder.builder()
+                                    .holder(getSwaggerExample(errorCode))
+                                    .code(errorCode.getHttpStatus().value())
+                                    .name(errorCode.name())
+                                    .description(errorCode.getHttpStatus().getReasonPhrase())
+                                    .build();
+                        } catch (NoSuchFieldException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
                 )
                 .collect(Collectors.groupingBy(ExampleHolder::getCode));
 
@@ -108,21 +114,27 @@ public class SwaggerConfig {
     private void generateErrorCodeResponseExample(Operation operation, ErrorCode errorCode) {
         ApiResponses responses = operation.getResponses();
 
-        ExampleHolder exampleHolder = ExampleHolder.builder()
-                .holder(getSwaggerExample(errorCode))
-                .name(errorCode.name())
-                .code(errorCode.getHttpStatus().value())
-                .description(errorCode.getHttpStatus().getReasonPhrase())
-                .build();
+        ExampleHolder exampleHolder = null;
+        try {
+            exampleHolder = ExampleHolder.builder()
+                    .holder(getSwaggerExample(errorCode))
+                    .name(errorCode.name())
+                    .code(errorCode.getHttpStatus().value())
+                    .description(errorCode.getHttpStatus().getReasonPhrase())
+                    .build();
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
 
         addExamplesToResponses(responses, exampleHolder);
     }
 
     // ErrorResponseDto 형태의 예시 객체 생성
-    private Example getSwaggerExample(ErrorCode errorCode) {
+    private Example getSwaggerExample(ErrorCode errorCode) throws NoSuchFieldException {
         ErrorResponseDto errorResponseDto = ErrorResponseDto.of(errorCode);
         Example example = new Example();
         example.setValue(errorResponseDto);
+        example.description(errorCode.getExplainError());
 
         return example;
     }

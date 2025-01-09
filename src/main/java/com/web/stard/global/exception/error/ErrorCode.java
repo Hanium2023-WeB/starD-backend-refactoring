@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+import java.lang.reflect.Field;
+import java.util.Objects;
+
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
@@ -47,6 +50,7 @@ public enum ErrorCode {
     INVALID_POST_TYPE(HttpStatus.BAD_REQUEST, "유효하지 않은 게시글 타입입니다."),
 
     // Study
+    @ExplainError("존재하지 않는 스터디 게시글")
     STUDY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스터디 게시글입니다."),
     STUDY_FORBIDDEN(HttpStatus.FORBIDDEN, "스터디 작성자가 아니므로 권한이 없습니다."),
     STUDY_NOT_EDITABLE(HttpStatus.BAD_REQUEST, "진행 전인 스터디만 수정 및 삭제가 가능합니다."),
@@ -90,4 +94,10 @@ public enum ErrorCode {
 
     private final HttpStatus httpStatus;    // HttpStatus
     private final String message;       // 설명
+
+    public String getExplainError() throws NoSuchFieldException {
+        Field field = this.getClass().getField(this.name());
+        ExplainError explainError = field.getAnnotation(ExplainError.class);
+        return Objects.nonNull(explainError) ? explainError.value() : this.getMessage();
+    }
 }
