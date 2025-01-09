@@ -27,10 +27,8 @@ public class EvaluationController {
 
     @Operation(summary = "평가 등록", description = "평가 대상 회원 닉네임을 적어주세요.")
     @ApiErrorCodeExamples({
-            ErrorCode.STUDY_NOT_FOUND,
-            ErrorCode.STUDY_NOT_COMPLETED,
-            ErrorCode.STUDY_EVALUATION_BAD_REQUEST,
-            ErrorCode.DUPLICATE_STUDY_EVALUATION_REQUEST
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_NOT_COMPLETED,
+            ErrorCode.STUDY_EVALUATION_BAD_REQUEST, ErrorCode.DUPLICATE_STUDY_EVALUATION_REQUEST
     })
     @PostMapping
     public ResponseEntity<Long> createEvaluation(@CurrentMember Member member,
@@ -51,9 +49,7 @@ public class EvaluationController {
 
     @Operation(summary = "사용자의 스터디원 평가 전체 리스트", description = "사용자가 평가할 수 있거나 평가한 스터디원 전체 리스트입니다.")
     @ApiErrorCodeExamples({
-            ErrorCode.STUDY_NOT_FOUND,
-            ErrorCode.STUDY_NOT_COMPLETED,
-            ErrorCode.STUDY_MEMBER_NOT_FOUND
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_NOT_COMPLETED, ErrorCode.STUDY_MEMBER_NOT_FOUND
     })
     @GetMapping("/given")
     public ResponseEntity<List<EvaluationResponseDto.EvaluationDto>> getStudyMembersWithEvaluations (
@@ -65,9 +61,7 @@ public class EvaluationController {
 
     @Operation(summary = "사용자가 받은 스터디원 평가 전체 리스트", description = "다른 사용자로부터 받거나 받을 리스트입니다.")
     @ApiErrorCodeExamples({
-            ErrorCode.STUDY_NOT_FOUND,
-            ErrorCode.STUDY_NOT_COMPLETED,
-            ErrorCode.STUDY_MEMBER_NOT_FOUND
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_NOT_COMPLETED, ErrorCode.STUDY_MEMBER_NOT_FOUND
     })
     @GetMapping("/received")
     public ResponseEntity<List<EvaluationResponseDto.EvaluationDto>> getMemberReceivedEvaluations (
