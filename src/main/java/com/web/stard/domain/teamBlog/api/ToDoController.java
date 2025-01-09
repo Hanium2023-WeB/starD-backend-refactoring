@@ -52,7 +52,7 @@ public class ToDoController {
     @Operation(summary = "ToDo 상태 변화")
     @ApiErrorCodeExamples({
             ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_NOT_IN_PROGRESS,
-            ErrorCode.STUDY_NOT_MEMBER, ErrorCode.STUDY_TODO_BAD_REQUEST
+            ErrorCode.STUDY_NOT_MEMBER, ErrorCode.STUDY_TODO_BAD_REQUEST, ErrorCode.STUDY_TODO_FORBIDDEN
     })
     @PutMapping("/{toDoId}/{assigneeId}")
     public ResponseEntity<ToDoResponseDto.ToDoDto> updateStatus(@CurrentMember Member member,
