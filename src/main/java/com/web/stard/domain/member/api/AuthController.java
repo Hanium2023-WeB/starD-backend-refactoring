@@ -7,6 +7,9 @@ import com.web.stard.domain.member.domain.dto.request.MemberRequestDto;
 import com.web.stard.domain.member.domain.dto.response.MemberResponseDto;
 import com.web.stard.global.domain.CurrentMember;
 import com.web.stard.global.dto.TokenInfo;
+import com.web.stard.global.exception.ApiErrorCodeExample;
+import com.web.stard.global.exception.ApiErrorCodeExamples;
+import com.web.stard.global.exception.error.ErrorCode;
 import com.web.stard.global.utils.HeaderUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,6 +32,10 @@ public class AuthController {
     private final AuthService authService;
 
     @Operation(summary = "회원가입")
+    @ApiErrorCodeExamples({
+            ErrorCode.EMAIL_CONFLICT, ErrorCode.NICKNAME_CONFLICT,
+            ErrorCode.INVALID_EMAIL, ErrorCode.INVALID_NICKNAME, ErrorCode.UPLOAD_FAILED
+    })
     @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MemberResponseDto.SignupResultDto> signUp(@RequestPart(value = "file", required = false) MultipartFile file,
                                                                     @Valid @RequestPart(name = "requestDto") MemberRequestDto.SignupDto requestDto) {
@@ -51,6 +58,7 @@ public class AuthController {
 
     @Operation(summary = "회원가입 추가 정보 저장",
             description = "회원가입 후, 관심 분야를 저장합니다.(선택사항)")
+    @ApiErrorCodeExample(ErrorCode.MEMBER_NOT_FOUND)
     @PostMapping("/join/additional-info")
     public ResponseEntity<MemberResponseDto.AdditionalInfoResultDto> saveAdditionalInfo(@Valid @RequestBody MemberRequestDto.AdditionalInfoRequestDto requestDto) {
         MemberResponseDto.AdditionalInfoResultDto result = authService.saveAdditionalInfo(requestDto);
@@ -58,6 +66,7 @@ public class AuthController {
     }
 
     @PostMapping("/sign-in")
+    @ApiErrorCodeExample(ErrorCode.INVALID_PASSWORD)
     @Operation(summary = "로그인")
     public ResponseEntity<TokenInfo> signIn(@Valid @RequestBody MemberRequestDto.SignInDto request,
                                             HttpServletResponse response) {
@@ -65,6 +74,9 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
+    @ApiErrorCodeExamples({
+            ErrorCode.EXPIRED_TOKEN, ErrorCode.INVALID_TOKEN, ErrorCode.EMPTY_CLAIMS
+    })
     @Operation(summary = "JWT 토큰 재발급")
     public ResponseEntity<TokenInfo> reissue(HttpServletResponse response, HttpServletRequest request) {
         return ResponseEntity.ok(authService.reissue(response, request));
@@ -78,6 +90,9 @@ public class AuthController {
     }
 
     @PostMapping("/auth-codes/verify")
+    @ApiErrorCodeExamples({
+            ErrorCode.INVALID_OR_EXPIRED_AUTH_CODE, ErrorCode.INVALID_AUTH_CODE
+    })
     @Operation(summary = "인증 번호 검증")
     public ResponseEntity<Boolean> validAuthCode(@Valid @RequestBody MemberRequestDto.AuthCodeRequestDto request) throws Exception {
         authService.validAuthCode(request);
@@ -85,6 +100,9 @@ public class AuthController {
     }
 
     @PostMapping("/sign-out")
+    @ApiErrorCodeExamples({
+            ErrorCode.EXPIRED_TOKEN, ErrorCode.INVALID_TOKEN, ErrorCode.EMPTY_CLAIMS
+    })
     @Operation(summary = "로그아웃")
     public ResponseEntity<Boolean> signOut(@CurrentMember Member member, HttpServletRequest request,
                                            HttpServletResponse response) {
@@ -93,6 +111,12 @@ public class AuthController {
     }
 
     @Operation(summary = "회원 탈퇴")
+    @ApiErrorCodeExamples({
+            ErrorCode.MEMBER_NOT_FOUND, ErrorCode.STUDY_MEMBER_NOT_FOUND,
+            ErrorCode.CANNOT_DELETE_FROM_IN_PROGRESS_STUDY, ErrorCode.DELETE_FAILED,
+            ErrorCode.EXPIRED_TOKEN, ErrorCode.INVALID_TOKEN, ErrorCode.EMPTY_CLAIMS,
+
+    })
     @DeleteMapping("/delete")
     public ResponseEntity<MemberResponseDto.DeleteDto> deleteMember(@CurrentMember Member member, HttpServletRequest request,
                                                                     HttpServletResponse response) {
@@ -100,6 +124,7 @@ public class AuthController {
     }
 
     @PostMapping("/find-password")
+    @ApiErrorCodeExample(ErrorCode.MEMBER_NOT_FOUND)
     @Operation(summary = "비밀번호 찾기")
     public ResponseEntity<Boolean> findPassword(@Valid @RequestBody MemberRequestDto.EmailRequestDto request) {
         authService.findPassword(request.email());
@@ -107,6 +132,7 @@ public class AuthController {
     }
 
     @GetMapping("/valid-password-reset-token")
+    @ApiErrorCodeExample(ErrorCode.INVALID_TOKEN)
     @Operation(summary = "비밀번호 재설정 토큰 검증")
     public ResponseEntity<MemberResponseDto.ValidPasswordResetTokenResponseDto> validPasswordResetToken(@RequestParam(name = "token") String token) {
         MemberResponseDto.ValidPasswordResetTokenResponseDto responseDto =
@@ -121,6 +147,9 @@ public class AuthController {
     }
 
     @GetMapping("/token-expiration")
+    @ApiErrorCodeExamples({
+            ErrorCode.EXPIRED_TOKEN, ErrorCode.INVALID_TOKEN, ErrorCode.EMPTY_CLAIMS
+    })
     @Operation(summary = "access token 남은 만료 시간 조회")
     public ResponseEntity<Long> getExpiration(@CurrentMember Member member,
                                                   HttpServletRequest request) {

@@ -84,9 +84,8 @@ public class ReportController {
 
     @Operation(summary = "회원 강제 탈퇴", description = "누적 신고 수가 1 이상인 회원에 대해 수동으로 탈퇴 처리 가능합니다. 누적 신고 수가 5 이상이면 자동으로 탈퇴됩니다.")
     @ApiErrorCodeExamples({
-            ErrorCode.PERMISSION_DENIED, ErrorCode.MEMBER_NOT_FOUND, ErrorCode.STUDY_MEMBER_NOT_FOUND,
-            ErrorCode.STUDY_NOT_FOUND, ErrorCode.REPLY_NOT_FOUND, ErrorCode.POST_NOT_FOUND,
-            ErrorCode.STUDY_POST_NOT_FOUND, ErrorCode.DELETE_FAILED
+            ErrorCode.PERMISSION_DENIED, ErrorCode.MEMBER_NOT_FOUND,
+            ErrorCode.STUDY_MEMBER_NOT_FOUND, ErrorCode.DELETE_FAILED
     })
     @PostMapping("/members/{memberId}")
     public ResponseEntity<ReportResponseDto.ForceDeleteDto> forceDeleteMember(@PathVariable(name = "memberId") Long memberId, @CurrentMember Member member) {

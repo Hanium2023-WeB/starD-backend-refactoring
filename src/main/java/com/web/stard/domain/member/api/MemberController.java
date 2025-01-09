@@ -18,6 +18,9 @@ import com.web.stard.domain.teamBlog.service.ScheduleService;
 import com.web.stard.domain.teamBlog.service.StudyPostService;
 import com.web.stard.domain.teamBlog.service.ToDoService;
 import com.web.stard.global.domain.CurrentMember;
+import com.web.stard.global.exception.ApiErrorCodeExample;
+import com.web.stard.global.exception.ApiErrorCodeExamples;
+import com.web.stard.global.exception.error.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -51,6 +54,7 @@ public class MemberController {
     }
 
     @Operation(summary = "비밀번호 변경")
+    @ApiErrorCodeExample(ErrorCode.INVALID_PASSWORD)
     @PostMapping("/edit/password")
     public ResponseEntity<String> editPassword(@CurrentMember Member member,
                                                @Valid @RequestBody MemberRequestDto.EditPasswordDto requestDto) {
@@ -58,6 +62,7 @@ public class MemberController {
     }
 
     @Operation(summary = "닉네임 변경")
+    @ApiErrorCodeExample(ErrorCode.NICKNAME_CONFLICT)
     @PostMapping("/edit/nickname")
     public ResponseEntity<MemberResponseDto.EditNicknameResponseDto> editNickname(@CurrentMember Member member,
                                                                                   @Valid @RequestBody MemberRequestDto.EditNicknameDto requestDto) {
@@ -65,12 +70,14 @@ public class MemberController {
     }
 
     @Operation(summary = "개인 신뢰도 조회")
+    @ApiErrorCodeExample(ErrorCode.MEMBER_NOT_FOUND)
     @PostMapping("/credibility")
     public ResponseEntity<MemberResponseDto.CredibilityResponseDto> getCredibility(@CurrentMember Member member) {
         return ResponseEntity.ok(memberService.getCredibility(member));
     }
 
     @Operation(summary = "관심분야 변경")
+    @ApiErrorCodeExample(ErrorCode.MEMBER_NOT_FOUND)
     @PostMapping("/edit/interests")
     public ResponseEntity<MemberResponseDto.EditInterestResponseDto> editInterests(@CurrentMember Member member,
                                                                                    @Valid @RequestBody MemberRequestDto.AdditionalInfoRequestDto requestDto) {
@@ -78,6 +85,7 @@ public class MemberController {
     }
 
     @Operation(summary = "자기소개 변경")
+    @ApiErrorCodeExample(ErrorCode.MEMBER_NOT_FOUND)
     @PostMapping("/edit/introduce")
     public ResponseEntity<MemberResponseDto.EditIntroduceResponseDto> editInterests(@CurrentMember Member member,
                                                                                    @Valid @RequestBody MemberRequestDto.EditIntroduceDto requestDto) {
@@ -91,6 +99,9 @@ public class MemberController {
     }
 
     @Operation(summary = "프로필 이미지 변경")
+    @ApiErrorCodeExamples({
+            ErrorCode.DELETE_FAILED, ErrorCode.UPLOAD_FAILED
+    })
     @PutMapping(value = "/profile/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MemberResponseDto.ProfileImageResponseDto> updateProfileImage(@RequestPart(value = "file", required = false) MultipartFile file,
                                                                                         @CurrentMember Member member) {
@@ -98,6 +109,7 @@ public class MemberController {
     }
 
     @Operation(summary = "프로필 이미지 삭제")
+    @ApiErrorCodeExample(ErrorCode.DELETE_FAILED)
     @DeleteMapping("/profile/image")
     public ResponseEntity<Void> deleteProfileImage(@CurrentMember Member member) {
         memberService.deleteProfileImage(member);
@@ -112,6 +124,7 @@ public class MemberController {
     }
 
     @Operation(summary = "사용자가 작성한 댓글 조회")
+    @ApiErrorCodeExample(ErrorCode.MEMBER_NOT_FOUND)
     @GetMapping("/replies")
     public ResponseEntity<ReplyResponseDto.MyPageReplyListDto> getReplyList(@CurrentMember Member member,
                                                                             @RequestParam(value = "page", defaultValue = "1", required = false) int page) {
@@ -162,6 +175,9 @@ public class MemberController {
     }
 
     @Operation(summary = "사용자 스터디 별 전체 ToDo 조회 - 월 단위")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_NOT_MEMBER, ErrorCode.STUDY_MEMBER_NOT_FOUND
+    })
     @GetMapping("/to-dos/{studyId}")
     public ResponseEntity<List<ToDoResponseDto.MemberToDoDto>> getToDoListByStudy(@CurrentMember Member member,
                                                                                   @PathVariable(name = "studyId") Long studyId,
@@ -179,6 +195,9 @@ public class MemberController {
     }
 
     @Operation(summary = "사용자 스터디 별 일정 조회 - 월 단위")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_NOT_MEMBER
+    })
     @GetMapping("/schedules/{studyId}")
     public ResponseEntity<List<ScheduleResponseDto.ScheduleDto>> getScheduleListByStudy(@CurrentMember Member member,
                                                                                         @PathVariable(name = "studyId") Long studyId,
@@ -188,6 +207,7 @@ public class MemberController {
     }
 
     @Operation(summary = "사용자가 작성한 스터디 별 팀블로그 커뮤니티 게시글 조회")
+    @ApiErrorCodeExample(ErrorCode.STUDY_NOT_FOUND)
     @GetMapping("/study-posts/{studyId}")
     public ResponseEntity<StudyPostResponseDto.StudyPostListDto> getStudyPostListByStudy(@CurrentMember Member member,
                                                                                          @PathVariable(name = "studyId") Long studyId,
@@ -196,6 +216,9 @@ public class MemberController {
     }
 
     @PutMapping("/reset-password")
+    @ApiErrorCodeExamples({
+            ErrorCode.MEMBER_NOT_FOUND, ErrorCode.DUPLICATE_PASSWORD
+    })
     @Operation(summary = "비밀번호 재설정")
     public ResponseEntity<Boolean> resetPassword(@Valid @RequestBody MemberRequestDto.SignInDto requestDto) {
         memberService.resetPassword(requestDto.email(), requestDto.password());
