@@ -12,10 +12,10 @@ import com.web.stard.domain.study.service.StudyService;
 import com.web.stard.domain.teamBlog.domain.dto.response.StudyPostResponseDto;
 import com.web.stard.domain.teamBlog.service.StudyPostService;
 import com.web.stard.global.domain.CurrentMember;
+import com.web.stard.global.exception.ApiErrorCodeExample;
+import com.web.stard.global.exception.ApiErrorCodeExamples;
+import com.web.stard.global.exception.error.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -55,6 +55,9 @@ public class StudyController {
     }
 
     @Operation(summary = "스터디 모집 게시글 수정")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_FORBIDDEN, ErrorCode.STUDY_NOT_EDITABLE
+    })
     @PutMapping("/{studyId}")
     public ResponseEntity<Long> updateStudy(@CurrentMember Member member, @PathVariable("studyId") Long studyId,
                                             @Valid @RequestBody StudyRequestDto.Save request) {
@@ -64,6 +67,9 @@ public class StudyController {
     }
 
     @Operation(summary = "스터디 모집 게시글 삭제")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_FORBIDDEN
+    })
     @DeleteMapping("/{studyId}")
     public ResponseEntity<Void> deleteStudy(@CurrentMember Member member, @PathVariable("studyId") Long studyId) {
         studyService.deleteStudy(member, studyId);
@@ -71,6 +77,9 @@ public class StudyController {
     }
 
     @Operation(summary = "스터디 모집 게시글 상세 조회")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.MEMBER_NOT_FOUND
+    })
     @GetMapping("/{studyId}")
     public ResponseEntity<StudyResponseDto.DetailInfo> getStudyDetailInfo(@CurrentMember Member member,
                                                                           @PathVariable("studyId") Long studyId) {
@@ -78,6 +87,9 @@ public class StudyController {
     }
 
     @Operation(summary = "스터디 참여 신청")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.MEMBER_NOT_FOUND, ErrorCode.STUDY_DUPLICATE_APPLICATION
+    })
     @PostMapping("/{studyId}/applications")
     public ResponseEntity<?> registerApplication(@CurrentMember Member member, @PathVariable("studyId") Long studyId,
                                                  @Valid @RequestBody StudyRequestDto.ApplyStudy request) {
@@ -86,12 +98,18 @@ public class StudyController {
     }
 
     @Operation(summary = "스터디 지원 동기 정보 조회")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.MEMBER_NOT_FOUND
+    })
     @GetMapping("/{studyId}/application")
     public ResponseEntity<StudyResponseDto.StudyApplicantInfo> getApplicationInfo(@CurrentMember Member member, @PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok().body(studyService.getApplicationInfo(member, studyId));
     }
 
     @Operation(summary = "스터디 신청자 선택")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.MEMBER_NOT_FOUND, ErrorCode.STUDY_APPLICATION_NOT_FOUND
+    })
     @PostMapping("/{studyId}/applications/{applicationId}/assignment")
     public ResponseEntity<?> selectApplicant(@CurrentMember Member member, @PathVariable("studyId") Long studyId,
                                              @PathVariable(name = "applicationId") Long applicationId) {
@@ -100,6 +118,9 @@ public class StudyController {
     }
 
     @Operation(summary = "스터디 신청자 목록 조회")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.MEMBER_NOT_FOUND, ErrorCode.STUDY_FORBIDDEN
+    })
     @GetMapping("/{studyId}/applications")
     public ResponseEntity<List<StudyResponseDto.StudyApplicantInfo>> getApplicants(@CurrentMember Member member,
                                                                                    @PathVariable("studyId") Long studyId) {
@@ -125,47 +146,24 @@ public class StudyController {
     }
 
     @Operation(summary = "스터디 팀블로그 개설")
-    @ApiResponse(
-            responseCode = "400",
-            description = "BAD_REQUEST",
-            content = @Content(
-                    mediaType = "application/json",
-                    examples = {
-                            @ExampleObject(
-                                    name = "스터디 참여자 최소 3명 이상",
-                                    value = """
-                                            {
-                                              "status": 400,
-                                              "message": "스터디 참여자는 최소 3명 이상이어야 합니다.",
-                                              "errorCode": "STUDY_MINIMUM_MEMBERS_REQUIRED"
-                                            }
-                                            """
-                            ),
-                            @ExampleObject(
-                                    name = "스터디 모집 인원 초과",
-                                    value = """
-                                            {
-                                              "status": 400,
-                                              "message": "스터디 모집 인원을 초과했습니다.",
-                                              "errorCode": "STUDY_MEMBER_LIMIT_EXCEEDED"
-                                            }
-                                            """
-                            )
-                    }
-            )
-    )
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_FORBIDDEN, ErrorCode.STUDY_DUPLICATE_OPEN,
+            ErrorCode.STUDY_MINIMUM_MEMBERS_REQUIRED, ErrorCode.STUDY_MEMBER_LIMIT_EXCEEDED
+    })
     @PostMapping("/{studyId}/open")
     public ResponseEntity<Long> openStudy(@CurrentMember Member member, @PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok().body(studyService.openStudy(member, studyId));
     }
 
     @Operation(summary = "팀블로그 스터디원 목록 조회")
+    @ApiErrorCodeExample(ErrorCode.STUDY_NOT_FOUND)
     @GetMapping("/{studyId}/members")
     public ResponseEntity<List<StudyResponseDto.StudyMemberInfo>> getStudyMembers(@CurrentMember Member member, @PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok().body(studyService.getStudyMembers(member, studyId));
     }
 
     @Operation(summary = "팀블로그 id로 스터디 게시글 id 조회", description = "신고 내역에서 대상 글을 조회할 때 사용합니다.")
+    @ApiErrorCodeExample(ErrorCode.STUDY_POST_NOT_FOUND)
     @GetMapping("/{studyPostId}/parent")
     public ResponseEntity<StudyPostResponseDto.StudyPostParentDto> getStudyPostParent(@PathVariable(name = "studyPostId") Long studyPostId,
                                                                                       @CurrentMember Member member) {
@@ -179,6 +177,9 @@ public class StudyController {
     }
 
     @Operation(summary = "진행 중인 스터디 삭제 동의")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_MEMBER_NOT_FOUND
+    })
     @PutMapping("/{studyId}/consent")
     public ResponseEntity<Void> agreeToStudyDeletion(@CurrentMember Member member, @PathVariable(name = "studyId") Long studyId) {
         studyService.agreeToStudyDeletion(member, studyId);
@@ -192,6 +193,9 @@ public class StudyController {
     }
 
     @Operation(summary = "스터디 중단")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_NOT_MEMBER, ErrorCode.STUDY_NOT_CANCELED
+    })
     @DeleteMapping("/{studyId}/cancel")
     public ResponseEntity<Void> canceledStudy(@CurrentMember Member member, @PathVariable(name = "studyId") Long studyId) {
         studyService.canceledStudy(member, studyId);

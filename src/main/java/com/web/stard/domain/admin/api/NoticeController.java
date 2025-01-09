@@ -6,6 +6,9 @@ import com.web.stard.domain.post.domain.dto.request.PostRequestDto;
 import com.web.stard.domain.post.domain.dto.response.PostResponseDto;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.global.domain.CurrentMember;
+import com.web.stard.global.exception.ApiErrorCodeExample;
+import com.web.stard.global.exception.ApiErrorCodeExamples;
+import com.web.stard.global.exception.error.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -22,6 +25,9 @@ public class NoticeController {
     private final PostService postService;
 
     @Operation(summary = "공지사항 등록", description = "관리자만 작성 가능합니다.")
+    @ApiErrorCodeExamples({
+            ErrorCode.MEMBER_NOT_FOUND, ErrorCode.PERMISSION_DENIED
+    })
     @PostMapping
     public ResponseEntity<PostResponseDto.PostDto> createNotice(@Valid @RequestBody PostRequestDto.CreatePostDto requestDto,
                                                                 @CurrentMember Member member) {
@@ -29,6 +35,9 @@ public class NoticeController {
     }
 
     @Operation(summary = "공지사항 수정", description = "관리자만 수정 가능합니다.")
+    @ApiErrorCodeExamples({
+            ErrorCode.POST_NOT_FOUND, ErrorCode.PERMISSION_DENIED, ErrorCode.INVALID_ACCESS
+    })
     @PutMapping("/{noticeId}")
     public ResponseEntity<PostResponseDto.PostDto> updateNotice(@PathVariable(name = "noticeId") Long noticeId,
                                                                 @Valid @RequestBody PostRequestDto.CreatePostDto requestDto,
@@ -37,6 +46,9 @@ public class NoticeController {
     }
 
     @Operation(summary = "공지사항 삭제", description = "관리자만 삭제 가능합니다.")
+    @ApiErrorCodeExamples({
+            ErrorCode.POST_NOT_FOUND, ErrorCode.PERMISSION_DENIED
+    })
     @DeleteMapping("/{noticeId}")
     public ResponseEntity<Long> deleteNotice(@PathVariable(name = "noticeId") Long noticeId, @CurrentMember Member member) {
         return ResponseEntity.ok(postService.deletePost(noticeId, member, PostType.NOTICE));
@@ -49,6 +61,7 @@ public class NoticeController {
     }
 
     @Operation(summary = "공지사항 상세 조회")
+    @ApiErrorCodeExample(ErrorCode.POST_NOT_FOUND)
     @GetMapping("/{noticeId}")
     public ResponseEntity<PostResponseDto.PostDto> getNoticeDetail(@PathVariable(name = "noticeId") Long noticeId, @CurrentMember Member member) {
         return ResponseEntity.ok(postService.getPostDetail(noticeId, member, PostType.NOTICE));

@@ -151,8 +151,8 @@ public class PostServiceImpl implements PostService {
             isAdmin(member);
         } else {
             isPostAuthor(member, post);
-
         }
+
         // 공감 삭제
         starScrapService.deletePostStarScraps(postId, ActType.STAR, TableType.POST);
 

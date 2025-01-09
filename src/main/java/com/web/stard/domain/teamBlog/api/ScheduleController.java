@@ -5,6 +5,8 @@ import com.web.stard.domain.teamBlog.domain.dto.request.ScheduleRequestDto;
 import com.web.stard.domain.teamBlog.domain.dto.response.ScheduleResponseDto;
 import com.web.stard.domain.teamBlog.service.ScheduleService;
 import com.web.stard.global.domain.CurrentMember;
+import com.web.stard.global.exception.ApiErrorCodeExamples;
+import com.web.stard.global.exception.error.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -23,6 +25,9 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @Operation(summary = "일정 등록")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_NOT_IN_PROGRESS, ErrorCode.STUDY_NOT_MEMBER
+    })
     @PostMapping
     public ResponseEntity<ScheduleResponseDto.ScheduleDto> createSchedule(@CurrentMember Member member,
                                                                           @PathVariable(name = "studyId") Long studyId,
@@ -31,6 +36,10 @@ public class ScheduleController {
     }
 
     @Operation(summary = "일정 수정", description = "일정명과 색상만 변경 가능합니다. \n\n 일정일 변경 시 삭제 후 생성해주세요.")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_NOT_IN_PROGRESS,
+            ErrorCode.STUDY_NOT_MEMBER, ErrorCode.STUDY_SCHEDULE_BAD_REQUEST
+    })
     @PutMapping("/{scheduleId}")
     public ResponseEntity<ScheduleResponseDto.ScheduleDto> updateSchedule(@CurrentMember Member member,
                                                                           @PathVariable(name = "studyId") Long studyId,
@@ -40,6 +49,10 @@ public class ScheduleController {
     }
 
     @Operation(summary = "일정 삭제")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_NOT_IN_PROGRESS,
+            ErrorCode.STUDY_NOT_MEMBER, ErrorCode.STUDY_SCHEDULE_BAD_REQUEST
+    })
     @DeleteMapping("/{scheduleId}")
     public ResponseEntity<Long> deleteSchedule(@CurrentMember Member member,
                                                @PathVariable(name = "studyId") Long studyId,
@@ -48,6 +61,9 @@ public class ScheduleController {
     }
 
     @Operation(summary = "스터디 별 일정 조회")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_NOT_MEMBER
+    })
     @GetMapping
     public ResponseEntity<List<ScheduleResponseDto.ScheduleDto>> getStudyScheduleList(@CurrentMember Member member,
                                                                                       @PathVariable(name = "studyId") Long studyId,

@@ -6,6 +6,9 @@ import com.web.stard.domain.post.domain.dto.request.PostRequestDto;
 import com.web.stard.domain.post.domain.dto.response.PostResponseDto;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.global.domain.CurrentMember;
+import com.web.stard.global.exception.ApiErrorCodeExample;
+import com.web.stard.global.exception.ApiErrorCodeExamples;
+import com.web.stard.global.exception.error.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -21,6 +24,9 @@ public class FaqController {
     private final PostService postService;
 
     @Operation(summary = "faq 등록")
+    @ApiErrorCodeExamples({
+            ErrorCode.MEMBER_NOT_FOUND, ErrorCode.PERMISSION_DENIED
+    })
     @PostMapping("/faqs")
     public ResponseEntity<PostResponseDto.PostDto> createFaq(@Valid @RequestBody PostRequestDto.CreatePostDto requestDto,
                                                              @CurrentMember Member member) {
@@ -28,6 +34,9 @@ public class FaqController {
     }
 
     @Operation(summary = "faq 수정")
+    @ApiErrorCodeExamples({
+            ErrorCode.POST_NOT_FOUND, ErrorCode.PERMISSION_DENIED, ErrorCode.INVALID_ACCESS
+    })
     @PutMapping("/faqs/{faqId}")
     public ResponseEntity<PostResponseDto.PostDto> updateFaq(@PathVariable(name = "faqId") Long faqId,
                                                              @Valid @RequestBody PostRequestDto.CreatePostDto requestDto,
@@ -36,12 +45,16 @@ public class FaqController {
     }
 
     @Operation(summary = "faq 삭제")
+    @ApiErrorCodeExamples({
+            ErrorCode.POST_NOT_FOUND, ErrorCode.PERMISSION_DENIED
+    })
     @DeleteMapping("/faqs/{faqId}")
     public ResponseEntity<Long> deleteFaq(@PathVariable(name = "faqId") Long faqId, @CurrentMember Member member) {
         return ResponseEntity.ok(postService.deletePost(faqId, member, PostType.FAQ));
     }
 
     @Operation(summary = "faq 상세 조회")
+    @ApiErrorCodeExample(ErrorCode.POST_NOT_FOUND)
     @GetMapping("/faqs/{faqId}")
     public ResponseEntity<PostResponseDto.PostDto> getFaqDetail(@PathVariable(name = "faqId") Long faqId, @CurrentMember Member member) {
         return ResponseEntity.ok(postService.getPostDetail(faqId, member, PostType.FAQ));

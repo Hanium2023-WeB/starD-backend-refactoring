@@ -2,6 +2,8 @@ package com.web.stard.domain.teamBlog.api;
 
 import com.web.stard.domain.teamBlog.domain.dto.response.Location;
 import com.web.stard.domain.teamBlog.service.LocationService;
+import com.web.stard.global.exception.ApiErrorCodeExamples;
+import com.web.stard.global.exception.error.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotEmpty;
@@ -21,6 +23,9 @@ public class LocationController {
     private final LocationService locationService;
 
     @Operation(summary = "장소 추천 (중간 지점 찾기)")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_NOT_IN_PROGRESS, ErrorCode.GEOCODING_FAILED
+    })
     @GetMapping("/find")
     public ResponseEntity<Location> recommendation(@PathVariable(name = "studyId") Long studyId,
                                                    @RequestParam @NotEmpty(message = "장소 목록은 필수입니다.")

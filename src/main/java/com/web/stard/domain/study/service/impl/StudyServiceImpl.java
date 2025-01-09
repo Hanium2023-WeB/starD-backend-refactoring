@@ -60,7 +60,7 @@ public class StudyServiceImpl implements StudyService {
     @Override
     public void isStudyMember(Study study, Member member) {
         if (!studyMemberRepository.existsByStudyAndMember(study, member)) {
-            throw new CustomException(ErrorCode.STUDY_MEMBER_NOT_FOUND);
+            throw new CustomException(ErrorCode.STUDY_NOT_MEMBER);
         }
     }
 
@@ -504,7 +504,7 @@ public class StudyServiceImpl implements StudyService {
     @Transactional
     public void agreeToStudyDeletion(Member member, Long studyId) {
         Study study = findById(studyId);
-        StudyMember studyMember = studyMemberRepository.findByStudyAndMember(study, member).orElseThrow();
+        StudyMember studyMember = studyMemberRepository.findByStudyAndMember(study, member).orElseThrow(() -> new CustomException(ErrorCode.STUDY_MEMBER_NOT_FOUND));
         studyMember.updateStudyRemoved(true);
     }
 
