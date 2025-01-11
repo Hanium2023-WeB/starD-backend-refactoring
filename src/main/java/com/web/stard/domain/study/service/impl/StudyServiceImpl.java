@@ -566,4 +566,23 @@ public class StudyServiceImpl implements StudyService {
 
         return (applicant == null) ? null : StudyResponseDto.StudyApplicantInfo.toDto(applicant);
     }
+
+    @Override
+    @Transactional
+    public List<StudyResponseDto.StudyTeamBlogInfo> getTeamBlogs(Member member) {
+
+        List<Study> studies = studyRepository.findByMemberAndProgressType(member, ProgressType.IN_PROGRESS);
+        List<StudyResponseDto.StudyTeamBlogInfo> teamBlogs = new ArrayList<>();
+
+        studies.stream().map(study -> {
+            boolean isScrapped = (starScrapService.existsStarScrap(member, study.getId(), ActType.SCRAP, TableType.STUDY) != null);
+
+            StudyResponseDto.StudyTeamBlogInfo info = new StudyResponseDto.StudyTeamBlogInfo(study.getId(), study.getProgressType(),
+                    study.getTitle(), study.getTagText(), study.getActivityDeadline(), study.getActivityType(), isScrapped, study.getField());
+
+            return teamBlogs.add(info);
+        }).toList();
+
+        return teamBlogs;
+    }
 }

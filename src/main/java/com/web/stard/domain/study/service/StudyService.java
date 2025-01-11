@@ -56,4 +56,6 @@ public interface StudyService {
     void canceledStudy(Member member, Long studyId);
 
     StudyResponseDto.StudyApplicantInfo getApplicationInfo(Member member, Long studyId);
+
+    List<StudyResponseDto.StudyTeamBlogInfo> getTeamBlogs(Member member);
 }

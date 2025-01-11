@@ -3,6 +3,7 @@ package com.web.stard.domain.study.repository;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.domain.enums.InterestField;
 import com.web.stard.domain.study.domain.entity.Study;
+import com.web.stard.domain.study.domain.enums.ProgressType;
 import com.web.stard.domain.study.domain.enums.RecruitmentType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,4 +38,6 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
             "WHEN 'UNKNOWN' THEN 3 " +
             "END, s.createdAt DESC")
     Page<Study> findOpenStudiesByMember(@Param("member") Member member, Pageable pageable);
+
+    List<Study> findByMemberAndProgressType(Member member, ProgressType type);
 }
