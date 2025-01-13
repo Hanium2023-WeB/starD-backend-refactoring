@@ -46,7 +46,7 @@ public class CustomStudyRepository {
                         , tagsEq(filter.tags())
                         , fieldEq(filter.field())
                 )
-                .offset(pageable.getPageNumber())
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
