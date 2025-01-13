@@ -41,6 +41,7 @@ public class ReportResponseDto {
         private int currentPage;    // 현재 페이지
         private int totalPages;     // 전체 페이지 수
         private boolean isLast;     // 마지막 페이지 여부
+        private long totalElements;
 
         public static ReportListDto of(Page<ReportResponseDto.ReportDetailDto> reports) {
             return ReportListDto.builder()
@@ -48,6 +49,7 @@ public class ReportResponseDto {
                     .currentPage(reports.getNumber() + 1)
                     .totalPages(reports.getTotalPages())
                     .isLast(reports.isLast())
+                    .totalElements(reports.getTotalElements())
                     .build();
         }
     }
@@ -89,6 +91,7 @@ public class ReportResponseDto {
         private int currentPage;
         private int totalPages;
         private boolean isLast;
+        private long totalElements;
 
         public static ReportMemberListDto of(Page<ReportResponseDto.ReportMember> members) {
             return ReportMemberListDto.builder()
@@ -96,6 +99,7 @@ public class ReportResponseDto {
                     .currentPage(members.getNumber() + 1)
                     .totalPages(members.getTotalPages())
                     .isLast(members.isLast())
+                    .totalElements(members.getTotalElements())
                     .build();
         }
     }

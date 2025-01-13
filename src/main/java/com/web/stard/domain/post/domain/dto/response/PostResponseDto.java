@@ -108,12 +108,15 @@ public class PostResponseDto {
         @Schema(description = "마지막 페이지 여부")
         private boolean isLast;
 
+        private long totalElements;
+
         public static PostListDto of(Page<Post> posts, List<PostDto> postDtos) {
             return PostListDto.builder()
                     .posts(postDtos)
                     .currentPage(posts.getNumber() + 1)
                     .totalPages(posts.getTotalPages())
                     .isLast(posts.isLast())
+                    .totalElements(posts.getTotalElements())
                     .build();
         }
     }
