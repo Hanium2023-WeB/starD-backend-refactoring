@@ -16,10 +16,7 @@ import com.web.stard.global.config.security.JwtTokenProvider;
 import com.web.stard.global.dto.TokenInfo;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
-import com.web.stard.global.utils.CookieUtils;
-import com.web.stard.global.utils.EmailUtils;
-import com.web.stard.global.utils.HeaderUtils;
-import com.web.stard.global.utils.RedisUtils;
+import com.web.stard.global.utils.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +49,7 @@ public class AuthServiceImpl implements AuthService {
 
     private static final String RESET_PW_PREFIX = "ResetPwToken ";
     private final HeaderUtils headerUtils;
+    private FileUtils fileUtils;
 
     /**
      * 회원가입
@@ -87,10 +85,14 @@ public class AuthServiceImpl implements AuthService {
         // UUID 생성 및 키 이름 생성
         if (file != null && !file.isEmpty()) {
             UUID uuid = UUID.randomUUID();
-            String keyName = s3Manager.generateProfileKeyName(uuid);
 
+//            String keyName = s3Manager.generateProfileKeyName(uuid);
             // S3에 파일 업로드
-            fileUrl = s3Manager.uploadFile(keyName, file);
+//            fileUrl = s3Manager.uploadFile(keyName, file);
+
+            // TODO 임시로 로컬에 파일 업로드
+            String keyName = fileUtils.generateProfileKeyName(uuid);
+            fileUtils.uploadFile(keyName, file);
         }
 
         // 프로필 생성

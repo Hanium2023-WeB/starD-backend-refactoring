@@ -63,6 +63,8 @@ public enum ErrorCode {
     STUDY_NOT_MEMBER(HttpStatus.BAD_REQUEST, "스터디 팀원이 아닙니다"),
     @ExplainError("모든 팀원이 동의할 경우에만 스터디 중단이 가능합니다.")
     STUDY_NOT_CANCELED(HttpStatus.BAD_REQUEST, "동의하지 않는 팀원이 있어 스터디 중단할 수 없습니다."),
+    STUDY_APPLICATION_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "참여 중인 스터디가 최대 3개이므로 더 이상 신청할 수 없습니다."),
+
 
     // Study - TeamBlog
     @ExplainError("진행 중인 스터디만 해당 기능을 수행할 수 있습니다.")

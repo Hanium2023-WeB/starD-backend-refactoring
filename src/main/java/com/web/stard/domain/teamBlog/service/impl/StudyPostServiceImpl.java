@@ -21,6 +21,7 @@ import com.web.stard.domain.teamBlog.service.StudyPostService;
 import com.web.stard.global.config.aws.S3Manager;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
+import com.web.stard.global.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +52,7 @@ public class StudyPostServiceImpl implements StudyPostService {
     private final StarScrapService starScrapService;
     private final ReplyRepository replyRepository;
 
+    private final FileUtils fileUtils;
 
     // id로 StudyPost 찾기
     private StudyPost findStudyPost(Long id) {
@@ -77,13 +79,12 @@ public class StudyPostServiceImpl implements StudyPostService {
     /**
      * 스터디 - 커뮤니티 게시글 등록
      *
-     * @param studyId 해당 study 고유 id
-     * @param member 로그인 회원
-     * @param files 다중 파일
+     * @param studyId    해당 study 고유 id
+     * @param member     로그인 회원
+     * @param files      다중 파일
      * @param requestDto title 제목, content 내용
-     *
      * @return StudyPostDto
-     *      studyPostId, studyId, writer 작성자, profileImg 프로필 이미지, title 제목, content 내용, files 파일경로들, isAuthor 작성자 여부
+     * studyPostId, studyId, writer 작성자, profileImg 프로필 이미지, title 제목, content 내용, files 파일경로들, isAuthor 작성자 여부
      */
     @Transactional
     @Override
@@ -113,10 +114,14 @@ public class StudyPostServiceImpl implements StudyPostService {
 
             for (MultipartFile file : files) {
                 UUID uuid = UUID.randomUUID();
-                keyNames.add(s3Manager.generateStudyPostKeyName(uuid));
+
+//                keyNames.add(s3Manager.generateStudyPostKeyName(uuid));
+                keyNames.add(fileUtils.generateStudyPostKeyName(uuid));
             }
 
-            fileUrls = s3Manager.uploadFiles(keyNames, files);
+            // TODO 임시로 로컬에 파일 업로드
+//            fileUrls = s3Manager.uploadFiles(keyNames, files);
+            fileUrls = fileUtils.uploadFiles(keyNames, files);
 
             for (int i = 0; i < fileUrls.size(); i++) {
                 MultipartFile file = files.get(i);
@@ -140,14 +145,13 @@ public class StudyPostServiceImpl implements StudyPostService {
     /**
      * 스터디 - 커뮤니티 게시글 수정
      *
-     * @param studyId 해당 study 고유 id
-     * @param studyPostId  해당 게시글 고유 id
-     * @param member 로그인 회원
-     * @param files 새로 추가할 다중 파일
-     * @param requestDto title 제목, content 내용, deleteFileId 삭제할 StudyPostFileId
-     *
+     * @param studyId     해당 study 고유 id
+     * @param studyPostId 해당 게시글 고유 id
+     * @param member      로그인 회원
+     * @param files       새로 추가할 다중 파일
+     * @param requestDto  title 제목, content 내용, deleteFileId 삭제할 StudyPostFileId
      * @return StudyPostDto
-     *      studyPostId, studyId, writer 작성자, profileImg 프로필 이미지, title 제목, content 내용, files 파일경로들, isAuthor 작성자 여부
+     * studyPostId, studyId, writer 작성자, profileImg 프로필 이미지, title 제목, content 내용, files 파일경로들, isAuthor 작성자 여부
      */
     @Transactional
     @Override
@@ -192,7 +196,9 @@ public class StudyPostServiceImpl implements StudyPostService {
                 return false;
             }); // DB 삭제
 
-            s3Manager.deleteFiles(deleteFileUrls); // s3 삭제
+            // TODO 임시로 로컬에서 파일 삭제
+//            s3Manager.deleteFiles(deleteFileUrls); // s3 삭제
+            fileUtils.deleteFiles(deleteFileUrls);
         }
 
         // 파일 추가
@@ -202,10 +208,13 @@ public class StudyPostServiceImpl implements StudyPostService {
 
             for (MultipartFile file : files) {
                 UUID uuid = UUID.randomUUID();
-                keyNames.add(s3Manager.generateStudyPostKeyName(uuid));
+//                keyNames.add(s3Manager.generateStudyPostKeyName(uuid));
+                keyNames.add(fileUtils.generateStudyPostKeyName(uuid));
             }
 
-            fileUrls = s3Manager.uploadFiles(keyNames, files);
+            // TODO 임시로 로컬에 파일 업로드
+//            fileUrls = s3Manager.uploadFiles(keyNames, files);
+            fileUrls = fileUtils.uploadFiles(keyNames, files);
 
             for (int i = 0; i < fileUrls.size(); i++) {
                 MultipartFile file = files.get(i);
@@ -231,9 +240,9 @@ public class StudyPostServiceImpl implements StudyPostService {
     /**
      * 스터디 - 커뮤니티 게시글 삭제
      *
-     * @param studyId 해당 study 고유 id
-     * @param studyPostId  해당 게시글 고유 id
-     * @param member  로그인 회원
+     * @param studyId     해당 study 고유 id
+     * @param studyPostId 해당 게시글 고유 id
+     * @param member      로그인 회원
      */
     @Transactional
     @Override
@@ -251,7 +260,9 @@ public class StudyPostServiceImpl implements StudyPostService {
         // 파일 삭제
         if (studyPost.getFiles() != null) {
             List<String> fileUrls = studyPost.getFiles().stream().map(StudyPostFile::getFileUrl).toList();
-            s3Manager.deleteFiles(fileUrls);
+            // TODO 임시로 로컬에서 파일 삭제
+//            s3Manager.deleteFiles(fileUrls);
+            fileUtils.deleteFiles(fileUrls);
         }
 
         // 스크랩 삭제
@@ -268,12 +279,11 @@ public class StudyPostServiceImpl implements StudyPostService {
     /**
      * 스터디 - 커뮤니티 게시글 상세조회
      *
-     * @param studyId 해당 study 고유 id
-     * @param studyPostId  해당 게시글 고유 id
-     * @param member 로그인 회원
-     *
+     * @param studyId     해당 study 고유 id
+     * @param studyPostId 해당 게시글 고유 id
+     * @param member      로그인 회원
      * @return StudyPostDto
-     *      studyPostId, studyId, writer 작성자, profileImg 프로필 이미지, title 제목, content 내용, files 파일경로들, isAuthor 작성자 여부
+     * studyPostId, studyId, writer 작성자, profileImg 프로필 이미지, title 제목, content 내용, files 파일경로들, isAuthor 작성자 여부
      */
     @Transactional
     @Override
@@ -311,12 +321,11 @@ public class StudyPostServiceImpl implements StudyPostService {
      * 스터디 - 커뮤니티 게시글 전체 조회
      *
      * @param studyId 해당 study 고유 id
-     * @param member 로그인 회원
-     * @param page 조회할 페이지 번호
-     *
+     * @param member  로그인 회원
+     * @param page    조회할 페이지 번호
      * @return StudyPostListDto
-     *      studyId, StudyPostItem, currentPage 현재 페이지, totalPages 전체 페이지 수, isLast 마지막 페이지 여부
-     *      StudyPostItem : studyPostId, writer 작성자, profileImg 프로필 이미지, title 제목, hit 조회수, scrapCount 스크랩 개수, totalFiles 파일 수, existsScrap 스크랩 여부
+     * studyId, StudyPostItem, currentPage 현재 페이지, totalPages 전체 페이지 수, isLast 마지막 페이지 여부
+     * StudyPostItem : studyPostId, writer 작성자, profileImg 프로필 이미지, title 제목, hit 조회수, scrapCount 스크랩 개수, totalFiles 파일 수, existsScrap 스크랩 여부
      */
     @Transactional(readOnly = true)
     @Override
@@ -325,7 +334,7 @@ public class StudyPostServiceImpl implements StudyPostService {
         studyService.isStudyMember(study, member);
 
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
+        Pageable pageable = PageRequest.of(page - 1, 10, sort);
 
         Page<StudyPost> studyPosts = studyPostRepository.findByStudy(study, pageable);
 
@@ -339,12 +348,11 @@ public class StudyPostServiceImpl implements StudyPostService {
      *
      * @param studyId 해당 study 고유 id
      * @param keyword 조회할 키워드
-     * @param member 로그인 회원
-     * @param page 조회할 페이지 번호
-     *
+     * @param member  로그인 회원
+     * @param page    조회할 페이지 번호
      * @return StudyPostListDto
-     *      studyId, StudyPostItem, currentPage 현재 페이지, totalPages 전체 페이지 수, isLast 마지막 페이지 여부
-     *      StudyPostItem : studyPostId, writer 작성자, profileImg 프로필 이미지, title 제목, hit 조회수, scrapCount 스크랩 개수, totalFiles 파일 수, existsScrap 스크랩 여부
+     * studyId, StudyPostItem, currentPage 현재 페이지, totalPages 전체 페이지 수, isLast 마지막 페이지 여부
+     * StudyPostItem : studyPostId, writer 작성자, profileImg 프로필 이미지, title 제목, hit 조회수, scrapCount 스크랩 개수, totalFiles 파일 수, existsScrap 스크랩 여부
      */
     @Transactional(readOnly = true)
     @Override
@@ -353,7 +361,7 @@ public class StudyPostServiceImpl implements StudyPostService {
         studyService.isStudyMember(study, member);
 
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
+        Pageable pageable = PageRequest.of(page - 1, 10, sort);
 
         Page<StudyPost> studyPosts = studyPostRepository.findByStudyAndTitleContainingOrContentContaining(study, keyword, keyword, pageable);
 
@@ -366,12 +374,11 @@ public class StudyPostServiceImpl implements StudyPostService {
      * 사용자 - 스터디 팀블로그 커뮤니티 작성한 게시글 스터디별 조회
      *
      * @param studyId 해당 study 고유 id
-     * @param member 로그인 회원
-     * @param page 조회할 페이지 번호
-     *
+     * @param member  로그인 회원
+     * @param page    조회할 페이지 번호
      * @return StudyPostListDto
-     *      studyId, StudyPostItem, currentPage 현재 페이지, totalPages 전체 페이지 수, isLast 마지막 페이지 여부
-     *      StudyPostItem : studyPostId, writer 작성자, profileImg 프로필 이미지, title 제목, hit 조회수, scrapCount 스크랩 개수, totalFiles 파일 수, existsScrap 스크랩 여부
+     * studyId, StudyPostItem, currentPage 현재 페이지, totalPages 전체 페이지 수, isLast 마지막 페이지 여부
+     * StudyPostItem : studyPostId, writer 작성자, profileImg 프로필 이미지, title 제목, hit 조회수, scrapCount 스크랩 개수, totalFiles 파일 수, existsScrap 스크랩 여부
      */
     @Transactional(readOnly = true)
     @Override
@@ -379,7 +386,7 @@ public class StudyPostServiceImpl implements StudyPostService {
         Study study = studyService.findById(studyId);
 
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
+        Pageable pageable = PageRequest.of(page - 1, 10, sort);
 
         Page<StudyPost> studyPosts = studyPostRepository.findByStudyMember_MemberAndStudy(member, study, pageable);
 
@@ -391,10 +398,9 @@ public class StudyPostServiceImpl implements StudyPostService {
     /**
      * 파일 다운로드
      *
-     * @param studyId 해당 study 고유 id
+     * @param studyId         해당 study 고유 id
      * @param studyPostFileId 해당 studyPost 파일 고유 id
-     * @param member 로그인 회원
-     *
+     * @param member          로그인 회원
      */
     @Override
     public ResponseEntity<byte[]> downloadFile(Long studyId, Long studyPostFileId, Member member) {
@@ -404,7 +410,9 @@ public class StudyPostServiceImpl implements StudyPostService {
         StudyPostFile studyPostFile = studyPostFileRepository.findById(studyPostFileId)
                 .orElseThrow(() -> new CustomException(ErrorCode.STUDY_POST_FILE_NOT_FOUND));
 
-        try (InputStream inputStream = s3Manager.downloadFile(studyPostFile.getFileUrl())) {
+        // TODO 임시로 로컬에서 파일 다운로드
+//        try (InputStream inputStream = s3Manager.downloadFile(studyPostFile.getFileUrl())) {
+        try (InputStream inputStream = fileUtils.downloadFile(studyPostFile.getFileUrl())) {
             byte[] bytes = inputStream.readAllBytes();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);

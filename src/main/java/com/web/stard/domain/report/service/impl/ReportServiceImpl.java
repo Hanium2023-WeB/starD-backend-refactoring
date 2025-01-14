@@ -30,6 +30,7 @@ import com.web.stard.domain.teamBlog.repository.StudyPostRepository;
 import com.web.stard.global.config.aws.S3Manager;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
+import com.web.stard.global.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,7 @@ public class ReportServiceImpl implements ReportService {
     private final StarScrapRepository starScrapRepository;
     private final S3Manager s3Manager;
     private final MemberService memberService;
+    private final FileUtils fileUtils;
 
     // 관리자인지 확인
     private void isAdmin(Member member) {
@@ -251,7 +253,9 @@ public class ReportServiceImpl implements ReportService {
             replyRepository.deleteAllByTargetIdAndPostType(targetId, type);
             if (studyPost.getFiles() != null) {
                 List<String> fileUrls = studyPost.getFiles().stream().map(StudyPostFile::getFileUrl).toList();
-                s3Manager.deleteFiles(fileUrls);
+                // TODO 임시로 로컬에서 파일 삭제
+//                s3Manager.deleteFiles(fileUrls);
+                fileUtils.deleteFiles(fileUrls);
             }
             starScrapRepository.deleteByActTypeAndTableTypeAndTargetId(ActType.SCRAP, TableType.STUDYPOST, studyPost.getId());
             studyPostRepository.delete(studyPost);

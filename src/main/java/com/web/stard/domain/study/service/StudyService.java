@@ -57,5 +57,5 @@ public interface StudyService {
 
     StudyResponseDto.StudyApplicantInfo getApplicationInfo(Member member, Long studyId);
 
-    List<StudyResponseDto.StudyTeamBlogInfo> getTeamBlogs(Member member);
+    List<StudyResponseDto.DetailInfo> getTeamBlogs(Member member);
 }
