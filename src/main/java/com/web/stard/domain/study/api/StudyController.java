@@ -201,4 +201,13 @@ public class StudyController {
         studyService.canceledStudy(member, studyId);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "진행 중인 스터디 팀 블로그 목록 조회")
+    @ApiErrorCodeExamples({
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_NOT_MEMBER, ErrorCode.STUDY_NOT_CANCELED
+    })
+    @GetMapping("/teamBlogs")
+    public ResponseEntity<List<StudyResponseDto.StudyTeamBlogInfo>> getTeamBlogs(@CurrentMember Member member) {
+        return ResponseEntity.ok().body(studyService.getTeamBlogs(member));
+    }
 }

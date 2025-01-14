@@ -22,6 +22,34 @@ import java.util.List;
 
 public class StudyResponseDto {
 
+    public record StudyTeamBlogInfo(
+            @Schema(description = "스터디 팀블로그 아이디")
+            Long studyId,
+
+            @Schema(description = "스터디 진행 상황")
+            ProgressType progressType,
+
+            @Schema(description = "스터디 제목")
+            String title,
+
+            @Schema(description = "스터디 태그")
+            String tagText,
+
+            @Schema(description = "스터디 활동 마감일")
+            LocalDate activityDeadline,
+
+            @Schema(description = "스터디 활동 타입")
+            ActivityType activityType,
+
+            @Schema(description = "스크랩 여부")
+            boolean existsScrap,
+
+            @Schema(description = "스터디 분야")
+            InterestField field
+    ) {
+
+    }
+
     @Getter
     @NoArgsConstructor
     public static class StudyInfo {

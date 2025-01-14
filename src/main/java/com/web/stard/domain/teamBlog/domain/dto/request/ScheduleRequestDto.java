@@ -6,13 +6,18 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 public class ScheduleRequestDto {
 
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(name = "ScheduleCreateDto")
     public static class CreateDto {
         @Schema(description = "일정명")
         @NotBlank(message = "일정명을 입력하세요.")
@@ -38,6 +43,9 @@ public class ScheduleRequestDto {
     }
 
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(name = "ScheduleUpdateDto")
     public static class UpdateDto {
         @Schema(description = "일정명")
         @NotBlank(message = "일정명을 입력하세요.")

@@ -38,8 +38,9 @@ public class CookieUtils {
     }
 
     public HttpServletResponse deleteRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
-        ResponseCookie cookie = ResponseCookie.from(COOKIE_NAME, refreshToken)
+        ResponseCookie cookie = ResponseCookie.from(COOKIE_NAME, null)
                 .maxAge(0)
+                .path("/")
                 .build();
         response.addHeader("Set-Cookie", cookie.toString());
         return response;
