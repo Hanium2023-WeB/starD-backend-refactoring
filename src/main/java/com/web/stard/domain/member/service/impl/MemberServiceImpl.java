@@ -38,6 +38,7 @@ import com.web.stard.domain.teamBlog.repository.StudyPostRepository;
 import com.web.stard.global.config.aws.S3Manager;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
+import com.web.stard.global.utils.FileUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -77,6 +78,8 @@ public class MemberServiceImpl implements MemberService {
     private final AssigneeRepository assigneeRepository;
     private final EvaluationRepository evaluationRepository;
     private final ChatMessageRepository chatMessageRepository;
+
+    private final FileUtils fileUtils;
 
     /**
      * 현재 비밀번호 확인
@@ -209,7 +212,9 @@ public class MemberServiceImpl implements MemberService {
         // 기존 이미지 삭제
         Profile profile = memberRepository.findByIdWithProfile(member.getId()).getProfile();
         if (profile.getImgUrl() != null) {
-            s3Manager.deleteFile(profile.getImgUrl());  // S3에서 파일 삭제
+            // TODO 임시로 로컬에서 삭제
+//            s3Manager.deleteFile(profile.getImgUrl());  // S3에서 파일 삭제
+            fileUtils.deleteFile(profile.getImgUrl());
             profile.deleteImageUrl();   // DB에서 이미지 url 삭제
         }
 
@@ -217,9 +222,14 @@ public class MemberServiceImpl implements MemberService {
         String fileUrl = null;
         if (file != null && !file.isEmpty()) {
             UUID uuid = UUID.randomUUID();
-            String keyName = s3Manager.generateProfileKeyName(uuid);
+//            String keyName = s3Manager.generateProfileKeyName(uuid);
+//
+//            fileUrl = s3Manager.uploadFile(keyName, file);  // S3에 파일 업로드
 
-            fileUrl = s3Manager.uploadFile(keyName, file);  // S3에 파일 업로드
+            // TODO 임시로 로컬에 파일 저장
+            String keyName = fileUtils.generateProfileKeyName(uuid);
+            fileUrl = fileUtils.uploadFile(keyName, file);
+
             profile.updateImageUrl(fileUrl);    // DB 이미지 url 변경
         }
 
@@ -231,7 +241,9 @@ public class MemberServiceImpl implements MemberService {
     public void deleteProfileImage(Member member) {
         Profile profile = memberRepository.findByIdWithProfile(member.getId()).getProfile();
         if (profile.getImgUrl() != null) {
-            s3Manager.deleteFile(profile.getImgUrl());
+            // TODO 임시로 로컬에서 삭제
+//            s3Manager.deleteFile(profile.getImgUrl());
+            fileUtils.deleteFile(profile.getImgUrl());
             profile.deleteImageUrl();
         }
     }
@@ -288,7 +300,9 @@ public class MemberServiceImpl implements MemberService {
                         .stream()
                         .map(StudyPostFile::getFileUrl)
                         .toList();
-                s3Manager.deleteFiles(fileUrls); // S3 파일 삭제
+                // TODO 임시로 로컬에서 파일 삭제
+//                s3Manager.deleteFiles(fileUrls); // S3 파일 삭제
+                fileUtils.deleteFiles(fileUrls);
             }
 
             replies = replyRepository.findAllByTargetIdAndPostType(studyPost.getId(), PostType.STUDYPOST);
@@ -374,7 +388,9 @@ public class MemberServiceImpl implements MemberService {
 
         // 프로필 삭제
         if (member.getProfile().getImgUrl() != null) {
-            s3Manager.deleteFile(member.getProfile().getImgUrl());  // S3에서 파일 삭제
+            // TODO 임시로 로컬에서 삭제
+//            s3Manager.deleteFile(member.getProfile().getImgUrl());  // S3에서 파일 삭제
+            fileUtils.deleteFile(member.getProfile().getImgUrl());
         }
         profileRepository.deleteById(member.getProfile().getId());
     }

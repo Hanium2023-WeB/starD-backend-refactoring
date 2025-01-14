@@ -159,6 +159,10 @@ public class StudyServiceImpl implements StudyService {
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         Study study = findById(studyId);
 
+        if (studyMemberRepository.countByMember(member) > 3) {
+            throw new CustomException(ErrorCode.STUDY_APPLICATION_LIMIT_EXCEEDED);
+        }
+
         if (studyApplicantRepository.existsByMemberAndStudy(member, study)) {
             throw new CustomException(ErrorCode.STUDY_DUPLICATE_APPLICATION);
         }
@@ -569,20 +573,13 @@ public class StudyServiceImpl implements StudyService {
 
     @Override
     @Transactional
-    public List<StudyResponseDto.StudyTeamBlogInfo> getTeamBlogs(Member member) {
+    public List<StudyResponseDto.DetailInfo> getTeamBlogs(Member member) {
+        List<Study> studies = studyRepository.findByOnGoingTeamBlogs(member, ProgressType.IN_PROGRESS);
 
-        List<Study> studies = studyRepository.findByMemberAndProgressType(member, ProgressType.IN_PROGRESS);
-        List<StudyResponseDto.StudyTeamBlogInfo> teamBlogs = new ArrayList<>();
-
-        studies.stream().map(study -> {
+        return studies.stream().map(study -> {
+            int scrapCount = starScrapService.findStarScrapCount(study.getId(), ActType.SCRAP, TableType.STUDY);
             boolean isScrapped = (starScrapService.existsStarScrap(member, study.getId(), ActType.SCRAP, TableType.STUDY) != null);
-
-            StudyResponseDto.StudyTeamBlogInfo info = new StudyResponseDto.StudyTeamBlogInfo(study.getId(), study.getProgressType(),
-                    study.getTitle(), study.getTagText(), study.getActivityDeadline(), study.getActivityType(), isScrapped, study.getField());
-
-            return teamBlogs.add(info);
+            return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount, isScrapped);
         }).toList();
-
-        return teamBlogs;
     }
 }
