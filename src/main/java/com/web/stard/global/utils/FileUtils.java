@@ -86,7 +86,7 @@ public class FileUtils {
 
         try {
             // 파일 저장 경로와 파일명으로 파일 객체 생성
-            File saveFile = new File(getUploadRootPath() + keyName, keyName + extension);
+            File saveFile = new File(getUploadRootPath(), keyName + extension);
 
             // 업로드한 파일 데이터를 지정한 경로에 저장
             file.transferTo(saveFile);
