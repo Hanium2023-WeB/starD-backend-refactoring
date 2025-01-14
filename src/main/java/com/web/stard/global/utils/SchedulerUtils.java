@@ -3,7 +3,7 @@ package com.web.stard.global.utils;
 import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.domain.member.service.MemberService;
-import com.web.stard.domain.report.service.ReportService;
+import com.web.stard.domain.study.domain.enums.ProgressType;
 import com.web.stard.domain.study.domain.enums.RecruitmentType;
 import com.web.stard.domain.study.repository.StudyRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +31,15 @@ public class SchedulerUtils {
         studyRepository.findByRecruitmentDeadlineBeforeAndRecruitmentType(LocalDate.now(), RecruitmentType.RECRUITING)
                 .forEach(study -> study.updateRecruitmentType(RecruitmentType.COMPLETED));
         log.info("Updating recruitment status for studies with past deadlines completed");
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    @Transactional
+    public void updateProgressStatusToCompleted() {
+        log.info("Updating progress status for studies with past deadline started");
+        studyRepository.findByActivityDeadlineBeforeAndProgressType(LocalDate.now(), ProgressType.IN_PROGRESS)
+                .forEach(study -> study.updateProcessType(ProgressType.COMPLETED));
+        log.info("Updating progress status for studies with past deadline completed");
     }
 
     /**
