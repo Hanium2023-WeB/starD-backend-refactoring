@@ -88,7 +88,8 @@ public class StudyController {
 
     @Operation(summary = "스터디 참여 신청")
     @ApiErrorCodeExamples({
-            ErrorCode.STUDY_NOT_FOUND, ErrorCode.MEMBER_NOT_FOUND, ErrorCode.STUDY_DUPLICATE_APPLICATION
+            ErrorCode.STUDY_NOT_FOUND, ErrorCode.MEMBER_NOT_FOUND, ErrorCode.STUDY_DUPLICATE_APPLICATION,
+            ErrorCode.STUDY_APPLICATION_LIMIT_EXCEEDED
     })
     @PostMapping("/{studyId}/applications")
     public ResponseEntity<?> registerApplication(@CurrentMember Member member, @PathVariable("studyId") Long studyId,
@@ -207,7 +208,7 @@ public class StudyController {
             ErrorCode.STUDY_NOT_FOUND, ErrorCode.STUDY_NOT_MEMBER, ErrorCode.STUDY_NOT_CANCELED
     })
     @GetMapping("/teamBlogs")
-    public ResponseEntity<List<StudyResponseDto.StudyTeamBlogInfo>> getTeamBlogs(@CurrentMember Member member) {
+    public ResponseEntity<List<StudyResponseDto.DetailInfo>> getTeamBlogs(@CurrentMember Member member) {
         return ResponseEntity.ok().body(studyService.getTeamBlogs(member));
     }
 }

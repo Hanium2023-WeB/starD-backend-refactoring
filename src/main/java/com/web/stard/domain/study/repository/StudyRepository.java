@@ -20,6 +20,8 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
 
     List<Study> findByRecruitmentDeadlineBeforeAndRecruitmentType(LocalDate deadLine, RecruitmentType type);
 
+    List<Study> findByActivityDeadlineBeforeAndProgressType(LocalDate deadLine, ProgressType type);
+
     @Query("SELECT s.field FROM Study s " +
             "group by s.field order by count(s.field) desc")
     List<InterestField> getTop5HotStudyFields();
@@ -39,5 +41,7 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
             "END, s.createdAt DESC")
     Page<Study> findOpenStudiesByMember(@Param("member") Member member, Pageable pageable);
 
-    List<Study> findByMemberAndProgressType(Member member, ProgressType type);
+    @Query("SELECT s From Study s join StudyMember sm ON s = sm.study " +
+            "WHERE sm.member = :member and s.progressType = :type")
+    List<Study> findByOnGoingTeamBlogs(@Param("member")Member member, @Param("type")ProgressType type);
 }
