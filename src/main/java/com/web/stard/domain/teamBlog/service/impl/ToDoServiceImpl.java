@@ -181,7 +181,7 @@ public class ToDoServiceImpl implements ToDoService {
         }
 
         // member == assignee의 member 확인 (본인 거 외에는 상태 변화 금지)
-        if (assignee.getStudyMember().getId() != member.getId()) {
+        if (assignee.getStudyMember().getMember().getId() != member.getId()) {
             throw new CustomException(ErrorCode.STUDY_TODO_FORBIDDEN);
         }
 

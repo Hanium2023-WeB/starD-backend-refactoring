@@ -20,12 +20,16 @@ public class ToDoResponseDto {
         @Schema(description = "담당자 닉네임")
         private String nickname;
 
+        @Schema(description = "담당자 이메일")
+        private String email;
+
         @Schema(description = "담당자 - 투두 완료 상태")
         private boolean toDoStatus;
 
         public static AssigneeDto from (Assignee assignee) {
             return AssigneeDto.builder()
                     .assigneeId(assignee.getId())
+                    .email(assignee.getStudyMember().getMember().getEmail())
                     .nickname(assignee.getStudyMember().getMember().getNickname())
                     .toDoStatus(assignee.getToDoStatus())
                     .build();
