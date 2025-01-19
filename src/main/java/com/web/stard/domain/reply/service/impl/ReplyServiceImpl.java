@@ -14,6 +14,7 @@ import com.web.stard.domain.member.domain.entity.Member;
 import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.domain.study.domain.entity.Study;
 import com.web.stard.domain.study.repository.StudyRepository;
+import com.web.stard.domain.teamBlog.domain.entity.StudyPost;
 import com.web.stard.domain.teamBlog.repository.StudyPostRepository;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
@@ -173,12 +174,20 @@ public class ReplyServiceImpl implements ReplyService {
         Member user = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC, "createdAt"));   // 최신 순
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));   // 최신 순
         Pageable pageable = PageRequest.of(page - 1, 10, sort);
 
         Page<Reply> replies = replyRepository.findAllByMember(member, pageable);
 
-        return ReplyResponseDto.MyPageReplyListDto.of(replies, user);
+        List<ReplyResponseDto.MyPageReplyDto> replyDtos = replies.stream().map(reply -> {
+            StudyPost studyPost = null;
+            if (reply.getPostType().equals(PostType.STUDYPOST)) {
+                studyPost = studyPostRepository.findById(reply.getTargetId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+            }
+            return ReplyResponseDto.MyPageReplyDto.of(reply, studyPost);
+        }).toList();
+
+        return ReplyResponseDto.MyPageReplyListDto.of(replies, user, replyDtos);
     }
 
     @Override

@@ -1,8 +1,10 @@
 package com.web.stard.domain.reply.domain.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.web.stard.domain.post.domain.enums.PostType;
 import com.web.stard.domain.reply.domain.entity.Reply;
 import com.web.stard.domain.member.domain.entity.Member;
+import com.web.stard.domain.teamBlog.domain.entity.StudyPost;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -91,7 +93,11 @@ public class ReplyResponseDto {
         @Schema(description = "댓글이 작성된 글 타입 (COMM, STUDY, STUDYPOST, QNA)")
         private PostType postType;
 
-        public static MyPageReplyDto of(Reply reply) {
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @Schema(description = "팀 블로그 내 커뮤니티에 작성된 경우 팀 블로그 id")
+        private Long studyId;
+
+        public static MyPageReplyDto of(Reply reply, StudyPost studyPost) {
             return MyPageReplyDto.builder()
                     .replyId(reply.getId())
                     .content(reply.getContent())
@@ -99,6 +105,7 @@ public class ReplyResponseDto {
                     .updatedAt(reply.getUpdatedAt())
                     .targetId(reply.getTargetId())
                     .postType(reply.getPostType())
+                    .studyId((studyPost == null) ? null : studyPost.getStudy().getId())
                     .build();
         }
     }
@@ -124,26 +131,28 @@ public class ReplyResponseDto {
         @Schema(description = "마지막 페이지 여부")
         private boolean isLast;
 
-        public static MyPageReplyListDto of(Page<Reply> replies, Member member) {
-            List<MyPageReplyDto> replyDtos = replies.getContent().stream().map(MyPageReplyDto::of).toList();
+        @Schema(description = "총 데이터 건 수")
+        private long totalElements;
 
+        public static MyPageReplyListDto of(Page<Reply> replies, Member member, List<MyPageReplyDto> dtos) {
             return MyPageReplyListDto.builder()
-                    .replies(replyDtos)
+                    .replies(dtos)
                     .writer(member.getNickname())
                     .profileImg(member.getProfile().getImgUrl())
                     .currentPage(replies.getNumber() + 1)
                     .totalPages(replies.getTotalPages())
                     .isLast(replies.isLast())
+                    .totalElements(replies.getTotalElements())
                     .build();
         }
     }
-    
+
     @Getter
     @Builder
     public static class ReplyParentDto {
         @Schema(description = "댓글의 부모 게시글 아이디")
         private Long parentId;
-        
+
         @Schema(description = "댓글의 부모 게시글 타입")
         private PostType parentPostType;
     }
