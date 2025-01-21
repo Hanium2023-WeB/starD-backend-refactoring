@@ -67,6 +67,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/faqs-and-qnas/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/qnas/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/replies/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/profile/**").permitAll()
                         .anyRequest().authenticated() // 다른 모든 요청은 인증 필요
                 )
                 .sessionManagement(session -> {

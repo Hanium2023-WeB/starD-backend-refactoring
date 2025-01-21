@@ -88,14 +88,28 @@ public class MemberController {
     @ApiErrorCodeExample(ErrorCode.MEMBER_NOT_FOUND)
     @PostMapping("/edit/introduce")
     public ResponseEntity<MemberResponseDto.EditIntroduceResponseDto> editInterests(@CurrentMember Member member,
-                                                                                   @Valid @RequestBody MemberRequestDto.EditIntroduceDto requestDto) {
+                                                                                    @Valid @RequestBody MemberRequestDto.EditIntroduceDto requestDto) {
         return ResponseEntity.ok(memberService.editIntroduce(member, requestDto));
     }
 
-    @Operation(summary = "프로필 이미지 조회")
+    @Operation(summary = "프로필 이미지 uri 조회")
     @GetMapping("/profile/image")
     public ResponseEntity<MemberResponseDto.ProfileImageResponseDto> getProfileImage(@CurrentMember Member member) {
         return ResponseEntity.ok(memberService.getProfileImage(member));
+    }
+
+    @Operation(summary = "프로필 조회")
+    @GetMapping("/profiles")
+    public ResponseEntity<MemberResponseDto.MemberProfileDto> getProfile(@CurrentMember Member member) {
+        return ResponseEntity.ok().body(memberService.getProfile(member));
+    }
+
+    @Operation(summary = "프로필 수정")
+    @PutMapping(value ="/profiles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MemberResponseDto.MemberProfileDto> updateProfile(@CurrentMember Member member,
+                                                                            @RequestPart(value = "image", required = false) MultipartFile image,
+                                                                            @Valid @RequestPart(value = "introduce") MemberRequestDto.EditProfileDto request) {
+        return ResponseEntity.ok().body(memberService.updateProfile(member, image, request));
     }
 
     @Operation(summary = "프로필 이미지 변경")
@@ -110,7 +124,7 @@ public class MemberController {
 
     @Operation(summary = "프로필 이미지 삭제")
     @ApiErrorCodeExample(ErrorCode.DELETE_FAILED)
-    @DeleteMapping("/profile/image")
+    @DeleteMapping("/profiles/images")
     public ResponseEntity<Void> deleteProfileImage(@CurrentMember Member member) {
         memberService.deleteProfileImage(member);
         return ResponseEntity.noContent().build();

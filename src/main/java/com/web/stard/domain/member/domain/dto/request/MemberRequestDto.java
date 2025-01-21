@@ -92,7 +92,8 @@ public class MemberRequestDto {
     }
 
     @Getter
-    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class AdditionalInfoRequestDto {
         private Long memberId;
         private List<String> interests;
@@ -125,5 +126,15 @@ public class MemberRequestDto {
     ) {
 
     }
+
+
+    public record EditProfileDto(
+
+            @Schema(example = "안녕하세요!", description = "자기소개")
+            @Size(max = 15, message = "자기소개는 최대 {max}자까지 입력 가능합니다.")
+            String introduce
+    ) {
+    }
+
 
 }

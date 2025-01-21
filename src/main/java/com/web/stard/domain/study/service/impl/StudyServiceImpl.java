@@ -21,6 +21,7 @@ import com.web.stard.domain.study.service.StudyService;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,9 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class StudyServiceImpl implements StudyService {
+
+    @Value("${base.back-end.url}")
+    private String backEndUrl;
 
     private final StarScrapService starScrapService;
     private final StudyRepository studyRepository;
@@ -238,6 +242,11 @@ public class StudyServiceImpl implements StudyService {
         if (!Objects.isNull(member)) {
             List<Long> scraps = starScrapRepository.findStudiesByMember(member.getId()).stream().map(Study::getId).toList();
             studyInfos.forEach(studyInfo -> {
+
+                if(studyInfo.getImgUrl() != null) {
+                    studyInfo.updateImageUrl(backEndUrl + studyInfo.getImgUrl());
+                }
+
                 if (scraps.contains(studyInfo.getStudyId())) {
                     studyInfo.updateScarpStatus(true);
                 } else {

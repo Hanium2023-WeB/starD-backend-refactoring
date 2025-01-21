@@ -49,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
 
     private static final String RESET_PW_PREFIX = "ResetPwToken ";
     private final HeaderUtils headerUtils;
-    private FileUtils fileUtils;
+    private final FileUtils fileUtils;
 
     /**
      * 회원가입
@@ -92,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
 
             // TODO 임시로 로컬에 파일 업로드
             String keyName = fileUtils.generateProfileKeyName(uuid);
-            fileUtils.uploadFile(keyName, file);
+            fileUrl = fileUtils.uploadFile(keyName, file);
         }
 
         // 프로필 생성

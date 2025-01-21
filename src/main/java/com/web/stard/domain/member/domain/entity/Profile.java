@@ -41,6 +41,8 @@ public class Profile {
     }
 
     public void updateIntroduce(String introduce) {
-        this.introduce = introduce;
+        if (!this.introduce.equals(introduce)) {
+            this.introduce = introduce;
+        }
     }
 }

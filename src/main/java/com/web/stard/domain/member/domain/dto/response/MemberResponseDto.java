@@ -12,6 +12,19 @@ import java.util.List;
 
 public class MemberResponseDto {
 
+    public record MemberProfileDto(
+            @Schema(description = "닉네임")
+            String nickname,
+
+            @Schema(description = "자기 소개")
+            String introduce,
+
+            @Schema(description = "프로필 이미지 url")
+            String imageUrl
+    ) {
+
+    }
+
     @Getter
     @Builder
     public static class SignupResultDto {
@@ -50,6 +63,10 @@ public class MemberResponseDto {
     @Getter
     @Builder
     public static class InfoDto {
+
+        @Schema(description = "회원 고유 id")
+        private Long memberId;
+
         @Schema(description = "닉네임")
         private String nickname;
 
@@ -58,6 +75,7 @@ public class MemberResponseDto {
 
         public static InfoDto of(Member member, List<Interest> interests) {
             return InfoDto.builder()
+                    .memberId(member.getId())
                     .nickname(member.getNickname())
                     .interests(interests.stream().map(interest -> interest.getInterestField().getDescription()).toList())
                     .build();

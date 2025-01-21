@@ -11,9 +11,11 @@ import com.web.stard.domain.study.domain.enums.ApplicationStatus;
 import com.web.stard.domain.study.domain.enums.ProgressType;
 import com.web.stard.domain.study.domain.enums.RecruitmentType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
@@ -21,6 +23,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class StudyResponseDto {
+
+    @Value("${base.back-end.url}")
+    private static String backEndUrl;
 
     public record StudyTeamBlogInfo(
             @Schema(description = "스터디 팀블로그 아이디")
@@ -52,6 +57,7 @@ public class StudyResponseDto {
 
     @Getter
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class StudyInfo {
 
         @Schema(description = "스터디 게시글 아이디")
@@ -110,6 +116,8 @@ public class StudyResponseDto {
         public void updateScarpCount(int scrapCount) {
             this.scrapCount = scrapCount;
         }
+
+        public void updateImageUrl(String imgUrl) { this.imgUrl = imgUrl; }
     }
 
     @Getter
@@ -218,7 +226,7 @@ public class StudyResponseDto {
                     .scrapCount(scrapCount)
                     .studyId(study.getId())
                     .nickname(study.getMember().getNickname())
-                    .profileImg(study.getMember().getProfile().getImgUrl())
+                    .profileImg((member.getProfile().getImgUrl() == null) ? null : backEndUrl + member.getProfile().getImgUrl())
                     .title(study.getTitle())
                     .content(study.getContent())
                     .tags(study.getTagText())
@@ -271,6 +279,9 @@ public class StudyResponseDto {
         @Schema(description = "스터디 참여자 닉네임")
         private String nickname;
 
+        @Schema(description = "스터디 참여자 프로필 url")
+        private String imageUrl;
+
         @Schema(description = "스터디 지원 동기")
         private String introduce;
 
@@ -281,6 +292,7 @@ public class StudyResponseDto {
             return StudyApplicantInfo.builder()
                     .applicantId(studyApplicant.getId())
                     .introduce(studyApplicant.getIntroduction())
+                    .imageUrl((studyApplicant.getMember().getProfile().getImgUrl() == null) ? null : backEndUrl + studyApplicant.getMember().getProfile().getImgUrl())
                     .nickname(studyApplicant.getMember().getNickname())
                     .status(studyApplicant.getStatus())
                     .build();
