@@ -41,6 +41,9 @@ import com.web.stard.global.exception.error.ErrorCode;
 import com.web.stard.global.utils.FileUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,6 +53,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -59,6 +64,12 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
+
+    @Value("${base.back-end.url}")
+    private String backEndUrl;
+
+    @Value("${file.path.profile}")
+    private String profilePath;
 
     private final MemberRepository memberRepository;
     private final InterestRepository interestRepository;
@@ -203,7 +214,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional(readOnly = true)
     public MemberResponseDto.ProfileImageResponseDto getProfileImage(Member member) {
         Member fullMember = memberRepository.findByIdWithProfile(member.getId());
-        return MemberResponseDto.ProfileImageResponseDto.from(fullMember.getProfile().getImgUrl());
+        return MemberResponseDto.ProfileImageResponseDto.from(backEndUrl + fullMember.getProfile().getImgUrl());
     }
 
     @Override
@@ -223,7 +234,6 @@ public class MemberServiceImpl implements MemberService {
         if (file != null && !file.isEmpty()) {
             UUID uuid = UUID.randomUUID();
 //            String keyName = s3Manager.generateProfileKeyName(uuid);
-//
 //            fileUrl = s3Manager.uploadFile(keyName, file);  // S3에 파일 업로드
 
             // TODO 임시로 로컬에 파일 저장
@@ -233,7 +243,12 @@ public class MemberServiceImpl implements MemberService {
             profile.updateImageUrl(fileUrl);    // DB 이미지 url 변경
         }
 
-        return MemberResponseDto.ProfileImageResponseDto.from(fileUrl);
+        try {
+            return MemberResponseDto.ProfileImageResponseDto.from(backEndUrl + fileUrl);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
@@ -442,6 +457,49 @@ public class MemberServiceImpl implements MemberService {
         return new MemberResponseDto.CredibilityResponseDto(credibility);
     }
 
+    @Override
+    public Resource getProfileImageFile(String image) {
+        try {
+            Path path = Paths.get(fileUtils.getUploadRootPath() + profilePath + "/" + image);
+            Resource resource = new UrlResource(path.toUri());
+
+            // 파일 존재 여부 확인
+            if (!resource.exists() || !resource.isReadable()) {
+                throw new RuntimeException("파일이 존재하지 않거나 읽을 수 없습니다: " + image);
+            }
+            return resource;
+        } catch (Exception e) {
+            throw new RuntimeException("파일이 존재하지 않거나 읽을 수 없습니다: " + image);
+        }
+    }
+
+    @Override
+    @Transactional
+    public MemberResponseDto.MemberProfileDto getProfile(Member member) {
+        member = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        return new MemberResponseDto.MemberProfileDto(member.getNickname(), member.getProfile().getIntroduce(),
+                (member.getProfile().getImgUrl() == null) ? null : backEndUrl + member.getProfile().getImgUrl());
+    }
+
+    @Override
+    @Transactional
+    public MemberResponseDto.MemberProfileDto updateProfile(Member member, MultipartFile image, MemberRequestDto.EditProfileDto request) {
+        member = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        member.getProfile().updateIntroduce(request.introduce());
+
+        if (member.getProfile().getImgUrl() != null) {
+            fileUtils.deleteFile(member.getProfile().getImgUrl());
+        }
+
+        if (!image.isEmpty()) {
+            String keyName = fileUtils.generateProfileKeyName(UUID.randomUUID());
+            String fileUrl = fileUtils.uploadFile(keyName, image);
+            member.getProfile().updateImageUrl(fileUrl);
+        }
+
+        return new MemberResponseDto.MemberProfileDto(member.getNickname(), member.getProfile().getIntroduce(),
+               backEndUrl + member.getProfile().getImgUrl());
+    }
 
     // 애플리케이션 실행 후 호출됨
     @PostConstruct

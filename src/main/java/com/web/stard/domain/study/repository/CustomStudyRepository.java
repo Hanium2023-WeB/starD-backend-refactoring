@@ -34,7 +34,7 @@ public class CustomStudyRepository {
                         qStudy.title, qStudy.hit, qStudy.activityType, qStudy.recruitmentType,
                         qStudy.tagText, qStudy.activityStart, qStudy.activityDeadline,
                         qStudy.recruitmentDeadline, qStudy.city, qStudy.district,
-                        qStudy.field, qMember.nickname, qMember.profile.imgUrl,
+                        qStudy.field, qMember.nickname, qMember.profile.imgUrl.as("profileImg"),
                         qStudy.id.as("studyId")))
                 .from(qStudy)
                 .join(qStudy.member, qMember)

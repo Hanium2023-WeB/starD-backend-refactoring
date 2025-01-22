@@ -21,6 +21,7 @@ import com.web.stard.domain.study.service.StudyService;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,9 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class StudyServiceImpl implements StudyService {
+
+    @Value("${base.back-end.url}")
+    private String backEndUrl;
 
     private final StarScrapService starScrapService;
     private final StudyRepository studyRepository;
@@ -106,7 +110,7 @@ public class StudyServiceImpl implements StudyService {
             member = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         }
         boolean isScrapped = (starScrapService.existsStarScrap(member, study.getId(), ActType.SCRAP, TableType.STUDY) != null);
-        return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount, isScrapped);
+        return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount, isScrapped, backEndUrl);
     }
 
     /**
@@ -208,13 +212,12 @@ public class StudyServiceImpl implements StudyService {
      */
     @Override
     @Transactional
-    public List<StudyApplicant> getApplicants(Member member, Long studyId) {
+    public List<StudyResponseDto.StudyApplicantInfo> getApplicants(Member member, Long studyId) {
         member = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         Study study = findById(studyId);
         validateAuthor(member, study.getMember());
-
-        return studyApplicantRepository.findByStudy(study);
+        return studyApplicantRepository.findByStudy(study).stream().map(studyApplicant -> StudyResponseDto.StudyApplicantInfo.toDto(studyApplicant, backEndUrl)).toList();
     }
 
     /**
@@ -238,6 +241,11 @@ public class StudyServiceImpl implements StudyService {
         if (!Objects.isNull(member)) {
             List<Long> scraps = starScrapRepository.findStudiesByMember(member.getId()).stream().map(Study::getId).toList();
             studyInfos.forEach(studyInfo -> {
+
+                if (studyInfo.getProfileImg() != null) {
+                    studyInfo.updateImageUrl(backEndUrl + studyInfo.getProfileImg());
+                }
+
                 if (scraps.contains(studyInfo.getStudyId())) {
                     studyInfo.updateScarpStatus(true);
                 } else {
@@ -422,7 +430,7 @@ public class StudyServiceImpl implements StudyService {
                 .map(study -> {
                     int scrapCount = starScrapService.findStarScrapCount(study.getId(), ActType.SCRAP, TableType.STUDY);
                     boolean isScrapped = (starScrapService.existsStarScrap(member, study.getId(), ActType.SCRAP, TableType.STUDY) != null);
-                    return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount, isScrapped);
+                    return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount, isScrapped, backEndUrl);
                 })
                 .toList();
 
@@ -444,7 +452,7 @@ public class StudyServiceImpl implements StudyService {
                 .map(applicant -> {
                     int scrapCount = starScrapService.findStarScrapCount(applicant.getStudy().getId(), ActType.SCRAP, TableType.STUDY);
                     boolean isScrapped = (starScrapService.existsStarScrap(member, applicant.getStudy().getId(), ActType.SCRAP, TableType.STUDY) != null);
-                    return StudyResponseDto.DetailInfo.toDto(applicant.getStudy(), member, scrapCount, isScrapped);
+                    return StudyResponseDto.DetailInfo.toDto(applicant.getStudy(), member, scrapCount, isScrapped, backEndUrl);
                 })
                 .toList();
 
@@ -465,7 +473,7 @@ public class StudyServiceImpl implements StudyService {
                 .map(study -> {
                     int scrapCount = starScrapService.findStarScrapCount(study.getId(), ActType.SCRAP, TableType.STUDY);
                     boolean isScrapped = (starScrapService.existsStarScrap(member, study.getId(), ActType.SCRAP, TableType.STUDY) != null);
-                    return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount, isScrapped);
+                    return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount, isScrapped, backEndUrl);
                 })
                 .toList();
 
@@ -484,7 +492,7 @@ public class StudyServiceImpl implements StudyService {
         Study study = findById(studyId);
         List<Member> studyMembers = studyMemberRepository.findMembersByStudy(study);
         return studyMembers.stream().map(studyMember -> new StudyResponseDto.StudyMemberInfo(studyMember.getId(), studyMember.getNickname(),
-                studyMember.getProfile().getImgUrl())).toList();
+                (studyMember.getProfile().getImgUrl() == null) ? null : backEndUrl + studyMember.getProfile().getImgUrl())).toList();
     }
 
     /**
@@ -524,7 +532,7 @@ public class StudyServiceImpl implements StudyService {
     public List<StudyResponseDto.StudyMemberDeletionInfo> getStudyDeletionConsentStatus(Member member, Long studyId) {
         List<StudyMember> studyMembers = studyMemberRepository.findByStudyId(studyId);
         return studyMembers.stream().map(studyMember -> new StudyResponseDto.StudyMemberDeletionInfo(studyMember.getId(), studyMember.getMember().getNickname(),
-                studyMember.getMember().getProfile().getImgUrl(), studyMember.getStudyRemoved())).toList();
+                (studyMember.getMember().getProfile().getImgUrl() == null) ? null : studyMember.getMember().getProfile().getImgUrl(), studyMember.getStudyRemoved())).toList();
     }
 
     /**
@@ -568,7 +576,7 @@ public class StudyServiceImpl implements StudyService {
         Study study = findById(studyId);
         StudyApplicant applicant = studyApplicantRepository.findByMemberAndStudy(member, study).orElse(null);
 
-        return (applicant == null) ? null : StudyResponseDto.StudyApplicantInfo.toDto(applicant);
+        return (applicant == null) ? null : StudyResponseDto.StudyApplicantInfo.toDto(applicant, backEndUrl);
     }
 
     @Override
@@ -579,7 +587,7 @@ public class StudyServiceImpl implements StudyService {
         return studies.stream().map(study -> {
             int scrapCount = starScrapService.findStarScrapCount(study.getId(), ActType.SCRAP, TableType.STUDY);
             boolean isScrapped = (starScrapService.existsStarScrap(member, study.getId(), ActType.SCRAP, TableType.STUDY) != null);
-            return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount, isScrapped);
+            return StudyResponseDto.DetailInfo.toDto(study, member, scrapCount, isScrapped, backEndUrl);
         }).toList();
     }
 }

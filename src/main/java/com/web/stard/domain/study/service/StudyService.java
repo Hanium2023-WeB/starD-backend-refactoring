@@ -31,7 +31,7 @@ public interface StudyService {
 
     void selectApplicant(Member member, Long studyId, Long applicationId);
 
-    List<StudyApplicant> getApplicants(Member member, Long studyId);
+    List<StudyResponseDto.StudyApplicantInfo> getApplicants(Member member, Long studyId);
 
     Page<StudyResponseDto.StudyInfo> searchStudies(Member member, StudyRequestDto.StudySearchFilter filter, Pageable pageable);
 

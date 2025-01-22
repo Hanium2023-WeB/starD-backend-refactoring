@@ -19,6 +19,7 @@ import com.web.stard.domain.teamBlog.repository.StudyPostRepository;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ReplyServiceImpl implements ReplyService {
+
+    @Value("${base.back-end.url}")
+    private String backEndUrl;
 
     private final ReplyRepository replyRepository;
     private final MemberRepository memberRepository;
@@ -95,7 +99,7 @@ public class ReplyServiceImpl implements ReplyService {
             }
 
         }
-        return ReplyResponseDto.ReplyDto.from(reply, writer, true);
+        return ReplyResponseDto.ReplyDto.from(reply, writer, true, backEndUrl);
     }
 
     /**
@@ -113,7 +117,7 @@ public class ReplyServiceImpl implements ReplyService {
         validatePostExists(reply.getTargetId(), reply.getPostType());
 
         reply.updateReply(requestDto.getContent());
-        return ReplyResponseDto.ReplyDto.from(reply, reply.getMember(), isAuthor);
+        return ReplyResponseDto.ReplyDto.from(reply, reply.getMember(), isAuthor, backEndUrl);
     }
 
     /**
@@ -154,7 +158,7 @@ public class ReplyServiceImpl implements ReplyService {
         List<ReplyResponseDto.ReplyDto> replyDtos = replies.getContent().stream()
                 .map(reply -> {
                     boolean isAuthor = (member != null && reply.getMember().getId().equals(member.getId()));
-                    return ReplyResponseDto.ReplyDto.from(reply, reply.getMember(), isAuthor);
+                    return ReplyResponseDto.ReplyDto.from(reply, reply.getMember(), isAuthor, backEndUrl);
                 })
                 .toList();
 
@@ -187,7 +191,7 @@ public class ReplyServiceImpl implements ReplyService {
             return ReplyResponseDto.MyPageReplyDto.of(reply, studyPost);
         }).toList();
 
-        return ReplyResponseDto.MyPageReplyListDto.of(replies, user, replyDtos);
+        return ReplyResponseDto.MyPageReplyListDto.of(replies, user, replyDtos, backEndUrl);
     }
 
     @Override

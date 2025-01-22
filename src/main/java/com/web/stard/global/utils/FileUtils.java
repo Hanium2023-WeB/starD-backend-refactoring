@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -34,18 +35,23 @@ public class FileUtils {
     private String windowRoot;
 
     public String getUploadRootPath() {
+        // os 가져오기
         String os = System.getProperty("os.name").toLowerCase();
+        // user home 디렉토리 가져오기
         String userHome = System.getProperty("user.home");
 
         if (os.contains("win")) {
             return windowRoot;
         } else if (os.contains("mac") || os.contains("nix") || os.contains("nux")) {
-            return userHome + "/stard/";
+            return userHome + "/stard";
         } else {
-            return "/stard/";
+            return "/stard";
         }
     }
 
+    /**
+     * 디렉토리 생성
+     */
     @PostConstruct
     public void init() {
         File folder = new File(getUploadRootPath() + profilePath);
@@ -91,7 +97,7 @@ public class FileUtils {
             // 업로드한 파일 데이터를 지정한 경로에 저장
             file.transferTo(saveFile);
 
-            return saveFile.getAbsolutePath();
+            return keyName + extension;
         } catch (IOException e) {
             log.error("File upload failed : {}", e.getMessage(), e);
             throw new CustomException(ErrorCode.UPLOAD_FAILED);
@@ -127,10 +133,12 @@ public class FileUtils {
      */
     public void deleteFile(String fileUrl) {
         try {
-            File file = new File(fileUrl);
+            File file = new File(getUploadRootPath() + fileUrl);
 
             if (file.exists()) {
                 file.delete();
+            } else {
+                throw new FileNotFoundException(fileUrl);
             }
         } catch (Exception e) {
             log.error("File delete failed: {}", e.getMessage(), e);
@@ -167,7 +175,7 @@ public class FileUtils {
     /**
      * 단일 파일 다운로드
      *
-     * @param fileUrl
+     * @param fileUrl 파일 저장 절대 경로
      * @return
      */
     public InputStream downloadFile(String fileUrl) {

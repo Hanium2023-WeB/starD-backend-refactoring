@@ -39,13 +39,13 @@ public class ReplyResponseDto {
         @Schema(description = "댓글 수정 일시")
         private LocalDateTime updatedAt;
 
-        public static ReplyDto from(Reply reply, Member member, boolean isAuthor) {
+        public static ReplyDto from(Reply reply, Member member, boolean isAuthor, String backendUrl) {
             return ReplyDto.builder()
                     .replyId(reply.getId())
                     .content(reply.getContent())
                     .isAuthor(isAuthor)
                     .writer(member.getNickname())
-                    .profileImg(member.getProfile().getImgUrl())
+                    .profileImg((member.getProfile().getImgUrl() == null) ? null : backendUrl + member.getProfile().getImgUrl())
                     .createdAt(reply.getCreatedAt())
                     .updatedAt(reply.getUpdatedAt())
                     .build();
@@ -134,11 +134,11 @@ public class ReplyResponseDto {
         @Schema(description = "총 데이터 건 수")
         private long totalElements;
 
-        public static MyPageReplyListDto of(Page<Reply> replies, Member member, List<MyPageReplyDto> dtos) {
+        public static MyPageReplyListDto of(Page<Reply> replies, Member member, List<MyPageReplyDto> dtos, String backendUrl) {
             return MyPageReplyListDto.builder()
                     .replies(dtos)
                     .writer(member.getNickname())
-                    .profileImg(member.getProfile().getImgUrl())
+                    .profileImg((member.getProfile().getImgUrl() == null) ? null : backendUrl + member.getProfile().getImgUrl())
                     .currentPage(replies.getNumber() + 1)
                     .totalPages(replies.getTotalPages())
                     .isLast(replies.isLast())

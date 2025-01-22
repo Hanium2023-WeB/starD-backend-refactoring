@@ -3,6 +3,8 @@ package com.web.stard.domain.member.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Objects;
+
 @Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,6 +43,8 @@ public class Profile {
     }
 
     public void updateIntroduce(String introduce) {
-        this.introduce = introduce;
+        if (!Objects.equals(this.introduce, introduce)) {
+            this.introduce = introduce;
+        }
     }
 }
