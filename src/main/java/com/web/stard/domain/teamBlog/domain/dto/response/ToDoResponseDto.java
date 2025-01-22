@@ -78,6 +78,9 @@ public class ToDoResponseDto {
         @Schema(description = "투두 고유 id")
         private Long toDoId;
 
+        @Schema(description = "투두 담당자 고유 id")
+        private Long assigneeId;
+
         @Schema(description = "담당 업무")
         private String task;
 
@@ -92,6 +95,7 @@ public class ToDoResponseDto {
 
         public static MemberToDoDto of (Assignee assignee) {
             return MemberToDoDto.builder()
+                    .assigneeId(assignee.getId())
                     .toDoId(assignee.getToDo().getId())
                     .task(assignee.getToDo().getTask())
                     .dueDate(assignee.getToDo().getDueDate())
