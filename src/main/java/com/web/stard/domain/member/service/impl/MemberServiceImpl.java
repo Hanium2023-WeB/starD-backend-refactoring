@@ -214,7 +214,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional(readOnly = true)
     public MemberResponseDto.ProfileImageResponseDto getProfileImage(Member member) {
         Member fullMember = memberRepository.findByIdWithProfile(member.getId());
-        return MemberResponseDto.ProfileImageResponseDto.from(backEndUrl + "/members" + fullMember.getProfile().getImgUrl());
+        return MemberResponseDto.ProfileImageResponseDto.from(backEndUrl + fullMember.getProfile().getImgUrl());
     }
 
     @Override
@@ -498,7 +498,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         return new MemberResponseDto.MemberProfileDto(member.getNickname(), member.getProfile().getIntroduce(),
-                backEndUrl + profilePath + member.getProfile().getImgUrl());
+               backEndUrl + member.getProfile().getImgUrl());
     }
 
     // 애플리케이션 실행 후 호출됨

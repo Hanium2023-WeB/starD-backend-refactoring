@@ -24,9 +24,6 @@ import java.util.List;
 
 public class StudyResponseDto {
 
-    @Value("${base.back-end.url}")
-    private static String backEndUrl;
-
     public record StudyTeamBlogInfo(
             @Schema(description = "스터디 팀블로그 아이디")
             Long studyId,
@@ -67,7 +64,7 @@ public class StudyResponseDto {
         private String nickname;
 
         @Schema(description = "스터디 게시글 작성자 프로필 url")
-        private String imgUrl;
+        private String profileImg;
 
         @Schema(description = "스터디 게시글 제목")
         private String title;
@@ -117,7 +114,9 @@ public class StudyResponseDto {
             this.scrapCount = scrapCount;
         }
 
-        public void updateImageUrl(String imgUrl) { this.imgUrl = imgUrl; }
+        public void updateImageUrl(String profileImg) {
+            this.profileImg = profileImg;
+        }
     }
 
     @Getter
@@ -221,12 +220,13 @@ public class StudyResponseDto {
         @Schema(description = "스터디 게시글 스크랩 여부")
         private boolean existsScrap;
 
-        public static DetailInfo toDto(Study study, Member member, int scrapCount, boolean existsScrap) {
+        public static DetailInfo toDto(Study study, Member member, int scrapCount, boolean existsScrap,
+                                       String backendUrl) {
             return DetailInfo.builder()
                     .scrapCount(scrapCount)
                     .studyId(study.getId())
                     .nickname(study.getMember().getNickname())
-                    .profileImg((member.getProfile().getImgUrl() == null) ? null : backEndUrl + member.getProfile().getImgUrl())
+                    .profileImg((study.getMember().getProfile().getImgUrl() == null) ? null : backendUrl + study.getMember().getProfile().getImgUrl())
                     .title(study.getTitle())
                     .content(study.getContent())
                     .tags(study.getTagText())
@@ -280,7 +280,7 @@ public class StudyResponseDto {
         private String nickname;
 
         @Schema(description = "스터디 참여자 프로필 url")
-        private String imageUrl;
+        private String profileImg;
 
         @Schema(description = "스터디 지원 동기")
         private String introduce;
@@ -288,11 +288,11 @@ public class StudyResponseDto {
         @Schema(description = "스터디 신청 상태")
         private ApplicationStatus status;
 
-        public static StudyApplicantInfo toDto(StudyApplicant studyApplicant) {
+        public static StudyApplicantInfo toDto(StudyApplicant studyApplicant, String backendUrl) {
             return StudyApplicantInfo.builder()
                     .applicantId(studyApplicant.getId())
                     .introduce(studyApplicant.getIntroduction())
-                    .imageUrl((studyApplicant.getMember().getProfile().getImgUrl() == null) ? null : backEndUrl + studyApplicant.getMember().getProfile().getImgUrl())
+                    .profileImg((studyApplicant.getMember().getProfile().getImgUrl() == null) ? null : backendUrl + studyApplicant.getMember().getProfile().getImgUrl())
                     .nickname(studyApplicant.getMember().getNickname())
                     .status(studyApplicant.getStatus())
                     .build();
