@@ -65,9 +65,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
-    @Value("${base.back-end.url}")
-    private String backEndUrl;
-
     @Value("${file.path.profile}")
     private String profilePath;
 
@@ -214,7 +211,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional(readOnly = true)
     public MemberResponseDto.ProfileImageResponseDto getProfileImage(Member member) {
         Member fullMember = memberRepository.findByIdWithProfile(member.getId());
-        return MemberResponseDto.ProfileImageResponseDto.from(backEndUrl + fullMember.getProfile().getImgUrl());
+        return MemberResponseDto.ProfileImageResponseDto.from(fullMember.getProfile().getImgUrl());
     }
 
     @Override
@@ -244,7 +241,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         try {
-            return MemberResponseDto.ProfileImageResponseDto.from(backEndUrl + fileUrl);
+            return MemberResponseDto.ProfileImageResponseDto.from(fileUrl);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -478,7 +475,7 @@ public class MemberServiceImpl implements MemberService {
     public MemberResponseDto.MemberProfileDto getProfile(Member member) {
         member = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         return new MemberResponseDto.MemberProfileDto(member.getNickname(), member.getProfile().getIntroduce(),
-                (member.getProfile().getImgUrl() == null) ? null : backEndUrl + member.getProfile().getImgUrl());
+                (member.getProfile().getImgUrl() == null) ? null : member.getProfile().getImgUrl());
     }
 
     @Override
@@ -498,7 +495,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         return new MemberResponseDto.MemberProfileDto(member.getNickname(), member.getProfile().getIntroduce(),
-               backEndUrl + member.getProfile().getImgUrl());
+               member.getProfile().getImgUrl());
     }
 
     // 애플리케이션 실행 후 호출됨

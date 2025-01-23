@@ -130,12 +130,15 @@ public class StudyResponseDto {
         @Schema(description = "마지막 페이지 여부")
         private boolean isLast;
 
+        private long totalElements;
+
         public static StudyRecruitListDto of(Page<Study> studyPosts, List<StudyResponseDto.DetailInfo> detailInfos) {
             return StudyRecruitListDto.builder()
                     .studyRecruitPosts(detailInfos)
                     .currentPage(studyPosts.getNumber() + 1)
                     .totalPages(studyPosts.getTotalPages())
                     .isLast(studyPosts.isLast())
+                    .totalElements(studyPosts.getTotalElements())
                     .build();
         }
 
@@ -145,6 +148,7 @@ public class StudyResponseDto {
                     .currentPage(applicants.getNumber() + 1)
                     .totalPages(applicants.getTotalPages())
                     .isLast(applicants.isLast())
+                    .totalElements(applicants.getTotalElements())
                     .build();
         }
     }
@@ -220,13 +224,12 @@ public class StudyResponseDto {
         @Schema(description = "스터디 게시글 스크랩 여부")
         private boolean existsScrap;
 
-        public static DetailInfo toDto(Study study, Member member, int scrapCount, boolean existsScrap,
-                                       String backendUrl) {
+        public static DetailInfo toDto(Study study, Member member, int scrapCount, boolean existsScrap) {
             return DetailInfo.builder()
                     .scrapCount(scrapCount)
                     .studyId(study.getId())
                     .nickname(study.getMember().getNickname())
-                    .profileImg((study.getMember().getProfile().getImgUrl() == null) ? null : backendUrl + study.getMember().getProfile().getImgUrl())
+                    .profileImg((study.getMember().getProfile().getImgUrl() == null) ? null : study.getMember().getProfile().getImgUrl())
                     .title(study.getTitle())
                     .content(study.getContent())
                     .tags(study.getTagText())
@@ -288,11 +291,11 @@ public class StudyResponseDto {
         @Schema(description = "스터디 신청 상태")
         private ApplicationStatus status;
 
-        public static StudyApplicantInfo toDto(StudyApplicant studyApplicant, String backendUrl) {
+        public static StudyApplicantInfo toDto(StudyApplicant studyApplicant) {
             return StudyApplicantInfo.builder()
                     .applicantId(studyApplicant.getId())
                     .introduce(studyApplicant.getIntroduction())
-                    .profileImg((studyApplicant.getMember().getProfile().getImgUrl() == null) ? null : backendUrl + studyApplicant.getMember().getProfile().getImgUrl())
+                    .profileImg((studyApplicant.getMember().getProfile().getImgUrl() == null) ? null : studyApplicant.getMember().getProfile().getImgUrl())
                     .nickname(studyApplicant.getMember().getNickname())
                     .status(studyApplicant.getStatus())
                     .build();

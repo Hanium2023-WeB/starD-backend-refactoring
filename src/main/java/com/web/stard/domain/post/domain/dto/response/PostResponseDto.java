@@ -62,8 +62,7 @@ public class PostResponseDto {
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private Boolean existsStar;
 
-        public static PostDto from(Post post, Member writer, Integer starCount, Boolean isAuthor, Boolean existsStar,
-                                   String backendUrl) {
+        public static PostDto from(Post post, Member writer, Integer starCount, Boolean isAuthor, Boolean existsStar) {
             String writerName = (writer.getRole() == Role.ADMIN) ? "관리자" : writer.getNickname();
             String profileImage = (writer.getRole() == Role.ADMIN) ? null : writer.getProfile().getImgUrl();
 
@@ -86,7 +85,7 @@ public class PostResponseDto {
                     .postType(type)
                     .isAuthor(isAuthor)
                     .writer(writerName)
-                    .profileImg((profileImage == null) ? "" : backendUrl + profileImage)
+                    .profileImg((profileImage == null) ? null : profileImage)
                     .createdAt(post.getCreatedAt())
                     .updatedAt(post.getUpdatedAt())
                     .starCount(starCount)
