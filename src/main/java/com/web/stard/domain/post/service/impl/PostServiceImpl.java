@@ -18,7 +18,6 @@ import com.web.stard.domain.member.repository.MemberRepository;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,9 +27,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
-
-    @Value("${base.back-end.url}")
-    private String backEndUrl;
 
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
@@ -75,7 +71,7 @@ public class PostServiceImpl implements PostService {
         Member writer = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return PostResponseDto.PostDto.from(post, writer, 0, true, false, backEndUrl);
+        return PostResponseDto.PostDto.from(post, writer, 0, true, false);
     }
 
     /**
@@ -93,7 +89,7 @@ public class PostServiceImpl implements PostService {
         Member writer = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return PostResponseDto.PostDto.from(post, writer, 0, true, false, backEndUrl);
+        return PostResponseDto.PostDto.from(post, writer, 0, true, false);
     }
 
     /**
@@ -116,7 +112,7 @@ public class PostServiceImpl implements PostService {
         post.updatePost(requestDto.getTitle(), requestDto.getContent());
         int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
 
-        return PostResponseDto.PostDto.from(post, post.getMember(), starCount, isAuthor, false, backEndUrl);
+        return PostResponseDto.PostDto.from(post, post.getMember(), starCount, isAuthor, false);
     }
 
     /**
@@ -137,7 +133,7 @@ public class PostServiceImpl implements PostService {
         post.updateComm(requestDto.getTitle(), requestDto.getContent(), Category.find(requestDto.getCategory()));
         int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
 
-        return PostResponseDto.PostDto.from(post, post.getMember(), starCount, isAuthor, false, backEndUrl);
+        return PostResponseDto.PostDto.from(post, post.getMember(), starCount, isAuthor, false);
     }
 
     /**
@@ -179,7 +175,7 @@ public class PostServiceImpl implements PostService {
                     if (member != null) {
                         existsStar = (starScrapService.existsStarScrap(member, post.getId(), ActType.STAR, TableType.POST) != null);
                     }
-                    return PostResponseDto.PostDto.from(post, post.getMember(), starCount, null, existsStar, backEndUrl);
+                    return PostResponseDto.PostDto.from(post, post.getMember(), starCount, null, existsStar);
                 })
                 .toList();
 
@@ -224,7 +220,7 @@ public class PostServiceImpl implements PostService {
         int starCount = starScrapService.findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
         Boolean existsStar = (starScrapService.existsStarScrap(member, post.getId(), ActType.STAR, TableType.POST) != null);
 
-        return PostResponseDto.PostDto.from(post, post.getMember(), starCount, isAuthor, existsStar, backEndUrl);
+        return PostResponseDto.PostDto.from(post, post.getMember(), starCount, isAuthor, existsStar);
     }
 
     /**
@@ -262,7 +258,7 @@ public class PostServiceImpl implements PostService {
 
         List<PostResponseDto.PostDto> postDtos = paginatePostList.getContent().stream()
                 .map(post -> {
-                    return PostResponseDto.PostDto.from(post, post.getMember(), null, null, null, backEndUrl);
+                    return PostResponseDto.PostDto.from(post, post.getMember(), null, null, null);
                 }).toList();
 
         return PostResponseDto.PostListDto.of(paginatePostList, postDtos);
@@ -288,7 +284,7 @@ public class PostServiceImpl implements PostService {
 
         List<PostResponseDto.PostDto> postDtos = paginatePostList.getContent().stream()
                 .map(post -> {
-                    return PostResponseDto.PostDto.from(post, post.getMember(), null, null, null, backEndUrl);
+                    return PostResponseDto.PostDto.from(post, post.getMember(), null, null, null);
                 }).toList();
 
         return PostResponseDto.PostListDto.of(paginatePostList, postDtos);

@@ -18,7 +18,6 @@ import com.web.stard.domain.teamBlog.repository.StudyPostRepository;
 import com.web.stard.global.exception.CustomException;
 import com.web.stard.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +28,6 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class StarScrapServiceImpl implements StarScrapService {
-
-    @Value("${base.back-end.url}")
-    private String backEndUrl;
 
     private final StarScrapRepository starScrapRepository;
     private final PostRepository postRepository;
@@ -194,7 +190,7 @@ public class StarScrapServiceImpl implements StarScrapService {
                 .map(post -> {
                     int starCount = findStarScrapCount(post.getId(), ActType.STAR, TableType.POST);
                     Boolean existsStar = (existsStarScrap(member, post.getId(), ActType.STAR, TableType.POST) != null);
-                    return PostResponseDto.PostDto.from(post, post.getMember(), starCount, null, existsStar, backEndUrl);
+                    return PostResponseDto.PostDto.from(post, post.getMember(), starCount, null, existsStar);
                 })
                 .toList();
 
@@ -214,14 +210,14 @@ public class StarScrapServiceImpl implements StarScrapService {
     @Override
     public StudyResponseDto.StudyRecruitListDto getMemberScrapStudyList(Member member, int page) {
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "id"));
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
+        Pageable pageable = PageRequest.of(page-1, 9, sort);
 
         Page<Study> studyRecruitPosts = starScrapRepository.findStudyRecruitPostsByMember(member, pageable);
 
         List<StudyResponseDto.DetailInfo> studyPostDtos = studyRecruitPosts.getContent().stream()
                 .map(post -> {
                     int scrapCount = findStarScrapCount(post.getId(), ActType.SCRAP, TableType.STUDY);
-                    return StudyResponseDto.DetailInfo.toDto(post, member, scrapCount, true, backEndUrl);
+                    return StudyResponseDto.DetailInfo.toDto(post, member, scrapCount, true);
                 })
                 .toList();
 
