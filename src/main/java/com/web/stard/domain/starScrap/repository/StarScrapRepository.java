@@ -25,10 +25,10 @@ public interface StarScrapRepository extends JpaRepository<StarScrap, Long> {
     List<StarScrap> findAllByActTypeAndTableTypeAndTargetId(ActType actType, TableType tableType, Long targetId);
 
     @Query("SELECT p FROM Post p JOIN StarScrap s ON p.id = s.targetId WHERE s.member = :member AND s.actType = 'STAR'")
-    Page<Post> findPostsByMember(Member member, Pageable pageable);
+    Page<Post> findPostsByMember(@Param("member") Member member, Pageable pageable);
 
     @Query("SELECT st FROM Study st JOIN StarScrap ss ON st.id = ss.targetId WHERE ss.member = :member AND ss.actType = 'SCRAP'")
-    Page<Study> findStudyRecruitPostsByMember(Member member, Pageable pageable);
+    Page<Study> findStudyRecruitPostsByMember(@Param("member") Member member, Pageable pageable);
 
     void deleteByActTypeAndTableTypeAndTargetId(ActType actType, TableType tableType, Long id);
 
