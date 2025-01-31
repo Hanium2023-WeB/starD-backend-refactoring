@@ -90,6 +90,9 @@ public class ToDoResponseDto {
         @Schema(description = "해당 스터디 id")
         private Long studyId;
 
+        @Schema(description = "해당 스터디 제목")
+        private String studyTitle;
+
         @Schema(description = "회원 - 투두 완료 상태")
         private boolean toDoStatus;
 
@@ -100,6 +103,7 @@ public class ToDoResponseDto {
                     .task(assignee.getToDo().getTask())
                     .dueDate(assignee.getToDo().getDueDate())
                     .studyId(assignee.getToDo().getStudy().getId())
+                    .studyTitle(assignee.getToDo().getStudy().getTitle())
                     .toDoStatus(assignee.getToDoStatus())
                     .build();
         }
