@@ -436,7 +436,7 @@ public class StudyServiceImpl implements StudyService {
     @Transactional(readOnly = true)
     public StudyResponseDto.StudyRecruitListDto getMemberApplyStudy(Member member, int page) {
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC, "createdAt"));
-        Pageable pageable = PageRequest.of(page - 1, 10, sort);
+        Pageable pageable = PageRequest.of(page - 1, 9, sort);
 
         Page<StudyApplicant> applicants = studyApplicantRepository.findByMember(member, pageable);
 
