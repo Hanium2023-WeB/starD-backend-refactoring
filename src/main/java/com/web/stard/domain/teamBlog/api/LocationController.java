@@ -28,7 +28,7 @@ public class LocationController {
     })
     @GetMapping("/find")
     public ResponseEntity<Location> recommendation(@PathVariable(name = "studyId") Long studyId,
-                                                   @RequestParam @NotEmpty(message = "장소 목록은 필수입니다.")
+                                                   @RequestParam(name = "places") @NotEmpty(message = "장소 목록은 필수입니다.")
                                                    @Size(min = 2, message = "장소는 최소 2개 이상 입력해야 합니다.") List<String> places) {
         return  ResponseEntity.ok(locationService.recommendation(studyId, places));
     }
