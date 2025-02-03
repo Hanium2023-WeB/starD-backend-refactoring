@@ -7,7 +7,7 @@ import java.util.List;
 public class NotificationResponse {
 
     public record InfoResponseDto(
-            Long NotificationId,
+            Long notificationId,
             String title,
             String body,
             boolean read,

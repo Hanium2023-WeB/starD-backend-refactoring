@@ -25,7 +25,7 @@ public class NotificationController {
     @Operation(summary = "Sse 구독")
     @GetMapping(value = "/subscribe", produces = "text/event-stream")
     public ResponseEntity<SseEmitter> subscribe(@CurrentMember Member member,
-                                                @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
+                                                @RequestParam(value = "lastEventId", required = false, defaultValue = "") String lastEventId) {
         return ResponseEntity.ok().body(notificationService.subscribe(member, lastEventId));
     }
 
