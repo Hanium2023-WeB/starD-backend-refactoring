@@ -351,7 +351,8 @@ public class StudyResponseDto {
             long memberId,
             String nickname,
             String profileUrl,
-            boolean studyRemoved
+            boolean studyRemoved,
+            boolean isLoggedIn
     ) {
 
     }

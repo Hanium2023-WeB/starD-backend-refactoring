@@ -524,7 +524,8 @@ public class StudyServiceImpl implements StudyService {
     public List<StudyResponseDto.StudyMemberDeletionInfo> getStudyDeletionConsentStatus(Member member, Long studyId) {
         List<StudyMember> studyMembers = studyMemberRepository.findByStudyId(studyId);
         return studyMembers.stream().map(studyMember -> new StudyResponseDto.StudyMemberDeletionInfo(studyMember.getId(), studyMember.getMember().getNickname(),
-                (studyMember.getMember().getProfile().getImgUrl() == null) ? null : studyMember.getMember().getProfile().getImgUrl(), studyMember.getStudyRemoved())).toList();
+                (studyMember.getMember().getProfile().getImgUrl() == null) ? null : studyMember.getMember().getProfile().getImgUrl(), studyMember.getStudyRemoved(),
+                (member.getId() == studyMember.getMember().getId()) ? true : false)).toList();
     }
 
     /**
