@@ -35,8 +35,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
      */
     @Override
     @Transactional
-    public ChatResponseDto.ChatMessageDto saveChatMessage(Long chatRoomId, String message, Member member) {
-        StudyMember studyMember = studyMemberRepository.findStudyMemberByMember(member)
+    public ChatResponseDto.ChatMessageDto saveChatMessage(Long chatRoomId, Long studyId, String message, Member member) {
+        StudyMember studyMember = studyMemberRepository.findStudyMemberByMemberAndStudyId(member, studyId)
                 .orElseThrow(() -> new CustomException(ErrorCode.STUDY_MEMBER_NOT_FOUND));
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
